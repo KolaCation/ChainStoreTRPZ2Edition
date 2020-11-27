@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ChainStoreTRPZ2Edition.ViewModels;
 
 namespace ChainStoreTRPZ2Edition.Pages.Account
 {
@@ -18,8 +19,9 @@ namespace ChainStoreTRPZ2Edition.Pages.Account
     /// </summary>
     public partial class RegisterPage : Page
     {
-        public RegisterPage()
+        public RegisterPage(MainViewModel mainViewModel)
         {
+            //DataContext = mainViewModel;
             InitializeComponent();
         }
     }

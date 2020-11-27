@@ -19,8 +19,9 @@ namespace ChainStoreTRPZ2Edition
     /// </summary>
     public partial class LoginPage : Page
     {
-        public LoginPage()
+        public LoginPage(MainViewModel mainViewModel)
         {
+            DataContext = mainViewModel;
             InitializeComponent();
         }
     }

@@ -26,11 +26,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         {
             //Create command
             OpenLoginPage = new RelayCommand(() => {
-                CurrentPage = new LoginPage();
+                CurrentPage = new LoginPage(this);
             });
             OpenRegisterPage = new RelayCommand(() =>
             {
-                CurrentPage = new RegisterPage();
+                CurrentPage = new RegisterPage(this);
             });
         }
     }
