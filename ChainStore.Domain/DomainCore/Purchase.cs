@@ -21,6 +21,7 @@ namespace ChainStore.Domain.DomainCore
             ClientId = clientId;
             ProductId = productId;
             CreationTime = DateTimeOffset.UtcNow;
+            PriceAtPurchaseMoment = priceAtPurchaseMoment;
         }
 
         public Purchase(Guid id, Guid clientId, Guid productId, DateTimeOffset creationTime, double priceAtPurchaseMoment) : this(id, clientId, productId, priceAtPurchaseMoment)
