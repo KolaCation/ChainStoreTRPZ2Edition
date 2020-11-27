@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.Actions.ApplicationServices;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
@@ -29,28 +30,30 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
             _bookRepository = bookRepository;
         }
 
-        public void HandleOperation(Guid clientId, Guid productId)
+        public async Task HandleOperation(Guid clientId, Guid productId)
         {
             CustomValidator.ValidateId(clientId);
             CustomValidator.ValidateId(productId);
-            var client = _clientRepository.GetOne(clientId);
-            var product = _productRepository.GetOne(productId);
+            var client = await _clientRepository.GetOne(clientId);
+            var product = await _productRepository.GetOne(productId);
             if (client != null && product != null)
             {
-                var books = _bookRepository.GetClientBooks(client.Id);
-                var bookToDel = books.FirstOrDefault(b => b.ProductId.Equals(product.Id));
-                if (product.ProductStatus.Equals(ProductStatus.Booked) && bookToDel != null)
-                    _bookRepository.DeleteOne(bookToDel.Id);
-                var res = client.Charge(product.PriceInUAH);
-                if (!res) return;
-                var store = _productRepository.GetStoreOfSpecificProduct(product.Id);
+                var clientBooks = await _bookRepository.GetClientBooks(client.Id);
+                var currentClientProductBook = clientBooks.FirstOrDefault(b => b.ProductId.Equals(product.Id));
+                if (product.ProductStatus.Equals(ProductStatus.Booked) && currentClientProductBook != null)
+                {
+                    await _bookRepository.DeleteOne(currentClientProductBook.Id);
+                }
+                var operationSucceed = client.Charge(product.PriceInUAH);
+                if (!operationSucceed) return;
+                var store = await _productRepository.GetStoreOfSpecificProduct(product.Id);
                 store.GetProfit(product.PriceInUAH);
                 product.ChangeStatus(ProductStatus.Purchased);
                 var purchase = new Purchase(Guid.NewGuid(), clientId, productId, product.PriceInUAH);
-                _clientRepository.UpdateOne(client);
-                _storeRepository.UpdateOne(store);
-                _productRepository.UpdateOne(product);
-                _purchaseRepository.AddOne(purchase);
+                await _clientRepository.UpdateOne(client);
+                await _storeRepository.UpdateOne(store);
+                await _productRepository.UpdateOne(product);
+                await _purchaseRepository.AddOne(purchase);
             }
         }
     }

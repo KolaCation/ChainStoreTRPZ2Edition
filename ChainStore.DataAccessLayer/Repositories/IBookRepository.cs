@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ChainStore.Domain.DomainCore;
 
 namespace ChainStore.DataAccessLayer.Repositories
 {
     public interface IBookRepository : ICreateDeleteRepository<Book>
     {
-        List<Book> GetClientBooks(Guid clientId);
-        void CheckBooksForExpiration();
+        Task<List<Book>> GetClientBooks(Guid clientId);
+        Task CheckBooksForExpiration();
     }
 }

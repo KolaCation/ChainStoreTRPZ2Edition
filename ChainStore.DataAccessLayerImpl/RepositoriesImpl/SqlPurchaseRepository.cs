@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
@@ -19,28 +20,26 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             _purchaseMapper = new PurchaseMapper();
         }
 
-        public void AddOne(Purchase item)
+        public async Task AddOne(Purchase item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (!exists)
+            if (!Exists(item.Id))
             {
-                var enState = _context.Purchases.Add(_purchaseMapper.DomainToDb(item));
+                var enState = await _context.Purchases.AddAsync(_purchaseMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public void DeleteOne(Guid id)
+        public async Task DeleteOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var purchaseDbModel = _context.Purchases.Find(id);
+                var purchaseDbModel = await _context.Purchases.FindAsync(id);
                 var enState = _context.Purchases.Remove(purchaseDbModel);
                 enState.State = EntityState.Deleted;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -50,11 +49,11 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return _context.Purchases.Any(item => item.Id.Equals(id));
         }
 
-        public List<Purchase> GetClientPurchases(Guid clientId)
+        public async Task<List<Purchase>> GetClientPurchases(Guid clientId)
         {
-            var purchaseDbModelList = _context.Purchases.Where(p => p.ClientId.Equals(clientId)).ToList();
-            var purchaseList = (from purchaseDbModel in purchaseDbModelList select _purchaseMapper.DbToDomain(purchaseDbModel)).ToList();
-            return purchaseList;
+            var purchaseDbModels = await _context.Purchases.Where(p => p.ClientId.Equals(clientId)).ToListAsync();
+            var purchases = (from purchaseDbModel in purchaseDbModels select _purchaseMapper.DbToDomain(purchaseDbModel)).ToList();
+            return purchases;
         }
     }
 }

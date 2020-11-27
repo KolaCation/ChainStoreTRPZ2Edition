@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.DataAccessLayerImpl.Helpers;
@@ -24,28 +25,29 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             _productMapper = new ProductMapper();
         }
 
-        public List<Book> GetClientBooks(Guid clientId)
+        public async Task<List<Book>> GetClientBooks(Guid clientId)
         {
             CustomValidator.ValidateId(clientId);
-            var bookDbModels = _context.Books.Where(b => b.ClientId.Equals(clientId)).ToList();
+            var bookDbModels = await _context.Books.Where(b => b.ClientId.Equals(clientId)).ToListAsync();
             var books = (from bookDbModel in bookDbModels select _bookMapper.DbToDomain(bookDbModel)).ToList();
             return books;
         }
 
-        public void CheckBooksForExpiration()
+        public async Task CheckBooksForExpiration()
         {
-            var books = (from bookDbModel in _context.Books.ToList() select _bookMapper.DbToDomain(bookDbModel)).ToList();
+            var bookDbModels = await _context.Books.ToListAsync();
+            var books = (from bookDbModel in bookDbModels select _bookMapper.DbToDomain(bookDbModel)).ToList();
             var booksToRemove = new List<Book>();
             foreach (var book in books)
             {
-                var result = book.IsExpired();
-                if (!result) return;
-                var productDbModel = _context.Products.Find(book.ProductId);
-                CustomValidator.ValidateObject(productDbModel);
+                var isExpired = book.IsExpired();
+                if (!isExpired) return;
+                var productDbModel = await _context.Products.FindAsync(book.ProductId);
                 var product = _productMapper.DbToDomain(productDbModel);
                 product.ChangeStatus(ProductStatus.OnSale);
                 DetachService.Detach<ProductDbModel>(_context, product.Id);
-                _context.Products.Update(_productMapper.DomainToDb(product));
+                var enState = _context.Products.Update(_productMapper.DomainToDb(product));
+                enState.State = EntityState.Modified;
                 booksToRemove.Add(book);
             }
 
@@ -55,31 +57,29 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 _context.Books.Remove(_bookMapper.DomainToDb(book));
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void AddOne(Book item)
+        public async Task AddOne(Book item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (!exists)
+            if (!Exists(item.Id))
             {
-                var enState = _context.Books.Add(_bookMapper.DomainToDb(item));
+                var enState = await _context.Books.AddAsync(_bookMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public void DeleteOne(Guid id)
+        public async Task DeleteOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var bookDbModel = _context.Books.Find(id);
+                var bookDbModel = await _context.Books.FindAsync(id);
                 var enState = _context.Books.Remove(bookDbModel);
                 enState.State = EntityState.Deleted;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 

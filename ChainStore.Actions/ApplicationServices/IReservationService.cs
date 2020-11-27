@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ChainStore.Actions.ApplicationServices
 {
     public interface IReservationService
     {
-        void HandleOperation(Guid clientId, Guid productId, int reserveDaysCount);
+        Task HandleOperation(Guid clientId, Guid productId, int reserveDaysCount);
     }
 }

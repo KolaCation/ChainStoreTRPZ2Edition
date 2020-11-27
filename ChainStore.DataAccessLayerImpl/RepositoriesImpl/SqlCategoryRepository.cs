@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl.DbModels;
-using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
@@ -23,27 +22,27 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             _categoryMapper = new CategoryMapper(context);
         }
 
-        public void AddOne(Category item)
+        public async Task AddOne(Category item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (!exists)
+            if (!Exists(item.Id))
             {
-                var hasSameName = _context.Categories.Any(cat => cat.Name.ToLower().Equals(item.Name.ToLower()));
-                if (hasSameName) return;
-                var enState = _context.Categories.Add(_categoryMapper.DomainToDb(item));
-                enState.State = EntityState.Added;
-                _context.SaveChanges();
+                var exists = await HasSameName(item);
+                if (!exists)
+                {
+                    var enState = await _context.Categories.AddAsync(_categoryMapper.DomainToDb(item));
+                    enState.State = EntityState.Added;
+                    await _context.SaveChangesAsync();
+                }
             }
         }
 
-        public Category GetOne(Guid id)
+        public async Task<Category> GetOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var categoryDbModel = _context.Categories.Find(id);
+                var categoryDbModel = await _context.Categories.FindAsync(id);
                 return _categoryMapper.DbToDomain(categoryDbModel);
             }
             else
@@ -52,39 +51,90 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-        public IReadOnlyCollection<Category> GetAll()
+        public async Task<IReadOnlyCollection<Category>> GetAll()
         {
-            var categoryDbModelList = _context.Categories.ToList();
-            var categoryList = (from categoryDbModel in categoryDbModelList select _categoryMapper.DbToDomain(categoryDbModel)).ToList();
-            return categoryList.AsReadOnly();
+            var categoryDbModels = await _context.Categories.ToListAsync();
+            var categories =
+                (from categoryDbModel in categoryDbModels select _categoryMapper.DbToDomain(categoryDbModel)).ToList();
+            return categories.AsReadOnly();
         }
 
-        public void UpdateOne(Category item)
+        public async Task UpdateOne(Category item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (exists)
+            if (Exists(item.Id))
             {
-                var hasSameName = _context.Categories.Any(cat => cat.Name.ToLower().Equals(item.Name.ToLower()));
-                if (hasSameName) return;
-                DetachService.Detach<CategoryDbModel>(_context, item.Id);
-                var enState = _context.Categories.Update(_categoryMapper.DomainToDb(item));
-                enState.State = EntityState.Modified;
-                _context.SaveChanges();
+                var exists = await HasSameName(item);
+                if (!exists)
+                {
+                    var enState = _context.Categories.Update(_categoryMapper.DomainToDb(item));
+                    enState.State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
             }
         }
 
-        public void DeleteOne(Guid id)
+        public async Task DeleteOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var categoryDbModel = _context.Categories.Find(id);
+                var categoryDbModel = await _context.Categories.FindAsync(id);
                 var enState = _context.Categories.Remove(categoryDbModel);
                 enState.State = EntityState.Deleted;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
+        }
+
+    
+
+        public async Task AddCategoryToStore(Guid categoryId, Guid storeId)
+        {
+            CustomValidator.ValidateId(categoryId);
+            CustomValidator.ValidateId(storeId);
+            var exists = await StoreCategoryRelationExists(storeId, categoryId);
+            if (!exists)
+            {
+                var storeCatRel = new StoreCategoryDbModel(storeId, categoryId);
+                var enState = await _context.StoreCategoryRelation.AddAsync(storeCatRel);
+                enState.State = EntityState.Added;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteCategoryFromStore(Guid categoryId, Guid storeId)
+        {
+            CustomValidator.ValidateId(categoryId);
+            CustomValidator.ValidateId(storeId);
+            var exists = await StoreCategoryRelationExists(storeId, categoryId);
+            if (exists)
+            {
+                var storeCatRelToRemove = await _context.StoreCategoryRelation.FirstAsync(e =>
+                    e.CategoryDbModelId.Equals(categoryId) && e.StoreDbModelId.Equals(storeId));
+                var enState = _context.StoreCategoryRelation.Remove(storeCatRelToRemove);
+                enState.State = EntityState.Deleted;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        #region Validations
+
+        private async Task<bool> HasSameName(Category category)
+        {
+            if (category != null)
+            {
+                return await _context.Categories.AnyAsync(e => e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> StoreCategoryRelationExists(Guid storeId, Guid categoryId)
+        {
+            return await _context.StoreCategoryRelation
+                .AnyAsync(e => e.CategoryDbModelId.Equals(categoryId) && e.StoreDbModelId.Equals(storeId));
         }
 
         public bool Exists(Guid id)
@@ -93,31 +143,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return _context.Categories.Any(item => item.Id.Equals(id));
         }
 
-        public void AddCategoryToStore(Category category, Guid storeId)
-        {
-            CustomValidator.ValidateObject(category);
-            CustomValidator.ValidateId(storeId);
-            var storeCatRel = new StoreCategoryDbModel(storeId, category.Id);
-            if (!_context.StoreCategoryRelation
-                .Any(e => e.CategoryDbModelId.Equals(storeCatRel.CategoryDbModelId) && e.StoreDbModelId.Equals(storeCatRel.StoreDbModelId)))
-            {
-                _context.StoreCategoryRelation.Add(storeCatRel);
-                _context.SaveChanges();
-            }
-        }
-
-        public void DeleteCategoryFromStore(Category category, Guid storeId)
-        {
-            CustomValidator.ValidateObject(category);
-            CustomValidator.ValidateId(storeId);
-            if (_context.StoreCategoryRelation
-                .Any(e => e.CategoryDbModelId.Equals(category.Id) && e.StoreDbModelId.Equals(storeId)))
-            {
-               var storeCatRelToDel = _context.StoreCategoryRelation.First(e =>
-                    e.CategoryDbModelId.Equals(category.Id) && e.StoreDbModelId.Equals(storeId));
-                _context.StoreCategoryRelation.Remove(storeCatRelToDel);
-                _context.SaveChanges();
-            }
-        }
+        #endregion
     }
 }

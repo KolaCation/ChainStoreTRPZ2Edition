@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ChainStore.Actions.ApplicationServices
 {
     public interface IPurchaseService
     {
-        void HandleOperation(Guid clientId, Guid productId);
+        Task HandleOperation(Guid clientId, Guid productId);
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ChainStore.Domain.DomainCore;
 
 namespace ChainStore.DataAccessLayer.Repositories
 {
     public interface ICategoryRepository : IRepository<Category>
     {
-        void AddCategoryToStore(Category category, Guid storeId);
-        void DeleteCategoryFromStore(Category category, Guid storeId);
+        Task AddCategoryToStore(Guid categoryId, Guid storeId);
+        Task DeleteCategoryFromStore(Guid categoryId, Guid storeId);
     }
 }

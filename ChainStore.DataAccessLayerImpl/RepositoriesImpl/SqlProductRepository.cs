@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.DataAccessLayerImpl.Helpers;
@@ -25,25 +26,24 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             _storeMapper = new StoreMapper(context);
         }
 
-        public void AddOne(Product item)
+        public async Task AddOne(Product item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (!exists)
+            if (!Exists(item.Id))
             {
-                var enState = _context.Products.Add(_productMapper.DomainToDb(item));
+                var enState = await _context.Products.AddAsync(_productMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public Product GetOne(Guid id)
+        public async Task<Product> GetOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                return _productMapper.DbToDomain(_context.Products.Find(id));
+                var productDbModel = await _context.Products.FindAsync(id);
+                return _productMapper.DbToDomain(productDbModel);
             }
             else
             {
@@ -51,91 +51,102 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-        public IReadOnlyCollection<Product> GetAll()
+        public async Task<IReadOnlyCollection<Product>> GetAll()
         {
-            var productDbModelList = _context.Products.ToList();
-            var productList = (from productDbModel in productDbModelList select _productMapper.DbToDomain(productDbModel)).ToList();
-            return productList.AsReadOnly();
+            var productDbModels = await _context.Products.ToListAsync();
+            var products = (from productDbModel in productDbModels select _productMapper.DbToDomain(productDbModel))
+                .ToList();
+            return products.AsReadOnly();
         }
 
-        public void UpdateOne(Product item)
+        public async Task UpdateOne(Product item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (exists)
+            if (Exists(item.Id))
             {
-                DetachService.Detach<ProductDbModel>(_context, item.Id);
                 var enState = _context.Products.Update(_productMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public void DeleteOne(Guid id)
+        public async Task DeleteOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var productDbModel = _context.Products.Find(id);
+                var productDbModel = await _context.Products.FindAsync(id);
                 var storeProdRel =
-                    _context.StoreProductRelation.First(e =>
+                    await _context.StoreProductRelation.FirstAsync(e =>
                         e.ProductDbModelId.Equals(productDbModel.Id));
-                DeleteProductFromStore(_productMapper.DbToDomain(productDbModel), storeProdRel.StoreDbModelId);
+                await DeleteProductFromStore(_productMapper.DbToDomain(productDbModel), storeProdRel.StoreDbModelId);
                 var enState = _context.Products.Remove(productDbModel);
                 enState.State = EntityState.Deleted;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
+    
+
+        public async Task<Store> GetStoreOfSpecificProduct(Guid productId)
+        {
+            CustomValidator.ValidateId(productId);
+            var res = await _context.StoreProductRelation.FirstOrDefaultAsync(e => e.ProductDbModelId.Equals(productId));
+            if (res != null)
+            {
+                var storeDbModelId = res.StoreDbModelId;
+                var storeDbModel = await _context.Stores.FindAsync(storeDbModelId);
+                return _storeMapper.DbToDomain(storeDbModel);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task AddProductToStore(Product product, Guid storeId)
+        {
+            CustomValidator.ValidateObject(product);
+            CustomValidator.ValidateId(storeId);
+            if (!Exists(product.Id))
+            {
+                await AddOne(product);
+            }
+            var storeProdRelExists = await StoreProductRelationExists(storeId, product.Id);
+            if (!storeProdRelExists)
+            {
+                var storeProdRel = new StoreProductDbModel(storeId, product.Id);
+                await _context.StoreProductRelation.AddAsync(storeProdRel);
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteProductFromStore(Product product, Guid storeId)
+        {
+            CustomValidator.ValidateObject(product);
+            CustomValidator.ValidateId(storeId);
+            var storeProdRelToRemove = await _context.StoreProductRelation.FirstAsync(e =>
+                e.ProductDbModelId.Equals(product.Id) && e.StoreDbModelId.Equals(storeId));
+            var enState = _context.StoreProductRelation.Remove(storeProdRelToRemove);
+            enState.State = EntityState.Deleted;
+            await _context.SaveChangesAsync();
+        }
+
+        #region Validations
+
+        private async Task<bool> StoreProductRelationExists(Guid storeId, Guid productId)
+        {
+            CustomValidator.ValidateId(storeId);
+            CustomValidator.ValidateId(productId);
+            return await _context.StoreProductRelation
+                .AnyAsync(e => e.StoreDbModelId.Equals(storeId) && e.ProductDbModelId.Equals(productId));
+        }
         public bool Exists(Guid id)
         {
             CustomValidator.ValidateId(id);
             return _context.Products.Any(item => item.Id.Equals(id));
         }
 
-        public Store GetStoreOfSpecificProduct(Guid productId)
-        {
-            CustomValidator.ValidateId(productId);
-            var res = _context.StoreProductRelation.FirstOrDefault(e => e.ProductDbModelId.Equals(productId));
-            if(res != null)
-            {
-                var storeDbModelId = res.StoreDbModelId;
-                var storeDbModel = _context.Stores.Find(storeDbModelId);
-                return _storeMapper.DbToDomain(storeDbModel);
-            }
-            return null;
-        }
-
-        public void AddProductToStore(Product product, Guid storeId)
-        {
-            CustomValidator.ValidateObject(product);
-            CustomValidator.ValidateId(storeId);
-            var storeProdRel = new StoreProductDbModel(storeId, product.Id);
-            if (!Exists(product.Id))
-            {
-                AddOne(product);
-            }
-            if (!_context.StoreProductRelation
-                .Any(e => e.ProductDbModelId.Equals(storeProdRel.ProductDbModelId) && e.StoreDbModelId.Equals(storeProdRel.StoreDbModelId)))
-            {
-                _context.StoreProductRelation.Add(storeProdRel);
-                _context.SaveChanges();
-            }
-        }
-
-        public void DeleteProductFromStore(Product product, Guid storeId)
-        {
-            CustomValidator.ValidateObject(product);
-            CustomValidator.ValidateId(storeId);
-            if (_context.StoreProductRelation
-                .Any(e => e.ProductDbModelId.Equals(product.Id) && e.StoreDbModelId.Equals(storeId)))
-            {
-                var storeProdToDel = _context.StoreProductRelation.First(e =>
-                    e.ProductDbModelId.Equals(product.Id) && e.StoreDbModelId.Equals(storeId));
-                _context.StoreProductRelation.Remove(storeProdToDel);
-                _context.SaveChanges();
-            }
-        }
+        #endregion
     }
 }

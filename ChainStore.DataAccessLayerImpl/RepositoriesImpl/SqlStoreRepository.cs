@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.DataAccessLayerImpl.Helpers;
@@ -23,31 +24,28 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             _storeMapper = new StoreMapper(context);
         }
 
-        public void AddOne(Store item)
+        public async Task AddOne(Store item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (!exists)
+            if (!Exists(item.Id))
             {
-                var storeWithTheSameLocationAndNameExists = _context.Stores.Any(st =>
-                        st.Location.Equals(item.Location) &&
-                        st.Name.Equals(item.Name) &&
-                        !st.Id.Equals(item.Id));
-                if (storeWithTheSameLocationAndNameExists) return;
-                var enState = _context.Stores.Add(_storeMapper.DomainToDb(item));
-                enState.State = EntityState.Added;
-                _context.SaveChanges();
+                var exists = await HasSameNameAndLocation(item);
+                if (!exists)
+                {
+                    var enState = await _context.Stores.AddAsync(_storeMapper.DomainToDb(item));
+                    enState.State = EntityState.Added;
+                    await _context.SaveChangesAsync();
+                }
             }
         }
 
-        public Store GetOne(Guid id)
+        public async Task<Store> GetOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var storeDbModel = _context.Stores.Find(id);
-                _context.Entry(storeDbModel).Collection(st => st.CategoryDbModels).Load();
+                var storeDbModel = await _context.Stores.FindAsync(id);
+                await _context.Entry(storeDbModel).Collection(st => st.CategoryDbModels).LoadAsync();
                 return _storeMapper.DbToDomain(storeDbModel);
             }
             else
@@ -56,48 +54,62 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-        public IReadOnlyCollection<Store> GetAll()
+        public async Task<IReadOnlyCollection<Store>> GetAll()
         {
-            var storeDbModelList = _context.Stores.ToList();
-            var storeList = (from storeDbModel in storeDbModelList select _storeMapper.DbToDomain(storeDbModel)).ToList();
-            return storeList.AsReadOnly();
+            var storeDbModels = await _context.Stores.ToListAsync();
+            var stores = (from storeDbModel in storeDbModels select _storeMapper.DbToDomain(storeDbModel)).ToList();
+            return stores.AsReadOnly();
         }
 
-        public void UpdateOne(Store item)
+        public async Task UpdateOne(Store item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (exists)
+            if (Exists(item.Id))
             {
-                var storeWithTheSameLocationAndNameExists = _context.Stores.Any(st =>
-                    st.Location.Equals(item.Location) &&
-                    st.Name.Equals(item.Name) &&
-                    !st.Id.Equals(item.Id));
-                if (storeWithTheSameLocationAndNameExists) return;
-                DetachService.Detach<StoreDbModel>(_context, item.Id);
-                var enState = _context.Stores.Update(_storeMapper.DomainToDb(item));
-                enState.State = EntityState.Modified;
-                _context.SaveChanges();
+                var exists = await HasSameNameAndLocation(item);
+                if (!exists)
+                {
+                    var enState = _context.Stores.Update(_storeMapper.DomainToDb(item));
+                    enState.State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+        
             }
         }
 
-        public void DeleteOne(Guid id)
+        public async Task DeleteOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var storeDbModel = _context.Stores.Find(id);
+                var storeDbModel = await _context.Stores.FindAsync(id);
                 var enState = _context.Stores.Remove(storeDbModel);
                 enState.State = EntityState.Deleted;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
+
+
+        #region Validations
 
         public bool Exists(Guid id)
         {
             CustomValidator.ValidateId(id);
             return _context.Stores.Any(item => item.Id.Equals(id));
         }
+
+        private async Task<bool> HasSameNameAndLocation(Store store)
+        {
+            if (store != null)
+            {
+                return await _context.Stores.AnyAsync(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
+                                                           e.Name.ToLower().Equals(store.Name.ToLower()) &&
+                                                           !e.Id.Equals(store.Id));
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

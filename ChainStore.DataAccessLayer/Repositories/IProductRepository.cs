@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ChainStore.Domain.DomainCore;
 
 namespace ChainStore.DataAccessLayer.Repositories
 {
     public interface IProductRepository : IRepository<Product>
     {
-        Store GetStoreOfSpecificProduct(Guid productId);
-        void AddProductToStore(Product product, Guid storeId);
-        void DeleteProductFromStore(Product product, Guid storeId);
+        Task<Store> GetStoreOfSpecificProduct(Guid productId);
+        Task AddProductToStore(Product product, Guid storeId);
+        Task DeleteProductFromStore(Product product, Guid storeId);
     }
 }

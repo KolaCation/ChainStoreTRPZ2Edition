@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
-using ChainStore.DataAccessLayerImpl.DbModels;
-using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
@@ -23,25 +21,24 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             _clientMapper = new ClientMapper();
         }
 
-        public void AddOne(Client item)
+        public async Task AddOne(Client item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (!exists)
+            if (Exists(item.Id))
             {
-                var enState = _context.Clients.Add(_clientMapper.DomainToDb(item));
+                var enState = await _context.Clients.AddAsync(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public Client GetOne(Guid id)
+        public async Task<Client> GetOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                return _clientMapper.DbToDomain(_context.Clients.Find(id));
+                var clientDbModel = await _context.Clients.FindAsync(id);
+                return _clientMapper.DbToDomain(clientDbModel);
             }
             else
             {
@@ -49,36 +46,33 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-        public IReadOnlyCollection<Client> GetAll()
+        public async Task<IReadOnlyCollection<Client>> GetAll()
         {
-            var clientDbModelList = _context.Clients.ToList();
-            var clientList = (from clientDbModel in clientDbModelList select _clientMapper.DbToDomain(clientDbModel)).ToList();
-            return clientList.AsReadOnly();
+            var clientDbModels = await _context.Clients.ToListAsync();
+            var clients = (from clientDbModel in clientDbModels select _clientMapper.DbToDomain(clientDbModel)).ToList();
+            return clients.AsReadOnly();
         }
 
-        public void UpdateOne(Client item)
+        public async Task UpdateOne(Client item)
         {
             CustomValidator.ValidateObject(item);
-            var exists = Exists(item.Id);
-            if (exists)
+            if (Exists(item.Id))
             {
-                DetachService.Detach<ClientDbModel>(_context, item.Id);
                 var enState = _context.Clients.Update(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public void DeleteOne(Guid id)
+        public async Task DeleteOne(Guid id)
         {
             CustomValidator.ValidateId(id);
-            var exists = Exists(id);
-            if (exists)
+            if (Exists(id))
             {
-                var clientDbModel = _context.Clients.Find(id);
+                var clientDbModel = await _context.Clients.FindAsync(id);
                 var enState = _context.Clients.Remove(clientDbModel);
                 enState.State = EntityState.Deleted;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
