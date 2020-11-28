@@ -17,7 +17,7 @@
             <PasswordBox Width="180" Height="28" Margin="5 5 5 0" Padding="2" Name="PasswordInputBox"/>
             <Button Content="Sign in" Margin="5 20 5 20" Height="28" Command="{Binding ShowMessageBox, Mode=OneWay}"/>
             <Label Content="Don't have an account?" HorizontalAlignment="Center"/>
-            <Button Content="Sign Up" Padding="2" HorizontalAlignment="Center" Command="{Binding OpenRegisterPage, Mode=TwoWay}"/>
+            <Button Content="Sign Up" Padding="2" HorizontalAlignment="Center" Click="NavigateToSignUp"/>
         </StackPanel>
     </Grid>
 </Page>

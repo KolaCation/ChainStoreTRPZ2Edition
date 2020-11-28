@@ -9,7 +9,7 @@
         Title="MainWindow" Height="450" Width="800">
 
     <Window.Resources>
-        <viewModels:MainViewModel x:Key="VM"/>
+        <viewModels:NavigationViewModel x:Key="VM"/>
     </Window.Resources>
     <Window.DataContext>
         <Binding Source="{StaticResource VM}"/>
@@ -33,7 +33,7 @@
 
        
         <Border BorderThickness="1" BorderBrush="Black" Margin="10,10,10,10" Grid.Row="1">
-            <Frame Content="{Binding CurrentPage, Mode=TwoWay}" NavigationUIVisibility="Hidden"/>
+                <Frame Content="{Binding CurrentPage, Mode=TwoWay}" NavigationUIVisibility="Hidden"/>
             </Border>
         </Grid>
 

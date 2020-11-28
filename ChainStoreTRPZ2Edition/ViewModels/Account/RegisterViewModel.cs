@@ -8,12 +8,10 @@ using System.Windows.Input;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
-    public sealed class RegisterViewModel : BaseViewModel
+    public sealed class RegisterViewModel : NavigationViewModel
     {
         private string _name;
         private string _email;
-        private SecureString _password;
-        private SecureString _confirmPassword;
 
         #region Properties
 
@@ -34,26 +32,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             {
                 _email = value;
                 OnPropertyChanged(nameof(Email));
-            }
-        }
-
-        public SecureString Password
-        {
-            get => _password;
-            set
-            {
-                _password = value;
-                OnPropertyChanged(nameof(Password));
-            }
-        }
-
-        public SecureString ConfirmPassword
-        {
-            get => _confirmPassword;
-            set
-            {
-                _confirmPassword = value;
-                OnPropertyChanged(nameof(ConfirmPassword));
             }
         }
 

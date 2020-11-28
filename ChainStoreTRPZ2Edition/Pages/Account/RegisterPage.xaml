@@ -5,12 +5,30 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:account="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Account"
       xmlns:valueConverters="clr-namespace:ChainStoreTRPZ2Edition.ValueConverters"
+      xmlns:validationRules="clr-namespace:ChainStoreTRPZ2Edition.ValidationRules"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RegisterPage">
     <Page.Resources>
         <account:RegisterViewModel x:Key="RegisterViewModel" />
         <valueConverters:PasswordConverter x:Key="PasswordConverter"/>
+        <Style x:Key="DefaultTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CustomErrorControlOnErrorStyle" TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel>
+                            <AdornedElementPlaceholder Name="placeholder" />
+                            <TextBlock FontSize="14" Foreground="Red"
+                                       Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}" />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <Page.DataContext>
         <Binding Source="{StaticResource RegisterViewModel}" />
@@ -21,7 +39,15 @@
             <Label Content="SIGN UP" HorizontalAlignment="Center" />
             <Label Content="Name:" Target="{Binding ElementName=NameInputBox}" />
             <TextBox HorizontalAlignment="Center" Width="180" Height="28" Margin="5 5 5 0" Padding="2"
-                     Name="NameInputBox" Text="{Binding Name, Mode=TwoWay}" />
+                     Name="NameInputBox" Style="{StaticResource CustomErrorControlOnErrorStyle}">
+                <TextBox.Text>
+                    <Binding Path="Name" Mode="TwoWay" ValidatesOnExceptions="True" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validationRules:StringValidationRule Parameter="Name" MinimumLength="2" MaximumLength="60"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <Label Content="Email:" Target="{Binding ElementName=EmailInputBox}" />
             <TextBox HorizontalAlignment="Center" Width="180" Height="28" Margin="5 5 5 0" Padding="2"
                      Name="EmailInputBox" Text="{Binding Email, Mode=TwoWay}" />
@@ -38,7 +64,7 @@
                 </Button.CommandParameter>
             </Button>
             <Label Content="Already have an account?" HorizontalAlignment="Center" />
-            <Button Content="Sign In" HorizontalAlignment="Center" Padding="2" />
+            <Button Content="Sign In" HorizontalAlignment="Center" Padding="2" Click="NavigateToLogin" />
         </StackPanel>
     </Grid>
 </Page>

@@ -4,7 +4,7 @@ using ChainStoreTRPZ2Edition.Pages.Account;
 
 namespace ChainStoreTRPZ2Edition.ViewModels
 {
-    public sealed class MainViewModel : BaseViewModel
+    public class NavigationViewModel : BaseViewModel
     {
         private Page _currentPage;
 
@@ -22,15 +22,16 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         public ICommand OpenLoginPage { get; set; }
         public ICommand OpenRegisterPage { get; set; }
 
-        public MainViewModel()
+        public NavigationViewModel()
         {
             //Create command
-            OpenLoginPage = new RelayCommand(() => {
-                CurrentPage = new LoginPage(this);
-            });
             OpenRegisterPage = new RelayCommand(() =>
             {
                 CurrentPage = new RegisterPage(this);
+            });
+            OpenLoginPage = new RelayCommand(() =>
+            {
+                CurrentPage = new LoginPage(this);
             });
         }
     }

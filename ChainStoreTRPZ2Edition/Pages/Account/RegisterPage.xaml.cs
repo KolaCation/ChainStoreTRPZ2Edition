@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,10 +20,16 @@ namespace ChainStoreTRPZ2Edition.Pages.Account
     /// </summary>
     public partial class RegisterPage : Page
     {
-        public RegisterPage(MainViewModel mainViewModel)
+        private readonly NavigationViewModel _navigationViewModel;
+        public RegisterPage(NavigationViewModel navigationViewModel)
         {
-            //DataContext = mainViewModel;
+            _navigationViewModel = navigationViewModel;
             InitializeComponent();
+        }
+
+        private void NavigateToLogin(object sender, RoutedEventArgs e)
+        {
+            _navigationViewModel.OpenLoginPage.Execute(null);
         }
     }
 }
