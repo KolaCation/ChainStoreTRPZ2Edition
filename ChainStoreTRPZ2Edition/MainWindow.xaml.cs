@@ -23,12 +23,12 @@ namespace ChainStoreTRPZ2Edition
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MainViewModel _navigationViewModel;
+        private readonly MainViewModel _mainViewModel;
 
-        public MainWindow(MainViewModel navigationViewModel)
+        public MainWindow(MainViewModel mainViewModel)
         {
-            _navigationViewModel = navigationViewModel;
-            DataContext = _navigationViewModel;
+            _mainViewModel = mainViewModel;
+            DataContext = mainViewModel;
             InitializeComponent();
         }
     }
