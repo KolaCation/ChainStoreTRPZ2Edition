@@ -6,10 +6,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
+using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
-    public sealed class RegisterViewModel : BaseViewModel
+    public sealed class RegisterViewModel : ViewModelBase
     {
         private readonly IAuthenticator _authenticator;
         private string _name;
@@ -23,7 +24,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             set
             {
                 _name = value;
-                OnPropertyChanged(nameof(Name));
             }
         }
 
@@ -33,7 +33,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             set
             {
                 _email = value;
-                OnPropertyChanged(nameof(Email));
             }
         }
 
@@ -47,6 +46,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             {
                 var passwords = (object[]) passwordInputBoxes;
                 MessageBox.Show($"{_name} | {_email} | {(passwords[0] as PasswordBox).Password} | {(passwords[1] as PasswordBox).Password}");
+                Messenger.Default.Send("From RegisterViewModel To MainViewModel: ShowMessageBox done!");
             });
         }
     }
