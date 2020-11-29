@@ -9,7 +9,7 @@ using ChainStore.DataAccessLayer.Identity;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
-    public sealed class RegisterViewModel : MainViewModel
+    public sealed class RegisterViewModel : BaseViewModel
     {
         private readonly IAuthenticator _authenticator;
         private string _name;
