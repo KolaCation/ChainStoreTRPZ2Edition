@@ -1,7 +1,10 @@
-﻿namespace ChainStoreTRPZ2Edition.ViewModels.Account
+﻿using ChainStore.DataAccessLayer.Identity;
+
+namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
     public class LoginViewModel : BaseViewModel
     {
+        private readonly IAuthenticator _authenticator;
         private string _email;
         private string _password;
 
@@ -25,6 +28,9 @@
             }
         }
 
-
+        public LoginViewModel(IAuthenticator authenticator)
+        {
+            _authenticator = authenticator;
+        }
     }
 }

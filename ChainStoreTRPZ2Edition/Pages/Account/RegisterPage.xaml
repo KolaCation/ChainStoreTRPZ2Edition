@@ -3,14 +3,12 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:account="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Account"
       xmlns:valueConverters="clr-namespace:ChainStoreTRPZ2Edition.ValueConverters"
       xmlns:validationRules="clr-namespace:ChainStoreTRPZ2Edition.ValidationRules"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RegisterPage">
     <Page.Resources>
-        <account:RegisterViewModel x:Key="RegisterViewModel" />
         <valueConverters:PasswordConverter x:Key="PasswordConverter"/>
         <Style x:Key="DefaultTextBoxStyle" TargetType="TextBox">
             <Setter Property="Margin" Value="5" />
@@ -30,9 +28,7 @@
             </Setter>
         </Style>
     </Page.Resources>
-    <Page.DataContext>
-        <Binding Source="{StaticResource RegisterViewModel}" />
-    </Page.DataContext>
+
 
     <Grid Background="DarkGray">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">

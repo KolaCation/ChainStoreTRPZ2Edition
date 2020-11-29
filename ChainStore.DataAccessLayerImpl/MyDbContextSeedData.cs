@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayerImpl.DbModels;
-using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.Domain.Identity;
 
 namespace ChainStore.DataAccessLayerImpl
 {
-    public class MyDbContextSeedData
+    public static class MyDbContextSeedData
     {
         public static async Task Initialize(IServiceProvider serviceProvider, IConfiguration configuration)
         {

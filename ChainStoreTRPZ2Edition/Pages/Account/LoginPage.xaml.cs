@@ -19,16 +19,17 @@ namespace ChainStoreTRPZ2Edition
     /// </summary>
     public partial class LoginPage : Page
     {
-        private readonly NavigationViewModel _navigationViewModel;
-        public LoginPage(NavigationViewModel navigationViewModel)
+        private readonly MainViewModel _mainViewModel;
+        public LoginPage(MainViewModel mainViewModel)
         {
-            _navigationViewModel = navigationViewModel;
+            _mainViewModel = mainViewModel;
+            DataContext = mainViewModel.LoginViewModel;
             InitializeComponent();
         }
 
         private void NavigateToSignUp(object sender, RoutedEventArgs e)
         {
-            _navigationViewModel.OpenRegisterPage.Execute(null);
+            _mainViewModel.OpenRegisterPage.Execute(null);
         }
     }
 }

@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ChainStore.DataAccessLayer.Identity;
+using ChainStore.DataAccessLayerImpl.Identity;
+using ChainStoreTRPZ2Edition.ViewModels;
 
 namespace ChainStoreTRPZ2Edition
 {
@@ -20,8 +23,12 @@ namespace ChainStoreTRPZ2Edition
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly MainViewModel _navigationViewModel;
+
+        public MainWindow(MainViewModel navigationViewModel)
         {
+            _navigationViewModel = navigationViewModel;
+            DataContext = _navigationViewModel;
             InitializeComponent();
         }
     }

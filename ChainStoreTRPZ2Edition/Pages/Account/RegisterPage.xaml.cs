@@ -20,10 +20,11 @@ namespace ChainStoreTRPZ2Edition.Pages.Account
     /// </summary>
     public partial class RegisterPage : Page
     {
-        private readonly NavigationViewModel _navigationViewModel;
-        public RegisterPage(NavigationViewModel navigationViewModel)
+        private readonly MainViewModel _navigationViewModel;
+        public RegisterPage(MainViewModel navigationViewModel)
         {
             _navigationViewModel = navigationViewModel;
+            DataContext = _navigationViewModel.RegisterViewModel;
             InitializeComponent();
         }
 

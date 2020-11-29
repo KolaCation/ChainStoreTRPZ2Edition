@@ -5,11 +5,14 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ChainStore.DataAccessLayer.Identity;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
-    public sealed class RegisterViewModel : NavigationViewModel
+    public sealed class RegisterViewModel : MainViewModel
     {
+        private readonly IAuthenticator _authenticator;
+        private readonly ICustomUserManager _customUserManager;
         private string _name;
         private string _email;
 
@@ -38,8 +41,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         #endregion
 
         public ICommand ShowMessageBox { get; set; }
-        public RegisterViewModel()
+        public RegisterViewModel(IAuthenticator authenticator)
         {
+            _authenticator = authenticator;
+            MessageBox.Show("Ready to go");
             ShowMessageBox = new RelayCommand((passwordInputBoxes) =>
             {
                 var passwords = (object[]) passwordInputBoxes;
