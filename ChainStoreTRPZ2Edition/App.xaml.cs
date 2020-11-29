@@ -53,49 +53,13 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<ICustomUserManager, CustomUserManager>();
                     services.AddSingleton<ICustomRoleManager, CustomRoleManager>();
                     services.AddSingleton<IAuthenticationService, AuthenticationService>();
-                    services.AddSingleton(CreateRegisterViewModel);
-                    services.AddSingleton(CreateLoginViewModel);
-                    services.AddSingleton(CreateMainViewModel);
-                    services.AddSingleton(CreateMainWindow);
+                    services.AddSingleton<IAuthenticator, Authenticator>();
+                    services.AddSingleton<RegisterViewModel>();
+                    services.AddSingleton<LoginViewModel>();
+                    services.AddSingleton<MainViewModel>();
+                    services.AddSingleton<MainWindow>();
                 });
         }
-
-
-        #region Main
-
-        private static MainViewModel CreateMainViewModel(IServiceProvider services)
-        {
-            return new MainViewModel(
-                services.GetRequiredService<RegisterViewModel>(),
-                services.GetRequiredService<LoginViewModel>()
-            );
-        }
-        private static MainWindow CreateMainWindow(IServiceProvider services)
-        {
-            return new MainWindow(
-                services.GetRequiredService<MainViewModel>()
-            );
-        }
-
-        #endregion
-
-        #region Account.ViewModels
-
-        private static LoginViewModel CreateLoginViewModel(IServiceProvider services)
-        {
-            return new LoginViewModel(
-                services.GetRequiredService<IAuthenticator>()
-            );
-        }
-
-        private static RegisterViewModel CreateRegisterViewModel(IServiceProvider services)
-        {
-            return new RegisterViewModel(
-                services.GetRequiredService<IAuthenticator>()
-            );
-        }
-
-        #endregion
 
         protected override async void OnStartup(StartupEventArgs e)
         {

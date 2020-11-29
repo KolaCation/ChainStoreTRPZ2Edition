@@ -12,7 +12,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
     public sealed class RegisterViewModel : MainViewModel
     {
         private readonly IAuthenticator _authenticator;
-        private readonly ICustomUserManager _customUserManager;
         private string _name;
         private string _email;
 
@@ -44,7 +43,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         public RegisterViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
-            MessageBox.Show("Ready to go");
             ShowMessageBox = new RelayCommand((passwordInputBoxes) =>
             {
                 var passwords = (object[]) passwordInputBoxes;
