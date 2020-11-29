@@ -4,9 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChainStoreTRPZ2Edition"
+        xmlns:viewModels="clr-namespace:ChainStoreTRPZ2Edition.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Content="Open Login Page" Grid.Column="0" Command="{Binding OpenLoginPage, Mode=TwoWay}" />
+            <Button Content="Open Register Page" Grid.Column="1" Command="{Binding OpenRegisterPage, Mode=TwoWay}" />
+        </Grid>
+
+
+        <Border BorderThickness="1" BorderBrush="Black" Margin="10,10,10,10" Grid.Row="1">
+            <Frame Content="{Binding CurrentPage, Mode=TwoWay}" NavigationUIVisibility="Hidden" />
+        </Border>
     </Grid>
+
 </Window>

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,24 +11,27 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ChainStore.DataAccessLayer.Identity;
-using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStoreTRPZ2Edition.ViewModels;
 
-namespace ChainStoreTRPZ2Edition
+namespace ChainStoreTRPZ2Edition.Pages.Account
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for RegisterPage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RegisterPage : Page
     {
         private readonly MainViewModel _mainViewModel;
 
-        public MainWindow(MainViewModel mainViewModel)
+        public RegisterPage(MainViewModel mainViewModel)
         {
             _mainViewModel = mainViewModel;
-            DataContext = mainViewModel;
+            DataContext = mainViewModel.RegisterViewModel;
             InitializeComponent();
+        }
+
+        private void NavigateToLogin(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.OpenLoginPage.Execute(null);
         }
     }
 }
