@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.Domain.Identity;
@@ -18,8 +19,8 @@ namespace ChainStore.DataAccessLayerImpl
             using (var scope = serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<MyDbContext>();
-                var userManager = scope.ServiceProvider.GetService<CustomUserManager>();
-                var roleManager = scope.ServiceProvider.GetService<CustomRoleManager>();
+                var userManager = scope.ServiceProvider.GetService<ICustomUserManager>();
+                var roleManager = scope.ServiceProvider.GetService<ICustomRoleManager>();
 
 
                 var email = configuration.GetValue<string>("AdminUserEmail");

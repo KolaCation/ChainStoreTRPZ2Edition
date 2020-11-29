@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Windows;
+using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
+using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace ChainStoreTRPZ2Edition
 {
@@ -15,29 +19,52 @@ namespace ChainStoreTRPZ2Edition
     /// </summary>
     public partial class App : Application
     {
-        public IConfiguration Configuration { get; private set; }
-        protected override void OnStartup(StartupEventArgs e)
+        private readonly IHost _host;
+        public static IConfiguration Config { get; private set; }
+
+        public App()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", false, true);
-            Configuration = builder.Build();
-            var serviceProvider = CreateServiceProvider();
+            _host = CreateHostBuilder().Build();
+        }
+
+
+        public static IHostBuilder CreateHostBuilder(string[] args = null)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(c =>
+                {
+                    c.AddJsonFile("appsettings.json");
+                    c.AddEnvironmentVariables();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    Config = context.Configuration;
+                    services.AddDbContext<MyDbContext>(opt =>
+                        opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2")));
+                    services.AddScoped<IBookRepository, SqlBookRepository>();
+                    services.AddScoped<ICategoryRepository, SqlCategoryRepository>();
+                    services.AddScoped<IClientRepository, SqlClientRepository>();
+                    services.AddScoped<IProductRepository, SqlProductRepository>();
+                    services.AddScoped<IPurchaseRepository, SqlPurchaseRepository>();
+                    services.AddScoped<IStoreRepository, SqlStoreRepository>();
+                    services.AddScoped<ICustomUserManager, CustomUserManager>();
+                    services.AddScoped<ICustomRoleManager, CustomRoleManager>();
+                });
+        }
+
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await _host.StartAsync();
+            await MyDbContextSeedData.Initialize(_host.Services, Config);
             base.OnStartup(e);
         }
 
-        private IServiceProvider CreateServiceProvider()
+        protected override async void OnExit(ExitEventArgs e)
         {
-            var services = new ServiceCollection();
-            services.AddDbContext<MyDbContext>(opt =>
-                opt.UseSqlServer(Configuration.GetConnectionString("ChainStoreDBTRPZ2")));
-            services.AddScoped<IBookRepository, SqlBookRepository>();
-            services.AddScoped<ICategoryRepository, SqlCategoryRepository>();
-            services.AddScoped<IClientRepository, SqlClientRepository>();
-            services.AddScoped<IProductRepository, SqlProductRepository>();
-            services.AddScoped<IPurchaseRepository, SqlPurchaseRepository>();
-            services.AddScoped<IStoreRepository, SqlStoreRepository>();
-            return services.BuildServiceProvider();
+            await _host.StopAsync();
+            _host.Dispose();
+            base.OnExit(e);
         }
     }
 }
