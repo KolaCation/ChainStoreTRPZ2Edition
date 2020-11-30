@@ -4,8 +4,10 @@ using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
 using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
+using ChainStore.Domain.Identity;
 using ChainStoreTRPZ2Edition.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +51,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<ICustomRoleManager, CustomRoleManager>();
                     services.AddSingleton<IAuthenticationService, AuthenticationService>();
                     services.AddSingleton<IAuthenticator, Authenticator>();
+                    services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
                     services.AddSingleton<RegisterViewModel>();
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<MainViewModel>();

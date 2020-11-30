@@ -12,5 +12,6 @@ namespace ChainStore.DataAccessLayer.Identity
         Task<bool> Login(string email, string password);
         Task<bool> Register(string name, string email, string password, string confirmPassword);
         void Logout();
+        User GetCurrentUser();
     }
 }

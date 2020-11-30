@@ -27,9 +27,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         public LoginViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
-            ShowMessageBox = new RelayCommand(() =>
+            ShowMessageBox = new RelayCommand(async (passwordBox) =>
             {
-                MessageBox.Show("Hello from loginVM!");
+                MessageBox.Show("TRY LOGIN!");
+                var res = await _authenticator.Login(Email, (passwordBox as PasswordBox).Password);
+                MessageBox.Show(res.ToString());
             });
             NavigateToSignUp = new RelayCommand(()=>Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel))));
         }

@@ -13,8 +13,12 @@
             <TextBox HorizontalAlignment="Center" Width="180" Height="28" Margin="5 5 5 0" Padding="2" Name="EmailInputBox"/>
             <Label Content="Password:" Target="{Binding ElementName=PasswordInputBox}"/>
             <PasswordBox Width="180" Height="28" Margin="5 5 5 0" Padding="2" Name="PasswordInputBox"/>
-            <Button Content="Sign in" Margin="5 20 5 20" Height="28" Command="{Binding ShowMessageBox, Mode=OneWay}"/>
-            <Label Content="Don't have an account?" HorizontalAlignment="Center"/>
+            <Button Content="Sign in" Margin="5 20 5 20" Height="28" Command="{Binding ShowMessageBox, Mode=OneWay}">
+                <Button.CommandParameter>
+                   <Binding ElementName="PasswordInputBox"/> 
+                </Button.CommandParameter>
+            </Button>
+                <Label Content="Don't have an account?" HorizontalAlignment="Center"/>
             <Button Content="Sign Up" Padding="2" HorizontalAlignment="Center" Command="{Binding NavigateToSignUp}"/>
         </StackPanel>
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using System.Security;
 using System.Text;
 using System.Windows;
@@ -32,13 +33,41 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         public RegisterViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
-            ShowMessageBox = new RelayCommand((passwordInputBoxes) =>
+            ShowMessageBox = new RelayCommand(async passwordInputBoxes =>
             {
                 var passwords = (object[]) passwordInputBoxes;
-                MessageBox.Show($"{Name} | {Email} | {(passwords[0] as PasswordBox).Password} | {(passwords[1] as PasswordBox).Password}");
-                Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel)));
+                var validationResult = HandleValidation(passwords);
+                if (validationResult)
+                {
+                    MessageBox.Show("SUCCESS!");
+                    var res = await _authenticator.Register(Name, Email, (passwords[0] as PasswordBox).Password,
+                        (passwords[1] as PasswordBox).Password);
+                    MessageBox.Show(res.ToString());
+                }
+                else
+                {
+                    MessageBox.Show("FAIL!");
+                }
+                //MessageBox.Show($"COMMAND {Name} | {Email} | {(passwords[0] as PasswordBox).Password} | {(passwords[1] as PasswordBox).Password}");
             });
             NavigateToSignIn = new RelayCommand(() => Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel))));
+        }
+
+
+        private bool HandleValidation(object[] passwords)
+        {
+            if (string.IsNullOrEmpty(Name) || Name.Length < 2 || Name.Length > 60) return false;
+            try
+            {
+                var email = new MailAddress(Email);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            if (passwords == null || (passwords[0] as PasswordBox).Password != (passwords[1] as PasswordBox).Password) return false;
+            return true;
         }
     }
 }

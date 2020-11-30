@@ -20,14 +20,14 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 
         public bool IsLoggedIn()
         {
-            return CurrentUser == null;
+            return CurrentUser != null;
         }
 
         public async Task<bool> Login(string email, string password)
         {
             var user = await _authenticationService.Login(email, password);
             CurrentUser = user;
-            return CurrentUser == null;
+            return CurrentUser != null;
         }
 
         public async Task<bool> Register(string name, string email, string password, string confirmPassword)
@@ -38,6 +38,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public void Logout()
         {
             CurrentUser = null;
+        }
+
+        public User GetCurrentUser()
+        {
+            return CurrentUser;
         }
     }
 }

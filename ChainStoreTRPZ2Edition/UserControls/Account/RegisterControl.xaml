@@ -30,6 +30,8 @@
     <Grid Background="DarkGray">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Label Content="SIGN UP" HorizontalAlignment="Center" />
+
+            <!-- Name -->
             <Label Content="Name:" Target="{Binding ElementName=NameInputBox}" />
             <TextBox HorizontalAlignment="Center" Width="180" Height="28" Margin="5 5 5 0" Padding="2"
                      Name="NameInputBox" Style="{StaticResource CustomErrorControlOnErrorStyle}">
@@ -41,9 +43,21 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
+
+            <!-- Email -->
             <Label Content="Email:" Target="{Binding ElementName=EmailInputBox}" />
             <TextBox HorizontalAlignment="Center" Width="180" Height="28" Margin="5 5 5 0" Padding="2"
-                     Name="EmailInputBox" Text="{Binding Email, Mode=TwoWay}" />
+                     Name="EmailInputBox" Style="{StaticResource CustomErrorControlOnErrorStyle}" >
+                <TextBox.Text>
+                    <Binding Path="Email" Mode="TwoWay" ValidatesOnExceptions="True" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validationRules:EmailValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+
+            <!-- Password & ConfirmPassword -->
             <Label Content="Password:" Target="{Binding ElementName=PasswordInputBox}" />
             <PasswordBox Width="180" Height="28" Margin="5 5 5 0" Padding="2" Name="PasswordInputBox" />
             <Label Content="Confirm password:" Target="{Binding ElementName=ConfirmPasswordInputBox}" />
