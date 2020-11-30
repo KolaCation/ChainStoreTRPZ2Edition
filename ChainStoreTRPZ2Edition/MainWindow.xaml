@@ -18,13 +18,13 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Content="Open Login Page" Grid.Column="0" Command="{Binding OpenLoginPage, Mode=TwoWay}" />
-            <Button Content="Open Register Page" Grid.Column="1" Command="{Binding OpenRegisterPage, Mode=TwoWay}" />
+            <Button Content="Open Login Page" Grid.Column="0" Command="{Binding OpenLoginControl, Mode=TwoWay}" />
+            <Button Content="Open Register Page" Grid.Column="1" Command="{Binding OpenRegisterControl, Mode=TwoWay}" />
         </Grid>
 
 
         <Border BorderThickness="1" BorderBrush="Black" Margin="10,10,10,10" Grid.Row="1">
-            <Frame Content="{Binding CurrentPage, Mode=TwoWay}" NavigationUIVisibility="Hidden" />
+            <ContentControl Content="{Binding CurrentViewModel}" />
         </Border>
     </Grid>
 

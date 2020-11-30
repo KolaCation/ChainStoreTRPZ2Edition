@@ -6,48 +6,39 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
+using ChainStoreTRPZ2Edition.Messages;
+using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
-    public sealed class RegisterViewModel : BaseViewModel
+    public sealed class RegisterViewModel : ViewModelBase
     {
         private readonly IAuthenticator _authenticator;
-        private string _name;
-        private string _email;
 
         #region Properties
 
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged(nameof(Name));
-            }
-        }
+        public string Name { get; set; }
 
-        public string Email
-        {
-            get => _email;
-            set
-            {
-                _email = value;
-                OnPropertyChanged(nameof(Email));
-            }
-        }
+        public string Email { get; set; }
 
         #endregion
 
+        #region Commands
+
+        public ICommand NavigateToSignIn { get; set; }
         public ICommand ShowMessageBox { get; set; }
+
+        #endregion
         public RegisterViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
             ShowMessageBox = new RelayCommand((passwordInputBoxes) =>
             {
                 var passwords = (object[]) passwordInputBoxes;
-                MessageBox.Show($"{_name} | {_email} | {(passwords[0] as PasswordBox).Password} | {(passwords[1] as PasswordBox).Password}");
+                MessageBox.Show($"{Name} | {Email} | {(passwords[0] as PasswordBox).Password} | {(passwords[1] as PasswordBox).Password}");
+                Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel)));
             });
+            NavigateToSignIn = new RelayCommand(() => Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel))));
         }
     }
 }

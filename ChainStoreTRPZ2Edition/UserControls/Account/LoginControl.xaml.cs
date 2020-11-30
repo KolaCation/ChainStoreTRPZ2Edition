@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,19 +10,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ChainStore.DataAccessLayer.Identity;
-using ChainStore.DataAccessLayerImpl.Identity;
-using ChainStoreTRPZ2Edition.ViewModels;
 
-namespace ChainStoreTRPZ2Edition
+namespace ChainStoreTRPZ2Edition.UserControls.Account
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for LoginControl.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class LoginControl : UserControl
     {
-
-        public MainWindow()
+        public LoginControl()
         {
             InitializeComponent();
         }

@@ -1,36 +1,37 @@
-﻿using ChainStore.DataAccessLayer.Identity;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using ChainStore.DataAccessLayer.Identity;
+using ChainStoreTRPZ2Edition.Messages;
+using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
-    public class LoginViewModel : BaseViewModel
+    public class LoginViewModel : ViewModelBase
     {
         private readonly IAuthenticator _authenticator;
-        private string _email;
-        private string _password;
 
-        public string Email
-        {
-            get => _email;
-            set
-            {
-                _email = value;
-                OnPropertyChanged(nameof(Email));
-            }
-        }
+        #region Properties
+        public string Email { get; set; }
+        public string Password { get; set; }
 
-        public string Password
-        {
-            get => _password;
-            set
-            {
-                _password = value;
-                OnPropertyChanged(nameof(Password));
-            }
-        }
+        #endregion
+
+        #region Commands
+        public ICommand NavigateToSignUp { get; set; }
+
+        public ICommand ShowMessageBox { get; set; }
+
+        #endregion
 
         public LoginViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
+            ShowMessageBox = new RelayCommand(() =>
+            {
+                MessageBox.Show("Hello from loginVM!");
+            });
+            NavigateToSignUp = new RelayCommand(()=>Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel))));
         }
     }
 }
