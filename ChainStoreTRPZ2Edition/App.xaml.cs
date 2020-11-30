@@ -1,14 +1,9 @@
-﻿using System;
-using System.Configuration;
-using System.IO;
-using System.Reflection.Metadata;
-using System.Windows;
+﻿using System.Windows;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
 using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
-using ChainStoreTRPZ2Edition.Pages.Account;
 using ChainStoreTRPZ2Edition.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
 using Microsoft.EntityFrameworkCore;

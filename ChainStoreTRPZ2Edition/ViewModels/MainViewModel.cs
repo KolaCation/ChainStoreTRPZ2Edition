@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using ChainStoreTRPZ2Edition.Pages.Account;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
 using DevExpress.Mvvm;
 
@@ -11,40 +9,43 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 {
     public class MainViewModel : ViewModelBase, INotifyPropertyChanged
     {
+        private ViewModelBase _currentViewModel;
+
+        #region INotifyPropertyChanged Realisation
         public new event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
 
+        #region Account.ViewModels
         public RegisterViewModel RegisterViewModel { get; }
         public LoginViewModel LoginViewModel { get; }
+        #endregion
 
-        private Page _currentPage;
 
-        public Page CurrentPage
+        public ViewModelBase CurrentViewModel
         {
-            get => _currentPage;
+            get => _currentViewModel;
             set
             {
-                _currentPage = value;
-                OnPropertyChanged(nameof(CurrentPage));
+                _currentViewModel = value;
+                OnPropertyChanged(nameof(CurrentViewModel));
             }
         }
 
-        #region NavigationCommands
-
-        public ICommand OpenLoginPage { get; set; }
-        public ICommand OpenRegisterPage { get; set; }
-
+        #region Navigational Commands
+        public ICommand OpenLoginControl { get; set; }
+        public ICommand OpenRegisterControl { get; set; }
         #endregion
 
 
         public MainViewModel()
         {
-            OpenRegisterPage = new RelayCommand(() => { CurrentPage = new RegisterPage(this); });
-            OpenLoginPage = new RelayCommand(() => { CurrentPage = new LoginPage(this); });
+            OpenLoginControl = new RelayCommand(() => { CurrentViewModel = LoginViewModel; });
+            OpenRegisterControl = new RelayCommand(() => { CurrentViewModel = RegisterViewModel; });
             Messenger.Default.Register<string>(this, GotMessage);
         }
 
@@ -57,6 +58,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         {
             RegisterViewModel = registerViewModel;
             LoginViewModel = loginViewModel;
+            CurrentViewModel = registerViewModel;
         }
     }
 }

@@ -9,26 +9,13 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
     public class LoginViewModel : ViewModelBase
     {
         private readonly IAuthenticator _authenticator;
-        private string _email;
-        private string _password;
 
-        public string Email
-        {
-            get => _email;
-            set
-            {
-                _email = value;
-            }
-        }
+        #region Properties
+        public string Email { get; set; }
+        public string Password { get; set; }
 
-        public string Password
-        {
-            get => _password;
-            set
-            {
-                _password = value;
-            }
-        }
+        #endregion
+
 
         public ICommand ShowMessageBox { get; set; }
         public LoginViewModel(IAuthenticator authenticator)
