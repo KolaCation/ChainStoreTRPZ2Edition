@@ -61,6 +61,7 @@ namespace ChainStoreTRPZ2Edition
             await _host.StartAsync();
             await MyDbContextSeedData.Initialize(_host.Services, Config);
             var window = _host.Services.GetRequiredService<MainWindow>();
+            window.DataContext = _host.Services.GetRequiredService<MainViewModel>();
             window.Show();
             base.OnStartup(e);
         }

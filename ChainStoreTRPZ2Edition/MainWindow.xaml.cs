@@ -23,12 +23,9 @@ namespace ChainStoreTRPZ2Edition
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MainViewModel _mainViewModel;
 
-        public MainWindow(MainViewModel mainViewModel)
+        public MainWindow()
         {
-            _mainViewModel = mainViewModel;
-            DataContext = mainViewModel;
             InitializeComponent();
         }
     }
