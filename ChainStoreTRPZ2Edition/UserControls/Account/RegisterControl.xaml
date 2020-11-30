@@ -57,7 +57,7 @@
                 </Button.CommandParameter>
             </Button>
             <Label Content="Already have an account?" HorizontalAlignment="Center" />
-            <Button Content="Sign In" HorizontalAlignment="Center" Padding="2" />
+            <Button Content="Sign In" HorizontalAlignment="Center" Padding="2" Command="{Binding NavigateToSignIn}" />
         </StackPanel>
     </Grid>
 </UserControl>

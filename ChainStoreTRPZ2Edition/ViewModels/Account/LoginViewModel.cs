@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
+using ChainStoreTRPZ2Edition.Messages;
 using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
@@ -16,8 +17,13 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 
         #endregion
 
+        #region Commands
+        public ICommand NavigateToSignUp { get; set; }
 
         public ICommand ShowMessageBox { get; set; }
+
+        #endregion
+
         public LoginViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
@@ -25,6 +31,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             {
                 MessageBox.Show("Hello from loginVM!");
             });
+            NavigateToSignUp = new RelayCommand(()=>Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel))));
         }
     }
 }

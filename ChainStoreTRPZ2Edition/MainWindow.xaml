@@ -19,7 +19,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Button Content="Open Login Page" Grid.Column="0" Command="{Binding OpenLoginControl, Mode=TwoWay}" />
-            <Button Content="Open Register Page" Grid.Column="1" Command="{Binding OpenRegisterPage, Mode=TwoWay}" />
+            <Button Content="Open Register Page" Grid.Column="1" Command="{Binding OpenRegisterControl, Mode=TwoWay}" />
         </Grid>
 
 
