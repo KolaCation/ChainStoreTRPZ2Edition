@@ -27,6 +27,10 @@ namespace ChainStoreTRPZ2Edition.ValidationRules
                 {
                     result = new ValidationResult(false, "Email is invalid.");
                 }
+                catch (ArgumentNullException)
+                {
+                    result = new ValidationResult(false, "Email is invalid.");
+                }
             }
             return result;
         }

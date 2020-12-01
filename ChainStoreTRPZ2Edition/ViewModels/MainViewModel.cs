@@ -53,6 +53,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         public MainViewModel(RegisterViewModel registerViewModel, LoginViewModel loginViewModel) : this()
         {
             ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel };
+            CurrentViewModel = GetAppropriateViewModel(nameof(RegisterViewModel));
         }
 
 

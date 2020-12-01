@@ -8,22 +8,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Button Content="Open Login Page" Grid.Column="0" Command="{Binding OpenLoginControl, Mode=TwoWay}" />
-            <Button Content="Open Register Page" Grid.Column="1" Command="{Binding OpenRegisterControl, Mode=TwoWay}" />
-        </Grid>
-
-
-        <Border BorderThickness="1" BorderBrush="Black" Margin="10,10,10,10" Grid.Row="1">
+        <Border BorderThickness="1" BorderBrush="Black" Margin="2,2,2,2">
             <ContentControl Content="{Binding CurrentViewModel}" />
         </Border>
     </Grid>
