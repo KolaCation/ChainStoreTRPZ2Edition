@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using ChainStoreTRPZ2Edition.Messages;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
+using ChainStoreTRPZ2Edition.ViewModels.Stores;
 using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels
@@ -50,9 +51,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// </summary>
         /// <param name="registerViewModel"></param>
         /// <param name="loginViewModel"></param>
-        public MainViewModel(RegisterViewModel registerViewModel, LoginViewModel loginViewModel) : this()
+        public MainViewModel(RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoreViewModel storeViewModel) : this()
         {
-            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel };
+            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel };
+            CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
 
 
@@ -68,6 +70,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 
         private void HandleNavigation(NavigationMessage navigationMessage)
         {
+            Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName));
             CurrentViewModel = GetAppropriateViewModel(navigationMessage.ViewModelName);
         }
 
