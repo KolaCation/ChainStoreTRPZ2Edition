@@ -33,6 +33,8 @@
             <!-- SIGN UP -->
             <Label Content="SIGN UP" FontSize="20" HorizontalAlignment="Center" />
 
+            <TextBlock FontSize="14" Foreground="Red" Text="{Binding Path=ErrorMessage, Mode=TwoWay}"/>
+
             <!-- Name -->
             <Grid Margin="0 10">
                 <Grid.ColumnDefinitions>

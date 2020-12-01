@@ -10,18 +10,48 @@ using ChainStore.DataAccessLayer.Identity;
 using ChainStoreTRPZ2Edition.Helpers;
 using ChainStoreTRPZ2Edition.Messages;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.Native;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
     public sealed class RegisterViewModel : ViewModelBase
     {
         private readonly IAuthenticator _authenticator;
+        private string _name;
+        private string _email;
+        private string _errorMessage;
 
         #region Properties
 
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                SetValue(value);
+            }
+        }
 
-        public string Email { get; set; }
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                _email = value;
+                SetValue(value);
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                SetValue(value);
+            }
+        }
 
         #endregion
 
@@ -36,7 +66,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             _authenticator = authenticator;
             ShowMessageBox = new RelayCommand(async passwordInputBoxes =>
             {
-                MessageBox.Show("TRY REGISTER!");
                 var unpackedPasswordInputBoxes = (object[]) passwordInputBoxes;
                 var validationResult = HandleValidation(unpackedPasswordInputBoxes);
                 if (validationResult.IsValid)
@@ -49,12 +78,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                     }
                     else
                     {
-                        MessageBox.Show("Something went wrong. Try to register later.");
+                        ErrorMessage = "Something went wrong. Try to register later.";
                     }
                 }
                 else
                 {
-                    MessageBox.Show(validationResult.ErrorMessage);
+                    ErrorMessage = validationResult.ErrorMessage;
                 }
             });
             NavigateToSignIn = new RelayCommand(() => Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel))));

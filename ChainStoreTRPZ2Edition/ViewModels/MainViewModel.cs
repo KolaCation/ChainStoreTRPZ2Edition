@@ -13,9 +13,9 @@ using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels
 {
-    public class MainViewModel : ViewModelBase, INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
-        public List<ViewModelBase> ViewModels { get; set; }
+        public List<ViewModelBase> ViewModels { get; }
 
         private ViewModelBase _currentViewModel;
         public ViewModelBase CurrentViewModel
@@ -24,7 +24,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             set
             {
                 _currentViewModel = value;
-                OnPropertyChanged(nameof(CurrentViewModel));
+                SetValue(value);
             }
         }
 
@@ -72,17 +72,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         {
             Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName));
             CurrentViewModel = GetAppropriateViewModel(navigationMessage.ViewModelName);
-        }
-
-        #endregion
-
-        #region INotifyPropertyChanged Realisation
-
-        public new event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion

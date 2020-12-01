@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
@@ -11,14 +14,35 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
     public class LoginViewModel : ViewModelBase
     {
         private readonly IAuthenticator _authenticator;
+        private string _email;
+        private string _errorMessage;
 
         #region Properties
-        public string Email { get; set; }
-        public string Password { get; set; }
+
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                _email = value;
+                SetValue(value);
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                SetValue(value);
+            }
+        }
 
         #endregion
 
         #region Commands
+
         public ICommand NavigateToSignUp { get; set; }
 
         public ICommand Login { get; set; }
@@ -28,27 +52,33 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         public LoginViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
-            Login = new RelayCommand(async (passwordBox) =>
+            Login = new RelayCommand(async passwordBox =>
             {
-                MessageBox.Show("TRY LOGIN!");
                 if (string.IsNullOrEmpty(((PasswordBox) passwordBox).Password) || string.IsNullOrEmpty(Email))
                 {
-                    MessageBox.Show("Provide email and password to login.");
+                    ErrorMessage = "Provide email and password to log in.";
                 }
                 else
                 {
                     var tryLogin = await _authenticator.Login(Email, ((PasswordBox) passwordBox).Password);
                     if (tryLogin)
                     {
+                        ErrorMessage = string.Empty;
+                        Email = string.Empty;
                         Messenger.Default.Send(new NavigationMessage(nameof(StoreViewModel)));
                     }
                     else
                     {
-                        MessageBox.Show("Invalid Credentials.");
+                        ErrorMessage = "Invalid credentials.";
                     }
                 }
             });
-            NavigateToSignUp = new RelayCommand(()=>Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel))));
+            NavigateToSignUp = new RelayCommand(() =>
+            {
+                ErrorMessage = string.Empty;
+                Email = string.Empty;
+                Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel)));
+            });
         }
     }
 }

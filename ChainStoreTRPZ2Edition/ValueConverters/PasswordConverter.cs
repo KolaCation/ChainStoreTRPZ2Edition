@@ -13,7 +13,7 @@ namespace ChainStoreTRPZ2Edition.ValueConverters
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException("Going back to what you had isn't supported.");
+            throw new NotImplementedException();
         }
     }
 }
