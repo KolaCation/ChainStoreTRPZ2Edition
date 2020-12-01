@@ -14,19 +14,18 @@
 
             <!-- Email -->
             <Label Content="Email:" FontSize="16" Margin="0 10 0 0" Target="{Binding ElementName=EmailInputBox}" />
-            <TextBox HorizontalAlignment="Center" Width="240" Height="28" Margin="20 10" Padding="2" Name="EmailInputBox"/>
-            <Label Content="Password:" FontSize="16" Margin="0 10 0 0" Target="{Binding ElementName=PasswordInputBox}"/>
+            <TextBox HorizontalAlignment="Center" Width="240" Height="28" Margin="20 10" Name="EmailInputBox" Text="{Binding Email}"/>
 
             <!-- Password -->
-            <PasswordBox Width="240" Height="28" Margin="20 10 " Padding="2" Name="PasswordInputBox"/>
-            
-            <Button Content="Sign in" Margin=" 20" Command="{Binding ShowMessageBox, Mode=OneWay}">
+            <Label Content="Password:" FontSize="16" Margin="0 10 0 0" Target="{Binding ElementName=PasswordInputBox}"/>
+            <PasswordBox Width="240" Height="28" Margin="20 10 " Name="PasswordInputBox"/>
+
+            <!-- Bottom -->
+            <Button Content="Sign in" Margin=" 20" Command="{Binding Login, Mode=OneWay}">
                 <Button.CommandParameter>
                    <Binding ElementName="PasswordInputBox"/> 
                 </Button.CommandParameter>
             </Button>
-
-            <!-- Bottom -->
             <Label Content="Don't have an account?" FontSize="16" HorizontalAlignment="Center"/>
             <Button Content="Sign Up" Padding="4" Margin="0 4" HorizontalAlignment="Center" Command="{Binding NavigateToSignUp}"/>
 

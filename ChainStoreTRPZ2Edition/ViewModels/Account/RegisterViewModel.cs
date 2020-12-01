@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
+using ChainStoreTRPZ2Edition.Helpers;
 using ChainStoreTRPZ2Edition.Messages;
 using DevExpress.Mvvm;
 
@@ -35,39 +36,67 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             _authenticator = authenticator;
             ShowMessageBox = new RelayCommand(async passwordInputBoxes =>
             {
-                var passwords = (object[]) passwordInputBoxes;
-                var validationResult = HandleValidation(passwords);
-                if (validationResult)
+                MessageBox.Show("TRY REGISTER!");
+                var unpackedPasswordInputBoxes = (object[]) passwordInputBoxes;
+                var validationResult = HandleValidation(unpackedPasswordInputBoxes);
+                if (validationResult.IsValid)
                 {
-                    MessageBox.Show("SUCCESS!");
-                    var res = await _authenticator.Register(Name, Email, (passwords[0] as PasswordBox).Password,
-                        (passwords[1] as PasswordBox).Password);
-                    MessageBox.Show(res.ToString());
+                    var tryRegister = await _authenticator.Register(Name, Email, ((PasswordBox)unpackedPasswordInputBoxes[0]).Password,
+                        ((PasswordBox)unpackedPasswordInputBoxes[1]).Password);
+                    if (tryRegister)
+                    {
+                        NavigateToSignIn.Execute(null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Something went wrong. Try to register later.");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("FAIL!");
+                    MessageBox.Show(validationResult.ErrorMessage);
                 }
-                //MessageBox.Show($"COMMAND {Name} | {Email} | {(passwords[0] as PasswordBox).Password} | {(passwords[1] as PasswordBox).Password}");
             });
             NavigateToSignIn = new RelayCommand(() => Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel))));
         }
 
 
-        private bool HandleValidation(object[] passwords)
+        private CustomValidationResult HandleValidation(object[] passwords)
         {
-            if (string.IsNullOrEmpty(Name) || Name.Length < 2 || Name.Length > 60) return false;
+            var result = new CustomValidationResult(null, true);
+            if (string.IsNullOrEmpty(Name) || Name.Length < 2 || Name.Length > 60)
+            {
+                result = new CustomValidationResult("Provide valid name.", false);
+            }
             try
             {
                 var email = new MailAddress(Email);
             }
             catch (Exception)
             {
-                return false;
+                if (result.IsValid)
+                {
+                    result = new CustomValidationResult("Provide valid email.", false);
+                }
+                else
+                {
+                    result.AppendErrorMessageContent("Provide valid email.");
+                }
             }
 
-            if (passwords == null || (passwords[0] as PasswordBox).Password != (passwords[1] as PasswordBox).Password) return false;
-            return true;
+            if (passwords == null || ((PasswordBox) passwords[0]).Password != ((PasswordBox) passwords[1]).Password)
+            {
+                if (result.IsValid)
+                {
+                    result = new CustomValidationResult("Passwords do not match.", false);
+                }
+                else
+                {
+                    result.AppendErrorMessageContent("Passwords do not match.");
+                }
+            }
+
+            return result;
         }
     }
 }

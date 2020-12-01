@@ -50,6 +50,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 if (userWithProvidedEmailExists) return false;
                 var userId = Guid.NewGuid();
                 var user = new User(userId, email, email, userId);
+                var hashedPassword = _passwordHasher.HashPassword(user, password);
+                user.SetHashedPassword(hashedPassword);
                 var clientDetails = new Client(userId, name, 0);
                 await _customUserManager.CreateUser(user);
                 await _clientRepository.AddOne(clientDetails);

@@ -7,6 +7,7 @@ using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
 using ChainStore.Domain.Identity;
 using ChainStoreTRPZ2Edition.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
+using ChainStoreTRPZ2Edition.ViewModels.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -56,6 +57,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();
+                    services.AddSingleton<StoreViewModel>();
                 });
         }
 
