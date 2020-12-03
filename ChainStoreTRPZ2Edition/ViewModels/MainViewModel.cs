@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using ChainStore.DataAccessLayer.Identity;
 using ChainStoreTRPZ2Edition.Messages;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
 using ChainStoreTRPZ2Edition.ViewModels.Stores;
@@ -15,12 +16,15 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly IAuthenticator _authenticator;
+
         #region Properties
 
         public List<ViewModelBase> ViewModels { get; }
 
         private ViewModelBase _currentViewModel;
         private int _loginStatus;
+        private string _username;
 
         public ViewModelBase CurrentViewModel
         {
@@ -42,6 +46,16 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             }
         }
 
+        public string Username
+        {
+            get => _username;
+            set
+            {
+                _username = value;
+                SetValue(value);
+            }
+        }
+
         #endregion
 
         #region Navigational Commands
@@ -55,8 +69,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <summary>
         /// Constructor for creating commands, handling messages
         /// </summary>
-        public MainViewModel()
+        public MainViewModel(IAuthenticator authenticator)
         {
+            _authenticator = authenticator;
             OpenLoginControl = new RelayCommand(() => { CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel)); });
             OpenRegisterControl = new RelayCommand(() => { CurrentViewModel = GetAppropriateViewModel(nameof(RegisterViewModel)); });
             Messenger.Default.Register<NavigationMessage>(this, HandleNavigation);
@@ -66,11 +81,13 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <summary>
         /// Constructor for injecting ViewModels
         /// </summary>
+        /// <param name="authenticator">For providing current user's email in sidebar menu</param>
         /// <param name="registerViewModel"></param>
         /// <param name="loginViewModel"></param>
         /// <param name="storeViewModel"></param>
-        public MainViewModel(RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoreViewModel storeViewModel) : this()
+        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoreViewModel storeViewModel) : this(authenticator)
         {
+            Username = "Unauthorized";
             ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
@@ -94,7 +111,16 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 
         private void HandleMenuIcon(LoginMessage loginMessage)
         {
-            LoginStatus = loginMessage.IsLoggedIn ? 2 : 0;
+            if (loginMessage.IsLoggedIn)
+            {
+                Username = _authenticator.GetCurrentUser().UserName;
+                LoginStatus = 2;
+            }
+            else
+            {
+                Username = "Unauthorized";
+            }
+          
         }
 
         #endregion
