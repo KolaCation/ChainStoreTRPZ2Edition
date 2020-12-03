@@ -66,6 +66,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                         ErrorMessage = string.Empty;
                         Email = string.Empty;
                         Messenger.Default.Send(new NavigationMessage(nameof(StoreViewModel)));
+                        Messenger.Default.Send(new LoginMessage(true));
                     }
                     else
                     {
