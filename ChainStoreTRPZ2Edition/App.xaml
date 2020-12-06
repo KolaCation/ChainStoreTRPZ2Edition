@@ -19,7 +19,7 @@
             <DataTemplate DataType="{x:Type account:RegisterViewModel}">
                 <account1:RegisterControl DataContext="{Binding}"/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type stores:StoreViewModel}">
+            <DataTemplate DataType="{x:Type stores:StoresViewModel}">
                 <stores1:StoresIndexControl DataContext="{Binding}"/>
             </DataTemplate>
         </ResourceDictionary>

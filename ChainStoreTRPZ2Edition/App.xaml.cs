@@ -57,7 +57,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();
-                    services.AddSingleton<StoreViewModel>();
+                    services.AddSingleton<StoresViewModel>();
                 });
         }
 

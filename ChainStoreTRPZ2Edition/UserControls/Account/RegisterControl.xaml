@@ -9,6 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <valueConverters:PasswordConverter x:Key="PasswordConverter" />
+        <valueConverters:ValidationErrorsConverter x:Key="ValidationErrorsConverter" />
         <ControlTemplate x:Key="ValidationErrorTemplate">
             <StackPanel>
                 <AdornedElementPlaceholder Name="placeholder" />
@@ -17,6 +18,8 @@
             </StackPanel>
         </ControlTemplate>
     </UserControl.Resources>
+
+
     <Grid Background="Wheat">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
 
@@ -36,9 +39,9 @@
                          Name="NameInputBox" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
                     <TextBox.Text>
                         <Binding Path="Name" Mode="TwoWay" ValidatesOnExceptions="True"
-                                 UpdateSourceTrigger="PropertyChanged">
+                                 UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <validationRules:StringValidationRule Parameter="Name" MinimumLength="2"
+                                <validationRules:StringValidationRule Parameter="Name" MinimumLength="4"
                                                                       MaximumLength="60" />
                             </Binding.ValidationRules>
                         </Binding>
@@ -57,7 +60,7 @@
                          Name="EmailInputBox" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
                     <TextBox.Text>
                         <Binding Path="Email" Mode="TwoWay" ValidatesOnExceptions="True"
-                                 UpdateSourceTrigger="PropertyChanged">
+                                 UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                             <Binding.ValidationRules>
                                 <validationRules:EmailValidationRule />
                             </Binding.ValidationRules>
@@ -89,17 +92,23 @@
             </Grid>
 
             <!-- Bottom -->
-            <Button Content="Sign Up" Margin="20" Command="{Binding ShowMessageBox, Mode=OneWay}">
+            <Button Content="Sign Up" Margin="20" Command="{Binding Register, Mode=OneWay}">
                 <Button.CommandParameter>
                     <MultiBinding Converter="{StaticResource PasswordConverter}">
                         <Binding ElementName="PasswordInputBox" />
                         <Binding ElementName="ConfirmPasswordInputBox" />
                     </MultiBinding>
                 </Button.CommandParameter>
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource ValidationErrorsConverter}" Mode="TwoWay">
+                        <Binding ElementName="NameInputBox" Path="(Validation.HasError)" />
+                        <Binding ElementName="EmailInputBox" Path="(Validation.HasError)" />
+                    </MultiBinding>
+                </Button.IsEnabled>
             </Button>
             <Label Content="Already have an account?" FontSize="16" HorizontalAlignment="Center" />
             <Button Content="Sign In" HorizontalAlignment="Center" Margin="0 4" Padding="4"
-                    Command="{Binding NavigateToSignIn}" />
+                    Command="{Binding NavigateToSignIn, Mode=TwoWay}" />
 
         </StackPanel>
     </Grid>

@@ -16,10 +16,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly IAuthenticator _authenticator;
-
         #region Properties
 
+        private readonly IAuthenticator _authenticator;
         public List<ViewModelBase> ViewModels { get; }
 
         private ViewModelBase _currentViewModel;
@@ -85,7 +84,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <param name="registerViewModel"></param>
         /// <param name="loginViewModel"></param>
         /// <param name="storeViewModel"></param>
-        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoreViewModel storeViewModel) : this(authenticator)
+        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
             ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel };
@@ -102,13 +101,16 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             return ViewModels.Find(e => e.GetType().Name.Equals(viewModelName));
         }
 
+        #endregion
+
+        #region Handlers
 
         private void HandleNavigation(NavigationMessage navigationMessage)
         {
             Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName));
             CurrentViewModel = GetAppropriateViewModel(navigationMessage.ViewModelName);
         }
-
+        
         private void HandleMenuIcon(LoginMessage loginMessage)
         {
             if (loginMessage.IsLoggedIn)
@@ -120,7 +122,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             {
                 Username = "Unauthorized";
             }
-          
+
         }
 
         #endregion
