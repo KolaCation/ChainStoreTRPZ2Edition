@@ -70,6 +70,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         {
             Name = string.Empty;
             Email = string.Empty;
+            ErrorMessage = string.Empty;
         }
 
         #endregion
