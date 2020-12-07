@@ -48,6 +48,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             NavigateToSignUp = new RelayCommand(() =>
             {
                 ClearData();
+                Messenger.Default.Send(new RefreshDataMessage(nameof(StoresViewModel)));
                 Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel)));
             });
         }
