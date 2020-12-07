@@ -40,14 +40,14 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             }
         }
 
-        public async Task<bool> Register(string name, string email, string password, string confirmPassword)
+        public async Task<RegistrationResult> Register(string name, string email, string password, string confirmPassword)
         {
             
             if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(confirmPassword))
             {
-                if (password != confirmPassword) return false;
+                if (password != confirmPassword) return RegistrationResult.Fail;
                 var userWithProvidedEmailExists = await _customUserManager.UserExists(email);
-                if (userWithProvidedEmailExists) return false;
+                if (userWithProvidedEmailExists) return RegistrationResult.EmailAlreadyTaken;
                 var userId = Guid.NewGuid();
                 var user = new User(userId, email, email, userId);
                 var hashedPassword = _passwordHasher.HashPassword(user, password);
@@ -58,11 +58,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 var roleExists = await _customRoleManager.RoleExists("Client");
                 if (!roleExists) await _customRoleManager.CreateRole(new Role("Client"));
                 await _customRoleManager.AddToRole(user, "Client");
-                return true;
+                return RegistrationResult.Success;
             }
             else
             {
-                return false;
+                return RegistrationResult.Fail;
             }
         }
     }

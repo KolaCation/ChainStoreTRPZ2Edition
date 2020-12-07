@@ -1,53 +1,48 @@
 ﻿<UserControl x:Class="ChainStoreTRPZ2Edition.UserControls.Account.RegisterControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:validationRules="clr-namespace:ChainStoreTRPZ2Edition.ValidationRules"
              xmlns:valueConverters="clr-namespace:ChainStoreTRPZ2Edition.ValueConverters"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <valueConverters:PasswordConverter x:Key="PasswordConverter"/>
-        <Style x:Key="DefaultTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="CustomErrorControlOnErrorStyle" TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
-            <Setter Property="Validation.ErrorTemplate">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <StackPanel>
-                            <AdornedElementPlaceholder Name="placeholder" />
-                            <TextBlock FontSize="12" Foreground="Red"
-                                       Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}" />
-                        </StackPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <valueConverters:PasswordConverter x:Key="PasswordConverter" />
+        <valueConverters:ValidationErrorsConverter x:Key="ValidationErrorsConverter" />
+        <ControlTemplate x:Key="ValidationErrorTemplate">
+            <StackPanel>
+                <AdornedElementPlaceholder Name="placeholder" />
+                <TextBlock FontSize="12" Foreground="Red"
+                           Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)/ErrorContent}" />
+            </StackPanel>
+        </ControlTemplate>
     </UserControl.Resources>
+
+
     <Grid Background="Wheat">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
 
             <!-- SIGN UP -->
             <Label Content="SIGN UP" FontSize="20" HorizontalAlignment="Center" />
 
-            <TextBlock FontSize="14" Foreground="Red" Text="{Binding Path=ErrorMessage, Mode=TwoWay}"/>
+            <TextBlock FontSize="14" Foreground="Red" Text="{Binding Path=ErrorMessage, Mode=TwoWay}" />
 
             <!-- Name -->
             <Grid Margin="0 10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Label Content="Name:" FontSize="16" Target="{Binding ElementName=NameInputBox}" Grid.Column="0" />
-                <TextBox HorizontalAlignment="Center" Width="180" Height="28" Padding="2" Grid.Column="1"
-                         Name="NameInputBox" Style="{StaticResource CustomErrorControlOnErrorStyle}">
+                <TextBox HorizontalAlignment="Center" Width="180" Height="28" Grid.Column="1"
+                         Name="NameInputBox" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
                     <TextBox.Text>
-                        <Binding Path="Name" Mode="TwoWay" ValidatesOnExceptions="True" UpdateSourceTrigger="PropertyChanged">
+                        <Binding Path="Name" Mode="TwoWay" ValidatesOnExceptions="True"
+                                 UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <validationRules:StringValidationRule Parameter="Name" MinimumLength="2" MaximumLength="60"/>
+                                <validationRules:StringValidationRule Parameter="Name" MinimumLength="4"
+                                                                      MaximumLength="60" />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>
@@ -57,16 +52,17 @@
             <!-- Email -->
             <Grid Margin="0 10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Label Content="Email:" FontSize="16" Target="{Binding ElementName=EmailInputBox}" Grid.Column="0" />
-                <TextBox HorizontalAlignment="Center" Width="180" Height="28" Padding="2" Grid.Column="1"
-                         Name="EmailInputBox" Style="{StaticResource CustomErrorControlOnErrorStyle}" >
+                <TextBox HorizontalAlignment="Center" Width="180" Height="28" Grid.Column="1"
+                         Name="EmailInputBox" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
                     <TextBox.Text>
-                        <Binding Path="Email" Mode="TwoWay" ValidatesOnExceptions="True" UpdateSourceTrigger="PropertyChanged">
+                        <Binding Path="Email" Mode="TwoWay" ValidatesOnExceptions="True"
+                                 UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <validationRules:EmailValidationRule/>
+                                <validationRules:EmailValidationRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>
@@ -76,34 +72,43 @@
             <!-- Password -->
             <Grid Margin="0 10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label Content="Password:" FontSize="16" Target="{Binding ElementName=PasswordInputBox}" Grid.Column="0" />
+                <Label Content="Password:" FontSize="16" Target="{Binding ElementName=PasswordInputBox}"
+                       Grid.Column="0" />
                 <PasswordBox Width="180" Height="28" Name="PasswordInputBox" Grid.Column="1" />
             </Grid>
 
             <!-- ConfirmPassword -->
             <Grid Margin="0 10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label Content="Confirm password:" FontSize="16" Target="{Binding ElementName=ConfirmPasswordInputBox}" Grid.Column="0" />
-                <PasswordBox Width="180" Height="28" Margin="2 0 0 0" Name="ConfirmPasswordInputBox" Grid.Column="1"  />
+                <Label Content="Confirm password:" FontSize="16" Target="{Binding ElementName=ConfirmPasswordInputBox}"
+                       Grid.Column="0" />
+                <PasswordBox Width="180" Height="28" Margin="2 0 0 0" Name="ConfirmPasswordInputBox" Grid.Column="1" />
             </Grid>
 
             <!-- Bottom -->
-            <Button Content="Sign Up" Margin="20" Command="{Binding ShowMessageBox, Mode=OneWay}">
+            <Button Content="Sign Up" Margin="20" Command="{Binding Register, Mode=OneWay}">
                 <Button.CommandParameter>
                     <MultiBinding Converter="{StaticResource PasswordConverter}">
                         <Binding ElementName="PasswordInputBox" />
                         <Binding ElementName="ConfirmPasswordInputBox" />
                     </MultiBinding>
                 </Button.CommandParameter>
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource ValidationErrorsConverter}" Mode="TwoWay">
+                        <Binding ElementName="NameInputBox" Path="(Validation.HasError)" />
+                        <Binding ElementName="EmailInputBox" Path="(Validation.HasError)" />
+                    </MultiBinding>
+                </Button.IsEnabled>
             </Button>
             <Label Content="Already have an account?" FontSize="16" HorizontalAlignment="Center" />
-            <Button Content="Sign In" HorizontalAlignment="Center" Margin="0 4" Padding="4" Command="{Binding NavigateToSignIn}" />
+            <Button Content="Sign In" HorizontalAlignment="Center" Margin="0 4" Padding="4"
+                    Command="{Binding NavigateToSignIn, Mode=TwoWay}" />
 
         </StackPanel>
     </Grid>

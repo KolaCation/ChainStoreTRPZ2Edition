@@ -30,7 +30,7 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             return CurrentUser != null;
         }
 
-        public async Task<bool> Register(string name, string email, string password, string confirmPassword)
+        public async Task<RegistrationResult> Register(string name, string email, string password, string confirmPassword)
         {
             return await _authenticationService.Register(name, email, password, confirmPassword);
         }

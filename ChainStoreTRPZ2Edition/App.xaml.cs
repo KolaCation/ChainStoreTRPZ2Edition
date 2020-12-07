@@ -1,9 +1,12 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
 using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
+using ChainStore.Domain.DomainCore;
 using ChainStore.Domain.Identity;
 using ChainStoreTRPZ2Edition.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
@@ -57,7 +60,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();
-                    services.AddSingleton<StoreViewModel>();
+                    services.AddSingleton<StoresViewModel>();
                 });
         }
 
@@ -65,6 +68,9 @@ namespace ChainStoreTRPZ2Edition
         {
             await _host.StartAsync();
             await MyDbContextSeedData.Initialize(_host.Services, Config);
+            //await AddData(_host.Services.GetRequiredService<IProductRepository>(),
+            //    _host.Services.GetRequiredService<IStoreRepository>(),
+            //_host.Services.GetRequiredService<ICategoryRepository>());
             var window = _host.Services.GetRequiredService<MainWindow>();
             window.DataContext = _host.Services.GetRequiredService<MainViewModel>();
             window.Show();
@@ -76,6 +82,51 @@ namespace ChainStoreTRPZ2Edition
             await _host.StopAsync();
             _host.Dispose();
             base.OnExit(e);
+        }
+
+        private async Task AddData(IProductRepository productRepository, IStoreRepository storeRepository, ICategoryRepository categoryRepository)
+        {
+            var category1Id = new Guid("080917f2-e2fa-4581-a7c2-743b259852ef");
+            var category2Id = new Guid("1696b27d-8452-458a-994b-fdeef9cff690");
+            var store1 = new Store(Guid.NewGuid(), "Shields and Weapons 2", "10 Pandora Street 2", 0);
+            var storeCatRel1 = new StoreCategoryRelation(store1.Id, category1Id);
+            var storeCatRel2 = new StoreCategoryRelation(store1.Id, category2Id);
+            var product1 = new Product(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1Id);
+            var product11 = new Product(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1Id);
+            var product111 = new Product(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1Id);
+            var product1111 = new Product(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1Id);
+            var product11111 = new Product(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1Id);
+            var product2 = new Product(Guid.NewGuid(), "HP 450 G2", 30_000, ProductStatus.OnSale, category1Id);
+            var product3 = new Product(Guid.NewGuid(), "HP 450 G3", 40_000, ProductStatus.OnSale, category1Id);
+            var product4 = new Product(Guid.NewGuid(), "HP 450 G4", 50_000, ProductStatus.OnSale, category1Id);
+            var product5 = new Product(Guid.NewGuid(), "HP 850 G5", 60_000, ProductStatus.OnSale, category1Id);
+            var product6 = new Product(Guid.NewGuid(), "LogTech G12", 1000, ProductStatus.OnSale, category2Id);
+            var product7 = new Product(Guid.NewGuid(), "X7", 2000, ProductStatus.OnSale, category2Id);
+            var stPrRel1 = new StoreProductRelation(store1.Id, product1.Id);
+            var stPrRel11 = new StoreProductRelation(store1.Id, product11.Id);
+            var stPrRel111 = new StoreProductRelation(store1.Id, product111.Id);
+            var stPrRel1111 = new StoreProductRelation(store1.Id, product1111.Id);
+            var stPrRel11111 = new StoreProductRelation(store1.Id, product11111.Id);
+            var stPrRel2 = new StoreProductRelation(store1.Id, product2.Id);
+            var stPrRel3 = new StoreProductRelation(store1.Id, product3.Id);
+            var stPrRel4 = new StoreProductRelation(store1.Id, product4.Id);
+            var stPrRel5 = new StoreProductRelation(store1.Id, product5.Id);
+            var stPrRel6 = new StoreProductRelation(store1.Id, product6.Id);
+            var stPrRel7 = new StoreProductRelation(store1.Id, product7.Id);
+            await storeRepository.AddOne(store1);
+            await categoryRepository.AddCategoryToStore(category1Id, store1.Id);
+            await categoryRepository.AddCategoryToStore(category2Id, store1.Id);
+            await productRepository.AddProductToStore(product1, store1.Id);
+            await productRepository.AddProductToStore(product11, store1.Id);
+            await productRepository.AddProductToStore(product111, store1.Id);
+            await productRepository.AddProductToStore(product1111, store1.Id);
+            await productRepository.AddProductToStore(product11111, store1.Id);
+            await productRepository.AddProductToStore(product2, store1.Id);
+            await productRepository.AddProductToStore(product3, store1.Id);
+            await productRepository.AddProductToStore(product4, store1.Id);
+            await productRepository.AddProductToStore(product5, store1.Id);
+            await productRepository.AddProductToStore(product6, store1.Id);
+            await productRepository.AddProductToStore(product7, store1.Id);
         }
     }
 }
