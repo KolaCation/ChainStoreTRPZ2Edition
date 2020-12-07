@@ -84,10 +84,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <param name="registerViewModel"></param>
         /// <param name="loginViewModel"></param>
         /// <param name="storeViewModel"></param>
-        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel) : this(authenticator)
+        /// <param name="storeDetailsViewModel"></param>
+        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel,
+            StoreDetailsViewModel storeDetailsViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
-            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel };
+            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
 
@@ -107,7 +109,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 
         private void HandleNavigation(NavigationMessage navigationMessage)
         {
-            Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName));
+            Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName, navigationMessage.ItemId));
             CurrentViewModel = GetAppropriateViewModel(navigationMessage.ViewModelName);
         }
         

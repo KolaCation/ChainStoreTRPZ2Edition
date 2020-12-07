@@ -27,6 +27,9 @@
             <DataTemplate DataType="{x:Type stores:StoresViewModel}">
                 <stores1:StoresIndexControl DataContext="{Binding}"/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type stores:StoreDetailsViewModel}">
+                <stores1:StoreDetailsControl DataContext="{Binding}"/>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
