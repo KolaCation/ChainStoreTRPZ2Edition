@@ -34,12 +34,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+    <ItemGroup>
+	    <Resource Include="Assets\product.png">
+		    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    </Resource>
+    </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\mountains.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
