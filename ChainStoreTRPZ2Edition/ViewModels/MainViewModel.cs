@@ -9,6 +9,7 @@ using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStoreTRPZ2Edition.Messages;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
+using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
 using ChainStoreTRPZ2Edition.ViewModels.Stores;
 using DevExpress.Mvvm;
 
@@ -85,11 +86,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <param name="loginViewModel"></param>
         /// <param name="storeViewModel"></param>
         /// <param name="storeDetailsViewModel"></param>
+        /// <param name="purchaseViewModel"></param>
         public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel,
-            StoreDetailsViewModel storeDetailsViewModel) : this(authenticator)
+            StoreDetailsViewModel storeDetailsViewModel, PurchaseViewModel purchaseViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
-            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel };
+            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
 

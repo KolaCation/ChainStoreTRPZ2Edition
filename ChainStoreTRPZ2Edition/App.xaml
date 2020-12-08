@@ -4,7 +4,9 @@
              xmlns:account="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Account"
              xmlns:account1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Account"
              xmlns:stores="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Stores"
-             xmlns:stores1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores">
+             xmlns:stores1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores"
+             xmlns:clientOperations="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.ClientOperations"
+             xmlns:clientOperations1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.ClientOperations">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -29,6 +31,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type stores:StoreDetailsViewModel}">
                 <stores1:StoreDetailsControl DataContext="{Binding}"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type clientOperations:PurchaseViewModel}">
+                <clientOperations1:PurchaseControl DataContext="{Binding}"/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

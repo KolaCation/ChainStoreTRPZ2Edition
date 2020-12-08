@@ -41,6 +41,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         public ICommand Filter { get; set; }
         public ICommand ClearFilter { get; set; }
+        public ICommand NavigateToPurchase { get; set; }
+        public ICommand NavigateToBook{ get; set; }
 
         #endregion
 
@@ -54,6 +56,16 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
             Filter = new RelayCommand(HandleFiltering);
             ClearFilter = new RelayCommand(HandleCleaning);
+            NavigateToPurchase = new RelayCommand(id =>
+            {
+                Messenger.Default.Send(new NavigationMessage("PurchaseViewModel", (Guid)id));
+                ClearData();
+            });
+            NavigateToBook = new RelayCommand(id =>
+            {
+                Messenger.Default.Send(new NavigationMessage("BookViewModel", (Guid)id));
+                ClearData();
+            });
         }
 
         #endregion
@@ -69,9 +81,25 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 Store = store;
                 foreach (var category in store.Categories)
                 {
-                    Categories.Add(category);
+                    var productsToDisplay = GetListWithUniqueProducts(category);
+                    var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
+                    Categories.Add(categoryToDisplay);
                 }
             }
+        }
+
+        private List<Product> GetListWithUniqueProducts(Category category)
+        {
+            var productGroups = category.Products.Where(e => e.ProductStatus.Equals(ProductStatus.OnSale))
+                .GroupBy(e => e.Name);
+            var listWithUniqueProducts = new List<Product>();
+            foreach (var groupOfProducts in productGroups.Where(groupOfProducts => groupOfProducts.Count() != 0))
+            {
+                listWithUniqueProducts.Add(groupOfProducts.First());
+            }
+
+            listWithUniqueProducts = listWithUniqueProducts.OrderBy(e => e.Name).ToList();
+            return listWithUniqueProducts;
         }
 
         public void ClearData()
@@ -96,7 +124,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 Categories.Clear();
                 foreach (var category in categoriesToDisplay)
                 {
-                    var productsToDisplay = category.Products
+                    var productsToDisplay = GetListWithUniqueProducts(category)
                         .Where(product => product.Name.ToLower().Contains(SearchProduct.ToLower())).ToList();
                     var result = new Category(productsToDisplay, category.Id, category.Name);
                     Categories.Add(result);
