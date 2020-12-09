@@ -35,6 +35,9 @@
             <DataTemplate DataType="{x:Type clientOperations:PurchaseViewModel}">
                 <clientOperations1:PurchaseControl DataContext="{Binding}"/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type clientOperations:BookViewModel}">
+                <clientOperations1:BookControl DataContext="{Binding}"/>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

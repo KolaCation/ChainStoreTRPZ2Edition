@@ -87,11 +87,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <param name="storeViewModel"></param>
         /// <param name="storeDetailsViewModel"></param>
         /// <param name="purchaseViewModel"></param>
+        /// <param name="bookViewModel"></param>
         public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel,
-            StoreDetailsViewModel storeDetailsViewModel, PurchaseViewModel purchaseViewModel) : this(authenticator)
+            StoreDetailsViewModel storeDetailsViewModel, PurchaseViewModel purchaseViewModel, BookViewModel bookViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
-            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel };
+            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel, bookViewModel };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
 

@@ -60,6 +60,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<IAuthenticator, Authenticator>();
                     services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
                     services.AddSingleton<IPurchaseService, PurchaseService>();
+                    services.AddSingleton<IReservationService, ReservationService>();
                     services.AddSingleton<RegisterViewModel>();
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<MainViewModel>();
@@ -67,6 +68,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<StoresViewModel>();
                     services.AddSingleton<StoreDetailsViewModel>();
                     services.AddSingleton<PurchaseViewModel>();
+                    services.AddSingleton<BookViewModel>();
                 });
         }
 
