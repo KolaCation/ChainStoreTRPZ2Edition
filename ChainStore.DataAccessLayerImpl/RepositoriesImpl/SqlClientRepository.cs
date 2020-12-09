@@ -65,7 +65,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                DetachService.Detach<ClientDbModel>(context, item.Id);
                 var enState = context.Clients.Update(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
                 await context.SaveChangesAsync();
