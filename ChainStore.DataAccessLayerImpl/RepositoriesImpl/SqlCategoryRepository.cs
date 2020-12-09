@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl.DbModels;
+using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
@@ -67,6 +68,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var exists = await HasSameName(item);
                 if (!exists)
                 {
+                    DetachService.Detach<CategoryDbModel>(_context, item.Id);
                     var enState = _context.Categories.Update(_categoryMapper.DomainToDb(item));
                     enState.State = EntityState.Modified;
                     await _context.SaveChangesAsync();

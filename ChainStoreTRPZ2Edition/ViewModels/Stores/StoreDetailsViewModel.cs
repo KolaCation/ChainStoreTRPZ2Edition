@@ -64,7 +64,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             });
             NavigateToBook = new RelayCommand(id =>
             {
-                Messenger.Default.Send(new NavigationMessage("BookViewModel", (Guid)id));
+                Messenger.Default.Send(new NavigationMessage(nameof(BookViewModel), (Guid)id));
                 ClearData();
             });
         }

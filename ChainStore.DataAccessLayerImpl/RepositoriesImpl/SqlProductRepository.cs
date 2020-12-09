@@ -64,6 +64,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
+                //DetachService.Detach<ProductDbModel>(_context, item.Id);
                 var enState = _context.Products.Update(_productMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
                 await _context.SaveChangesAsync();

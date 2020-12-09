@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
+using ChainStore.DataAccessLayerImpl.DbModels;
+using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
@@ -24,7 +26,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         public async Task AddOne(Client item)
         {
             CustomValidator.ValidateObject(item);
-            if (Exists(item.Id))
+            if (!Exists(item.Id))
             {
                 var enState = await _context.Clients.AddAsync(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
@@ -58,6 +60,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
+                DetachService.Detach<ClientDbModel>(_context, item.Id);
                 var enState = _context.Clients.Update(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
                 await _context.SaveChangesAsync();

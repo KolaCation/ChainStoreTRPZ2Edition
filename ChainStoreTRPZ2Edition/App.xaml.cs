@@ -47,7 +47,9 @@ namespace ChainStoreTRPZ2Edition
                 {
                     Config = context.Configuration;
                     services.AddDbContext<MyDbContext>(opt =>
-                        opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2")));
+                        {
+                            opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2"));
+                        });
                     services.AddSingleton<IBookRepository, SqlBookRepository>();
                     services.AddSingleton<ICategoryRepository, SqlCategoryRepository>();
                     services.AddSingleton<IClientRepository, SqlClientRepository>();

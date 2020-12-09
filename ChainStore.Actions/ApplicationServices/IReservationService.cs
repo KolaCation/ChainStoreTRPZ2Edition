@@ -5,6 +5,6 @@ namespace ChainStore.Actions.ApplicationServices
 {
     public interface IReservationService
     {
-        Task HandleOperation(Guid clientId, Guid productId, int reserveDaysCount);
+        Task<ReservationOperationResult> HandleOperation(Guid clientId, Guid productId, int reserveDaysCount);
     }
 }

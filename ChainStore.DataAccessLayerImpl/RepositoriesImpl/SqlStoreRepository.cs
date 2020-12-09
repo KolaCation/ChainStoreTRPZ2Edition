@@ -69,6 +69,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var exists = await HasSameNameAndLocation(item);
                 if (!exists)
                 {
+                    DetachService.Detach<StoreDbModel>(_context, item.Id);
                     var enState = _context.Stores.Update(_storeMapper.DomainToDb(item));
                     enState.State = EntityState.Modified;
                     await _context.SaveChangesAsync();
