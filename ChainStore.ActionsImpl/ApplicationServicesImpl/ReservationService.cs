@@ -22,11 +22,11 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
             _clientRepository = clientRepository;
         }
 
-        public async Task HandleOperation(Guid clientId, Guid productId, int reserveDaysCount)
+        public async Task<ReservationOperationResult> HandleOperation(Guid clientId, Guid productId, int reserveDaysCount)
         {
             CustomValidator.ValidateId(clientId);
             CustomValidator.ValidateId(productId);
-            if (reserveDaysCount > 7 || reserveDaysCount < 1) return;
+            if (reserveDaysCount > 7 || reserveDaysCount < 1) return ReservationOperationResult.InvalidParameters;
             var clientExists = _clientRepository.Exists(clientId);
             var productExists = _productRepository.Exists(productId);
 
@@ -34,11 +34,16 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
             {
                 var product = await _productRepository.GetOne(productId);
                 var clientBooksLimitCount = await _bookRepository.GetClientBooks(clientId);
-                if (clientBooksLimitCount.Count >= 3) return;
+                if (clientBooksLimitCount.Count >= 3) return ReservationOperationResult.LimitExceeded;
                 product.ChangeStatus(ProductStatus.Booked);
                 var book = new Book(Guid.NewGuid(), clientId, productId, reserveDaysCount);
                 await _productRepository.UpdateOne(product);
                 await _bookRepository.AddOne(book);
+                return ReservationOperationResult.Success;
+            }
+            else
+            {
+                return ReservationOperationResult.Fail;
             }
         }
     }

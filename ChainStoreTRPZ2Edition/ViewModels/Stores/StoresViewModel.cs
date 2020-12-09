@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 {
-    public sealed class StoresViewModel : ViewModelBase, IRefreshableAsync
+    public sealed class StoresViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
         #region Properties
 
@@ -40,7 +41,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         #region Commands
 
         public ICommand Filter { get; set; }
-        public ICommand Clear { get; set; }
+        public ICommand ClearFilter { get; set; }
+        public ICommand ViewStoreDetails { get; set; }
 
         #endregion
 
@@ -53,7 +55,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             Stores = new ObservableCollection<Store>();
             Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
             Filter = new RelayCommand(HandleFiltering);
-            Clear = new RelayCommand(HandleCleaning);
+            ClearFilter = new RelayCommand(HandleCleaning);
+            ViewStoreDetails = new RelayCommand(id =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid)id));
+                ClearData();
+            });
         }
 
         #endregion
@@ -73,6 +80,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             }
         }
 
+        public void ClearData()
+        {
+            Stores.Clear();
+            SearchStore = string.Empty;
+            SearchProduct = string.Empty;
+        }
         #endregion
 
         #region Handlers
@@ -143,5 +156,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         }
 
         #endregion
+
     }
 }

@@ -9,6 +9,7 @@ using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStoreTRPZ2Edition.Messages;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
+using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
 using ChainStoreTRPZ2Edition.ViewModels.Stores;
 using DevExpress.Mvvm;
 
@@ -84,10 +85,14 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <param name="registerViewModel"></param>
         /// <param name="loginViewModel"></param>
         /// <param name="storeViewModel"></param>
-        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel) : this(authenticator)
+        /// <param name="storeDetailsViewModel"></param>
+        /// <param name="purchaseViewModel"></param>
+        /// <param name="bookViewModel"></param>
+        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel,
+            StoreDetailsViewModel storeDetailsViewModel, PurchaseViewModel purchaseViewModel, BookViewModel bookViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
-            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel };
+            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel, bookViewModel };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
 
@@ -107,7 +112,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 
         private void HandleNavigation(NavigationMessage navigationMessage)
         {
-            Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName));
+            Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName, navigationMessage.ItemId));
             CurrentViewModel = GetAppropriateViewModel(navigationMessage.ViewModelName);
         }
         

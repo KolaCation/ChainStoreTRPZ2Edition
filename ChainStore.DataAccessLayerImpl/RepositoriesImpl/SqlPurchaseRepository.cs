@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
+using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
@@ -12,47 +13,53 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public class SqlPurchaseRepository : IPurchaseRepository
     {
-        private readonly MyDbContext _context;
         private readonly PurchaseMapper _purchaseMapper;
-        public SqlPurchaseRepository(MyDbContext context)
+        private readonly DbContextOptions<MyDbContext> _options;
+
+        public SqlPurchaseRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
-            _context = context;
             _purchaseMapper = new PurchaseMapper();
+            _options = optionsBuilder.BuildOptions();
         }
 
         public async Task AddOne(Purchase item)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var enState = await _context.Purchases.AddAsync(_purchaseMapper.DomainToDb(item));
+                var enState = await context.Purchases.AddAsync(_purchaseMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteOne(Guid id)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
             if (Exists(id))
             {
-                var purchaseDbModel = await _context.Purchases.FindAsync(id);
-                var enState = _context.Purchases.Remove(purchaseDbModel);
+                var purchaseDbModel = await context.Purchases.FindAsync(id);
+                var enState = context.Purchases.Remove(purchaseDbModel);
                 enState.State = EntityState.Deleted;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public bool Exists(Guid id)
         {
+            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
-            return _context.Purchases.Any(item => item.Id.Equals(id));
+            return context.Purchases.Any(item => item.Id.Equals(id));
         }
 
         public async Task<List<Purchase>> GetClientPurchases(Guid clientId)
         {
-            var purchaseDbModels = await _context.Purchases.Where(p => p.ClientId.Equals(clientId)).ToListAsync();
-            var purchases = (from purchaseDbModel in purchaseDbModels select _purchaseMapper.DbToDomain(purchaseDbModel)).ToList();
+            await using var context = new MyDbContext(_options);
+            var purchaseDbModels = await context.Purchases.Where(p => p.ClientId.Equals(clientId)).ToListAsync();
+            var purchases = (from purchaseDbModel in purchaseDbModels
+                select _purchaseMapper.DbToDomain(purchaseDbModel)).ToList();
             return purchases;
         }
     }

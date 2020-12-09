@@ -5,6 +5,6 @@ namespace ChainStore.Actions.ApplicationServices
 {
     public interface IPurchaseService
     {
-        Task HandleOperation(Guid clientId, Guid productId);
+        Task<PurchaseOperationResult> HandleOperation(Guid clientId, Guid productId);
     }
 }

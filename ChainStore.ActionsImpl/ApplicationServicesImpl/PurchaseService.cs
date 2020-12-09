@@ -30,7 +30,7 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
             _bookRepository = bookRepository;
         }
 
-        public async Task HandleOperation(Guid clientId, Guid productId)
+        public async Task<PurchaseOperationResult> HandleOperation(Guid clientId, Guid productId)
         {
             CustomValidator.ValidateId(clientId);
             CustomValidator.ValidateId(productId);
@@ -45,7 +45,7 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
                     await _bookRepository.DeleteOne(currentClientProductBook.Id);
                 }
                 var operationSucceed = client.Charge(product.PriceInUAH);
-                if (!operationSucceed) return;
+                if (!operationSucceed) return PurchaseOperationResult.InsufficientFunds;
                 var store = await _productRepository.GetStoreOfSpecificProduct(product.Id);
                 store.GetProfit(product.PriceInUAH);
                 product.ChangeStatus(ProductStatus.Purchased);
@@ -54,6 +54,11 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
                 await _storeRepository.UpdateOne(store);
                 await _productRepository.UpdateOne(product);
                 await _purchaseRepository.AddOne(purchase);
+                return PurchaseOperationResult.Success;
+            }
+            else
+            {
+                return PurchaseOperationResult.Fail;
             }
         }
     }

@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using ChainStore.Actions.ApplicationServices;
+using ChainStore.ActionsImpl.ApplicationServicesImpl;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
+using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Domain.Identity;
 using ChainStoreTRPZ2Edition.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
+using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
 using ChainStoreTRPZ2Edition.ViewModels.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -44,7 +48,10 @@ namespace ChainStoreTRPZ2Edition
                 {
                     Config = context.Configuration;
                     services.AddDbContext<MyDbContext>(opt =>
-                        opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2")));
+                        {
+                            opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2"));
+                        });
+                    services.AddSingleton<OptionsBuilderService<MyDbContext>>();
                     services.AddSingleton<IBookRepository, SqlBookRepository>();
                     services.AddSingleton<ICategoryRepository, SqlCategoryRepository>();
                     services.AddSingleton<IClientRepository, SqlClientRepository>();
@@ -56,11 +63,16 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<IAuthenticationService, AuthenticationService>();
                     services.AddSingleton<IAuthenticator, Authenticator>();
                     services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+                    services.AddSingleton<IPurchaseService, PurchaseService>();
+                    services.AddSingleton<IReservationService, ReservationService>();
                     services.AddSingleton<RegisterViewModel>();
                     services.AddSingleton<LoginViewModel>();
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<StoresViewModel>();
+                    services.AddSingleton<StoreDetailsViewModel>();
+                    services.AddSingleton<PurchaseViewModel>();
+                    services.AddSingleton<BookViewModel>();
                 });
         }
 

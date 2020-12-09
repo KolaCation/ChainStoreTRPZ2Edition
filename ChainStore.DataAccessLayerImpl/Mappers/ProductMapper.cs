@@ -18,7 +18,7 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
         public Product DbToDomain(ProductDbModel item)
         {
             CustomValidator.ValidateObject(item);
-            return new Product(item.Id, item.Name, item.PriceInUAH, item.ProductStatus, item.Id);
+            return new Product(item.Id, item.Name, item.PriceInUAH, item.ProductStatus, item.CategoryId);
         }
     }
 }

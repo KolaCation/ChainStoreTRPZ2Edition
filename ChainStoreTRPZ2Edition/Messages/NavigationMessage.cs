@@ -6,15 +6,13 @@ namespace ChainStoreTRPZ2Edition.Messages
 {
     public sealed class NavigationMessage
     {
-        public string ViewModelName { get; set; }
+        public string ViewModelName { get; }
+        public Guid? ItemId { get; }
 
-        public NavigationMessage()
-        {
-            
-        }
-        public NavigationMessage(string viewModelName)
+        public NavigationMessage(string viewModelName, Guid? itemId = null)
         {
             ViewModelName = viewModelName;
+            ItemId = itemId;
         }
     }
 }
