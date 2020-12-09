@@ -98,6 +98,20 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return _context.Stores.Any(item => item.Id.Equals(id));
         }
 
+        public async Task<IReadOnlyCollection<Product>> GetStoreSpecificProducts(Guid storeId)
+        {
+            CustomValidator.ValidateId(storeId);
+            var storeDbModel = await _context.Stores.FindAsync(storeId);
+            var store = _storeMapper.DbToDomain(storeDbModel);
+            var products = new List<Product>();
+            foreach (var category in store.Categories)
+            {
+                products.AddRange(category.Products);
+            }
+
+            return products;
+        }
+
         private async Task<bool> HasSameNameAndLocation(Store store)
         {
             if (store != null)

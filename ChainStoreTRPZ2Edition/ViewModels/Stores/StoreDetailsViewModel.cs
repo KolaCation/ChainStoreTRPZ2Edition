@@ -10,6 +10,7 @@ using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.Domain.DomainCore;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Messages;
+using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
 using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Stores
@@ -58,7 +59,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             ClearFilter = new RelayCommand(HandleCleaning);
             NavigateToPurchase = new RelayCommand(id =>
             {
-                Messenger.Default.Send(new NavigationMessage("PurchaseViewModel", (Guid)id));
+                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid)id));
                 ClearData();
             });
             NavigateToBook = new RelayCommand(id =>
