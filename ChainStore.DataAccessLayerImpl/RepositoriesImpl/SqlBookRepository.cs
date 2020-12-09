@@ -14,79 +14,84 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public sealed class SqlBookRepository : IBookRepository
     {
-        private readonly MyDbContext _context;
         private readonly BookMapper _bookMapper;
         private readonly ProductMapper _productMapper;
+        private readonly DbContextOptions<MyDbContext> _options;
 
-        public SqlBookRepository(MyDbContext context)
+        public SqlBookRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
-            _context = context;
             _bookMapper = new BookMapper();
             _productMapper = new ProductMapper();
+            _options = optionsBuilder.BuildOptions();
         }
 
         public async Task<List<Book>> GetClientBooks(Guid clientId)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(clientId);
-            var bookDbModels = await _context.Books.Where(b => b.ClientId.Equals(clientId)).ToListAsync();
+            var bookDbModels = await context.Books.Where(b => b.ClientId.Equals(clientId)).ToListAsync();
             var books = (from bookDbModel in bookDbModels select _bookMapper.DbToDomain(bookDbModel)).ToList();
             return books;
         }
 
         public async Task CheckBooksForExpiration()
         {
-            var bookDbModels = await _context.Books.ToListAsync();
+            await using var context = new MyDbContext(_options);
+            var bookDbModels = await context.Books.ToListAsync();
             var books = (from bookDbModel in bookDbModels select _bookMapper.DbToDomain(bookDbModel)).ToList();
             var booksToRemove = new List<Book>();
             foreach (var book in books)
             {
                 var isExpired = book.IsExpired();
                 if (!isExpired) return;
-                var productDbModel = await _context.Products.FindAsync(book.ProductId);
+                var productDbModel = await context.Products.FindAsync(book.ProductId);
                 var product = _productMapper.DbToDomain(productDbModel);
                 product.ChangeStatus(ProductStatus.OnSale);
-                DetachService.Detach<ProductDbModel>(_context, product.Id);
-                var enState = _context.Products.Update(_productMapper.DomainToDb(product));
+                DetachService.Detach<ProductDbModel>(context, product.Id);
+                var enState = context.Products.Update(_productMapper.DomainToDb(product));
                 enState.State = EntityState.Modified;
                 booksToRemove.Add(book);
             }
 
             foreach (var book in booksToRemove)
             {
-                DetachService.Detach<BookDbModel>(_context, book.Id);
-                _context.Books.Remove(_bookMapper.DomainToDb(book));
+                DetachService.Detach<BookDbModel>(context, book.Id);
+                context.Books.Remove(_bookMapper.DomainToDb(book));
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         public async Task AddOne(Book item)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var enState = await _context.Books.AddAsync(_bookMapper.DomainToDb(item));
+                var enState = await context.Books.AddAsync(_bookMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteOne(Guid id)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
             if (Exists(id))
             {
-                var bookDbModel = await _context.Books.FindAsync(id);
-                var enState = _context.Books.Remove(bookDbModel);
+                var bookDbModel = await context.Books.FindAsync(id);
+                var enState = context.Books.Remove(bookDbModel);
                 enState.State = EntityState.Deleted;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public bool Exists(Guid id)
         {
+            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
-            return _context.Books.Any(item => item.Id.Equals(id));
+            return context.Books.Any(item => item.Id.Equals(id));
         }
     }
 }

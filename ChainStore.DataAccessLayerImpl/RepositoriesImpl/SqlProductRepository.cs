@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
@@ -15,34 +14,35 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public class SqlProductRepository : IProductRepository
     {
-        private readonly MyDbContext _context;
         private readonly ProductMapper _productMapper;
-        private readonly StoreMapper _storeMapper;
+        private StoreMapper _storeMapper;
+        private readonly DbContextOptions<MyDbContext> _options;
 
-        public SqlProductRepository(MyDbContext context)
+        public SqlProductRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
-            _context = context;
             _productMapper = new ProductMapper();
-            _storeMapper = new StoreMapper(context);
+            _options = optionsBuilder.BuildOptions();
         }
 
         public async Task AddOne(Product item)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var enState = await _context.Products.AddAsync(_productMapper.DomainToDb(item));
+                var enState = await context.Products.AddAsync(_productMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task<Product> GetOne(Guid id)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
             if (Exists(id))
             {
-                var productDbModel = await _context.Products.FindAsync(id);
+                var productDbModel = await context.Products.FindAsync(id);
                 return _productMapper.DbToDomain(productDbModel);
             }
             else
@@ -53,7 +53,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<IReadOnlyCollection<Product>> GetAll()
         {
-            var productDbModels = await _context.Products.ToListAsync();
+            await using var context = new MyDbContext(_options);
+            var productDbModels = await context.Products.ToListAsync();
             var products = (from productDbModel in productDbModels select _productMapper.DbToDomain(productDbModel))
                 .ToList();
             return products.AsReadOnly();
@@ -61,29 +62,31 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task UpdateOne(Product item)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                //DetachService.Detach<ProductDbModel>(_context, item.Id);
-                var enState = _context.Products.Update(_productMapper.DomainToDb(item));
+                var enState = context.Products.Update(_productMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteOne(Guid id)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
             if (Exists(id))
             {
-                var productDbModel = await _context.Products.FindAsync(id);
+                var productDbModel = await context.Products.FindAsync(id);
                 var storeProdRel =
-                    await _context.StoreProductRelation.FirstAsync(e =>
+                    await context.StoreProductRelation.FirstAsync(e =>
                         e.ProductDbModelId.Equals(productDbModel.Id));
-                await DeleteProductFromStore(_productMapper.DbToDomain(productDbModel), storeProdRel.StoreDbModelId);
-                var enState = _context.Products.Remove(productDbModel);
+                await DeleteProductFromStore(_productMapper.DbToDomain(productDbModel),
+                    storeProdRel.StoreDbModelId);
+                var enState = context.Products.Remove(productDbModel);
                 enState.State = EntityState.Deleted;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -91,12 +94,15 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Store> GetStoreOfSpecificProduct(Guid productId)
         {
+            await using var context = new MyDbContext(_options);
+            _storeMapper = new StoreMapper(context);
             CustomValidator.ValidateId(productId);
-            var res = await _context.StoreProductRelation.FirstOrDefaultAsync(e => e.ProductDbModelId.Equals(productId));
+            var res = await context.StoreProductRelation.FirstOrDefaultAsync(e =>
+                e.ProductDbModelId.Equals(productId));
             if (res != null)
             {
                 var storeDbModelId = res.StoreDbModelId;
-                var storeDbModel = await _context.Stores.FindAsync(storeDbModelId);
+                var storeDbModel = await context.Stores.FindAsync(storeDbModelId);
                 return _storeMapper.DbToDomain(storeDbModel);
             }
             else
@@ -107,45 +113,51 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddProductToStore(Product product, Guid storeId)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(product);
             CustomValidator.ValidateId(storeId);
             if (!Exists(product.Id))
             {
                 await AddOne(product);
             }
+
             var storeProdRelExists = await StoreProductRelationExists(storeId, product.Id);
             if (!storeProdRelExists)
             {
                 var storeProdRel = new StoreProductDbModel(storeId, product.Id);
-                await _context.StoreProductRelation.AddAsync(storeProdRel);
+                await context.StoreProductRelation.AddAsync(storeProdRel);
             }
-            await _context.SaveChangesAsync();
+
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteProductFromStore(Product product, Guid storeId)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(product);
             CustomValidator.ValidateId(storeId);
-            var storeProdRelToRemove = await _context.StoreProductRelation.FirstAsync(e =>
+            var storeProdRelToRemove = await context.StoreProductRelation.FirstAsync(e =>
                 e.ProductDbModelId.Equals(product.Id) && e.StoreDbModelId.Equals(storeId));
-            var enState = _context.StoreProductRelation.Remove(storeProdRelToRemove);
+            var enState = context.StoreProductRelation.Remove(storeProdRelToRemove);
             enState.State = EntityState.Deleted;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         #region Validations
 
         private async Task<bool> StoreProductRelationExists(Guid storeId, Guid productId)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(storeId);
             CustomValidator.ValidateId(productId);
-            return await _context.StoreProductRelation
+            return await context.StoreProductRelation
                 .AnyAsync(e => e.StoreDbModelId.Equals(storeId) && e.ProductDbModelId.Equals(productId));
         }
         public bool Exists(Guid id)
         {
+            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
-            return _context.Products.Any(item => item.Id.Equals(id));
+            return context.Products.Any(item => item.Id.Equals(id));
         }
 
         #endregion

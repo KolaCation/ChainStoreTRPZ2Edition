@@ -6,6 +6,7 @@ using ChainStore.ActionsImpl.ApplicationServicesImpl;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.DataAccessLayerImpl;
+using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
 using ChainStore.Domain.DomainCore;
@@ -50,6 +51,7 @@ namespace ChainStoreTRPZ2Edition
                         {
                             opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2"));
                         });
+                    services.AddSingleton<OptionsBuilderService<MyDbContext>>();
                     services.AddSingleton<IBookRepository, SqlBookRepository>();
                     services.AddSingleton<ICategoryRepository, SqlCategoryRepository>();
                     services.AddSingleton<IClientRepository, SqlClientRepository>();

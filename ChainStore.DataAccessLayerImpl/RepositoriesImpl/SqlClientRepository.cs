@@ -14,32 +14,34 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public class SqlClientRepository : IClientRepository
     {
-        private readonly MyDbContext _context;
         private readonly ClientMapper _clientMapper;
+        private readonly DbContextOptions<MyDbContext> _options;
 
-        public SqlClientRepository(MyDbContext context)
+        public SqlClientRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
-            _context = context;
             _clientMapper = new ClientMapper();
+            _options = optionsBuilder.BuildOptions();
         }
 
         public async Task AddOne(Client item)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var enState = await _context.Clients.AddAsync(_clientMapper.DomainToDb(item));
+                var enState = await context.Clients.AddAsync(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Added;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task<Client> GetOne(Guid id)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
             if (Exists(id))
             {
-                var clientDbModel = await _context.Clients.FindAsync(id);
+                var clientDbModel = await context.Clients.FindAsync(id);
                 return _clientMapper.DbToDomain(clientDbModel);
             }
             else
@@ -50,39 +52,44 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<IReadOnlyCollection<Client>> GetAll()
         {
-            var clientDbModels = await _context.Clients.ToListAsync();
-            var clients = (from clientDbModel in clientDbModels select _clientMapper.DbToDomain(clientDbModel)).ToList();
+            await using var context = new MyDbContext(_options);
+            var clientDbModels = await context.Clients.ToListAsync();
+            var clients = (from clientDbModel in clientDbModels select _clientMapper.DbToDomain(clientDbModel))
+                .ToList();
             return clients.AsReadOnly();
         }
 
         public async Task UpdateOne(Client item)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                DetachService.Detach<ClientDbModel>(_context, item.Id);
-                var enState = _context.Clients.Update(_clientMapper.DomainToDb(item));
+                DetachService.Detach<ClientDbModel>(context, item.Id);
+                var enState = context.Clients.Update(_clientMapper.DomainToDb(item));
                 enState.State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteOne(Guid id)
         {
+            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
             if (Exists(id))
             {
-                var clientDbModel = await _context.Clients.FindAsync(id);
-                var enState = _context.Clients.Remove(clientDbModel);
+                var clientDbModel = await context.Clients.FindAsync(id);
+                var enState = context.Clients.Remove(clientDbModel);
                 enState.State = EntityState.Deleted;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public bool Exists(Guid id)
         {
+            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
-            return _context.Clients.Any(item => item.Id.Equals(id));
+            return context.Clients.Any(item => item.Id.Equals(id));
         }
     }
 }
