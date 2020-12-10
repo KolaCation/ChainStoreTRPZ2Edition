@@ -6,7 +6,9 @@
              xmlns:stores="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Stores"
              xmlns:stores1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores"
              xmlns:clientOperations="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.ClientOperations"
-             xmlns:clientOperations1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.ClientOperations">
+             xmlns:clientOperations1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.ClientOperations"
+             xmlns:dialogs="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Dialogs"
+             xmlns:dialogs1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Dialogs">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,6 +42,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type account:ProfileViewModel}">
                 <account1:ProfileControl DataContext="{Binding}"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:ChangeNameViewModel}">
+                <dialogs1:ChangeNameDialog DataContext="{Binding}"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:ReplenishBalanceViewModel}">
+                <dialogs1:ChangeNameDialog DataContext="{Binding}"/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

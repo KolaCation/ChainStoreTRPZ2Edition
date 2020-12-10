@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Account"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:stores="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores"
+             xmlns:clientOperations="clr-namespace:ChainStoreTRPZ2Edition.UserControls.ClientOperations"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -38,7 +39,7 @@
                                FontWeight="SemiBold" />
                         <Label Content="{Binding ClientName, Mode=TwoWay}" Margin="0 4 4 4" FontFamily="Champagne &amp; Limousines" FontSize="16"
                                FontStyle="Italic" />
-                        <Button Margin="6 0 0 0" Content="Change" />
+                        <Button Margin="6 0 0 0" Content="Change" Command="{Binding ChangeNameCommand}" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="4">
                         <materialDesign:PackIcon Kind="Wallet" Width="20" Height="20" Foreground="Green" Margin="5"
@@ -49,7 +50,7 @@
                                FontStyle="Italic" />
                         <Label Content="UAH" Margin="0 4 4 4" FontFamily="Champagne &amp; Limousines" FontSize="16"
                                FontStyle="Italic" />
-                        <Button Margin="6 0 0 0" Content="Replenish" />
+                        <Button Margin="6 0 0 0" Content="Replenish" Command="{Binding ReplenishBalanceCommand}" />
                     </StackPanel>
                 </Grid>
             </StackPanel>
@@ -67,7 +68,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <materialDesign:Card
-                            Width="200" Height="300" Margin="4">
+                            Width="220" Height="300" Margin="4">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition
@@ -78,7 +79,7 @@
                                 <Image
                                     Source="../../Assets/reservation.png"
                                     Height="140"
-                                    Width="196"
+                                    Width="216"
                                     Stretch="UniformToFill" />
                                 <Button
                                     Grid.Row="0"
@@ -95,7 +96,7 @@
                                 <StackPanel Grid.Row="1" Margin="8 24 8 0">
 
                                     <TextBlock FontSize="16" Margin="2" FontFamily="Champagne &amp; Limousines"
-                                               FontWeight="Bold" Text="{Binding ProductName}" />
+                                               FontWeight="Bold" Text="{Binding ProductName}" HorizontalAlignment="Center" />
 
                                     <StackPanel Orientation="Horizontal" Margin="2">
                                         <materialDesign:PackIcon Kind="CalendarDay" Width="16" Height="16"
@@ -103,20 +104,21 @@
                                         <TextBlock FontSize="14" Margin="2 0 0 0"
                                                    FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
                                                    Text="Creation Time:" />
-                                        <TextBlock FontSize="14" Margin="2 0 0 0"
-                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
-                                                   Text="{Binding BookCreationTime}" />
+                                       
                                     </StackPanel>
+                                    <TextBlock FontSize="14" Margin="2 0 0 0"
+                                               FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
+                                               Text="{Binding BookCreationTime}" />
                                     <StackPanel Orientation="Horizontal" Margin="2">
                                         <materialDesign:PackIcon Kind="CalendarDay" Width="16" Height="16"
                                                                  Foreground="DarkRed" />
                                         <TextBlock FontSize="14" Margin="2 0 0 0"
                                                    FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
                                                    Text="Expiration Time:" />
-                                        <TextBlock FontSize="14" Margin="2 0 0 0"
-                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
-                                                   Text="{Binding BookExpirationTime}" />
                                     </StackPanel>
+                                    <TextBlock FontSize="14" Margin="2 0 0 0"
+                                               FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
+                                               Text="{Binding BookExpirationTime}" />
                                 </StackPanel>
                             </Grid>
                         </materialDesign:Card>
@@ -163,18 +165,8 @@
                                 <StackPanel Grid.Row="1" Margin="8 24 8 0">
 
                                     <TextBlock FontSize="16" Margin="2" FontFamily="Champagne &amp; Limousines"
-                                               FontWeight="Bold" Text="{Binding ProductName}" />
+                                               FontWeight="Bold" Text="{Binding ProductName}" HorizontalAlignment="Center" />
 
-                                    <StackPanel Orientation="Horizontal" Margin="2">
-                                        <materialDesign:PackIcon Kind="CalendarDay" Width="16" Height="16"
-                                                                 Foreground="DarkRed" />
-                                        <TextBlock FontSize="14" Margin="2 0 0 0"
-                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
-                                                   Text="Creation Time:" />
-                                        <TextBlock FontSize="14" Margin="2 0 0 0"
-                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
-                                                   Text="{Binding PurchaseCreationTime}" />
-                                    </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="2">
                                         <materialDesign:PackIcon Kind="Dollar" Width="16" Height="16"
                                                                  Foreground="Green" />
@@ -182,9 +174,22 @@
                                                    FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
                                                    Text="Price:" />
                                         <TextBlock FontSize="14" Margin="2 0 0 0"
-                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
+                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Light"
                                                    Text="{Binding PriceAtPurchaseMoment}" />
+                                        <TextBlock FontSize="14" Margin="2 0 0 0"
+                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Light"
+                                                   Text="UAH" />
                                     </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="2">
+                                        <materialDesign:PackIcon Kind="CalendarDay" Width="16" Height="16"
+                                                                 Foreground="DarkRed" />
+                                        <TextBlock FontSize="14" Margin="2 0 0 0"
+                                                   FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
+                                                   Text="Creation Time:" />
+                                    </StackPanel>
+                                    <TextBlock FontSize="14" Margin="2 0 0 0"
+                                               FontFamily="Champagne &amp; Limousines" FontWeight="Medium"
+                                               Text="{Binding PurchaseCreationTime}" />
                                 </StackPanel>
                             </Grid>
                         </materialDesign:Card>

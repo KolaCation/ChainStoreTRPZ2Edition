@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
@@ -10,8 +12,12 @@ using ChainStore.Domain.DomainCore;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Helpers;
 using ChainStoreTRPZ2Edition.Messages;
+using ChainStoreTRPZ2Edition.UserControls.ClientOperations;
+using ChainStoreTRPZ2Edition.UserControls.Dialogs;
 using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
+using ChainStoreTRPZ2Edition.ViewModels.Dialogs;
 using DevExpress.Mvvm;
+using MaterialDesignThemes.Wpf;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
@@ -54,9 +60,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         #endregion
 
         #region Commands
-
-        public ICommand ChangeName { get; set; }
-        public ICommand ReplenishBalance { get; set; }
         public ICommand NavigateToPurchase { get; set; }
         public ICommand Filter { get; set; }
         public ICommand ClearFilter { get; set; }
@@ -160,6 +163,65 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         {
             SearchProduct = string.Empty;
             RefreshDataAsync(new RefreshDataMessage(nameof(ProfileViewModel), ClientId));
+        }
+
+        #endregion
+
+        #region Dialogs
+
+        public ICommand ChangeNameCommand => new RelayCommand(ChangeNameHandler);
+        public ICommand ReplenishBalanceCommand => new RelayCommand(ReplenishBalanceHandler);
+
+        private async void ChangeNameHandler(object o)
+        {
+            var view = new ChangeNameDialog
+            {
+                DataContext = new ChangeNameViewModel(ClientName)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is string)
+            {
+                var client = await _clientRepository.GetOne(_authenticator.GetCurrentUser().ClientId);
+                client.UpdateName(result.ToString());
+                await _clientRepository.UpdateOne(client);
+                ClientName = client.Name;
+            }
+        }
+
+        private async void ReplenishBalanceHandler(object o)
+        {
+            var view = new ReplenishBalanceDialog
+            {
+                DataContext = new ReplenishBalanceViewModel()
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+        }
+
+        private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+        {
+            var dialogHost = (DialogHost) sender;
+            var dialogSession = dialogHost.CurrentSession;
+            if (dialogSession.Content.GetType() == typeof(ChangeNameDialog) && eventArgs.Parameter is string)
+            {
+                var dialogDataContext = ((ChangeNameDialog) dialogSession.Content).DataContext;
+                var dialogViewModel = (ChangeNameViewModel) dialogDataContext;
+                if (!dialogViewModel.IsValid())
+                {
+                    eventArgs.Cancel();
+                }
+            }
+            else if (dialogSession.Content.GetType() == typeof(ReplenishBalanceDialog) &&
+                     eventArgs.Parameter is double)
+            {
+                var dialogDataContext = ((ReplenishBalanceDialog)dialogSession.Content).DataContext;
+                var dialogViewModel = (ReplenishBalanceViewModel)dialogDataContext;
+                if (!dialogViewModel.IsValid())
+                {
+                    eventArgs.Cancel();
+                }
+            }
         }
 
         #endregion
