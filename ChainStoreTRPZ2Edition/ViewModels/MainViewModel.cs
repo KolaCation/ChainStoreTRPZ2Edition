@@ -60,20 +60,54 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 
         #region Navigational Commands
 
-        public ICommand OpenLoginControl { get; set; }
-        public ICommand OpenRegisterControl { get; set; }
+        public ICommand NavigateToLogin { get; set; }
+        public ICommand NavigateToProfile { get; set; }
+        public ICommand NavigateToStoresIndex { get; set; }
+        public ICommand Logout { get; set; }
 
         #endregion
 
         #region Constructor
+
         /// <summary>
         /// Constructor for creating commands, handling messages
         /// </summary>
         public MainViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
-            OpenLoginControl = new RelayCommand(() => { CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel)); });
-            OpenRegisterControl = new RelayCommand(() => { CurrentViewModel = GetAppropriateViewModel(nameof(RegisterViewModel)); });
+            NavigateToLogin = new RelayCommand(() =>
+            {
+                CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
+            });
+            NavigateToProfile = new RelayCommand(() =>
+            {
+                if (_authenticator.IsLoggedIn())
+                {
+                    HandleNavigation(new NavigationMessage(nameof(ProfileViewModel),
+                        _authenticator.GetCurrentUser().ClientId));
+                }
+                else
+                {
+                    MessageBox.Show("Login to access profile.");
+                }
+            });
+            NavigateToStoresIndex = new RelayCommand(() =>
+            {
+                if (_authenticator.IsLoggedIn())
+                {
+                    HandleNavigation(new NavigationMessage(nameof(StoresViewModel)));
+                }
+                else
+                {
+                    MessageBox.Show("Login to access stores.");
+                }
+            });
+            Logout = new RelayCommand(() =>
+            {
+                _authenticator.Logout();
+                HandleMenuIcon(new LoginMessage(false));
+                NavigateToLogin.Execute(null);
+            });
             Messenger.Default.Register<NavigationMessage>(this, HandleNavigation);
             Messenger.Default.Register<LoginMessage>(this, HandleMenuIcon);
         }
@@ -88,14 +122,21 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         /// <param name="storeDetailsViewModel"></param>
         /// <param name="purchaseViewModel"></param>
         /// <param name="bookViewModel"></param>
-        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel, LoginViewModel loginViewModel, StoresViewModel storeViewModel,
-            StoreDetailsViewModel storeDetailsViewModel, PurchaseViewModel purchaseViewModel, BookViewModel bookViewModel) : this(authenticator)
+        /// <param name="profileViewModel"></param>
+        public MainViewModel(IAuthenticator authenticator, RegisterViewModel registerViewModel,
+            LoginViewModel loginViewModel, StoresViewModel storeViewModel,
+            StoreDetailsViewModel storeDetailsViewModel, PurchaseViewModel purchaseViewModel,
+            BookViewModel bookViewModel, ProfileViewModel profileViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
-            ViewModels = new List<ViewModelBase> { registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel, bookViewModel };
+            ViewModels = new List<ViewModelBase>
+            {
+                registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel,
+                bookViewModel,
+                profileViewModel
+            };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
         }
-
 
         #endregion
 
@@ -115,7 +156,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             Messenger.Default.Send(new RefreshDataMessage(navigationMessage.ViewModelName, navigationMessage.ItemId));
             CurrentViewModel = GetAppropriateViewModel(navigationMessage.ViewModelName);
         }
-        
+
         private void HandleMenuIcon(LoginMessage loginMessage)
         {
             if (loginMessage.IsLoggedIn)
@@ -126,8 +167,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             else
             {
                 Username = "Unauthorized";
+                LoginStatus = 0;
             }
-
         }
 
         #endregion

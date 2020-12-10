@@ -14,11 +14,13 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
     public class SqlPurchaseRepository : IPurchaseRepository
     {
         private readonly PurchaseMapper _purchaseMapper;
+        private readonly ProductMapper _productMapper;
         private readonly DbContextOptions<MyDbContext> _options;
 
         public SqlPurchaseRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
             _purchaseMapper = new PurchaseMapper();
+            _productMapper = new ProductMapper();
             _options = optionsBuilder.BuildOptions();
         }
 
@@ -61,6 +63,17 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             var purchases = (from purchaseDbModel in purchaseDbModels
                 select _purchaseMapper.DbToDomain(purchaseDbModel)).ToList();
             return purchases;
+        }
+
+        public async Task<List<Product>> GetClientPurchasedProducts(Guid clientId)
+        {
+            await using var context = new MyDbContext(_options);
+            var purchasedProductDbModels = await (from productDbModel in context.Products
+                join purchaseDbModel in context.Purchases on productDbModel.Id equals purchaseDbModel.ProductId
+                select productDbModel).ToListAsync();
+            var purchasedProducts = (from purchasedProductDbModel in purchasedProductDbModels
+                select _productMapper.DbToDomain(purchasedProductDbModel)).ToList();
+            return purchasedProducts;
         }
     }
 }

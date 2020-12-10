@@ -34,7 +34,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 
         #region Commands
 
-        public ICommand NavigateToSignUp { get; set; }
+        public ICommand NavigateToRegister { get; set; }
 
         public ICommand Login { get; set; }
 
@@ -45,10 +45,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         {
             _authenticator = authenticator;
             Login = new RelayCommand(async passwordBox => await HandleLogin(passwordBox));
-            NavigateToSignUp = new RelayCommand(() =>
+            NavigateToRegister = new RelayCommand(() =>
             {
                 ClearData();
-                Messenger.Default.Send(new RefreshDataMessage(nameof(StoresViewModel)));
                 Messenger.Default.Send(new NavigationMessage(nameof(RegisterViewModel)));
             });
         }

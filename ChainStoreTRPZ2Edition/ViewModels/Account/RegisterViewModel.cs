@@ -46,7 +46,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 
         #region Commands
 
-        public ICommand NavigateToSignIn { get; set; }
+        public ICommand NavigateToLogin { get; set; }
         public ICommand Register { get; set; }
 
         #endregion
@@ -56,7 +56,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         {
             _authenticator = authenticator;
             Register = new RelayCommand(async passwordInputBoxes => await HandleRegistration(passwordInputBoxes));
-            NavigateToSignIn = new RelayCommand(() =>
+            NavigateToLogin = new RelayCommand(() =>
             {
                 ClearData();
                 Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel)));
@@ -87,8 +87,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                     ((PasswordBox)unpackedPasswordInputBoxes[1]).Password);
                 if (tryRegister == RegistrationResult.Success)
                 {
-                    ClearData();
-                    NavigateToSignIn.Execute(null);
+                    NavigateToLogin.Execute(null);
                 }
                 else if (tryRegister == RegistrationResult.EmailAlreadyTaken)
                 {

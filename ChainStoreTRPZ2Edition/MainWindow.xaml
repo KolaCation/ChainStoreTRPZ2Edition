@@ -54,37 +54,31 @@
                     <ListViewItem Height="45" Padding="0">
                         <StackPanel Orientation="Horizontal" Margin="10 0">
                             <materialDesign:PackIcon Kind="FaceProfile" Width="20" Height="20" Foreground="Gray" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Profile" Margin="10"/>
+                            <TextBlock Text="Profile" Margin="10">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding NavigateToProfile}" MouseAction="LeftClick" />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
                         </StackPanel>
                     </ListViewItem>
                     <ListViewItem Height="45" Padding="0">
                         <StackPanel Orientation="Horizontal" Margin="10 0">
                             <materialDesign:PackIcon Kind="Store" Width="20" Height="20" Foreground="#FFF08033" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Stores" Margin="10"/>
+                            <TextBlock Text="Stores" Margin="10">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding NavigateToStoresIndex}" MouseAction="LeftClick" />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
                         </StackPanel>
                     </ListViewItem>
                     <ListViewItem Height="45" Padding="0">
                         <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="Lightbulb" Width="20" Height="20" Foreground="Green" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Send Feedback" Margin="10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem Height="45" Padding="0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="Heart" Width="20" Height="20" Foreground="#FFD41515" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Recommend" Margin="10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem Height="45" Padding="0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="StarCircle" Width="20" Height="20" Foreground="#FFE6A701" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Premium Subscription" Margin="10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem Height="45" Padding="0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="Settings" Width="20" Height="20" Foreground="#FF0069C1" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Settings" Margin="10"/>
+                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20" Foreground="Green" Margin="5" VerticalAlignment="Center"/>
+                            <TextBlock Text="Logout" Margin="10">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding Logout}" MouseAction="LeftClick" />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
                         </StackPanel>
                     </ListViewItem>
                 </ListView>

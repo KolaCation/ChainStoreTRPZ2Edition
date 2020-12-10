@@ -8,5 +8,6 @@ namespace ChainStore.DataAccessLayer.Repositories
     public interface IPurchaseRepository : ICreateDeleteRepository<Purchase>
     {
         Task<List<Purchase>> GetClientPurchases(Guid clientId);
+        Task<List<Product>> GetClientPurchasedProducts(Guid clientId);
     }
 }

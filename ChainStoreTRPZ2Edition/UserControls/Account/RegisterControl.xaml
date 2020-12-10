@@ -108,7 +108,7 @@
             </Button>
             <Label Content="Already have an account?" FontSize="16" HorizontalAlignment="Center" />
             <Button Content="Sign In" HorizontalAlignment="Center" Margin="0 4" Padding="4"
-                    Command="{Binding NavigateToSignIn, Mode=TwoWay}" />
+                    Command="{Binding NavigateToLogin, Mode=TwoWay}" />
 
         </StackPanel>
     </Grid>

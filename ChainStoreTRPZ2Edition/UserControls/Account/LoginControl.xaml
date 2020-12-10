@@ -29,7 +29,7 @@
                 </Button.CommandParameter>
             </Button>
             <Label Content="Don't have an account?" FontSize="16" HorizontalAlignment="Center"/>
-            <Button Content="Sign Up" Padding="4" Margin="0 4" HorizontalAlignment="Center" Command="{Binding NavigateToSignUp}"/>
+            <Button Content="Sign Up" Padding="4" Margin="0 4" HorizontalAlignment="Center" Command="{Binding NavigateToRegister}"/>
 
         </StackPanel>
     </Grid>
