@@ -23,12 +23,12 @@ namespace ChainStoreTRPZ2Edition.Helpers
 
         public static string MinValue(string parameter, int value)
         {
-            return $"{parameter} minimum value is {value}.";
+            return $"{parameter} minimum value is {value}";
         }
 
         public static string MaxValue(string parameter, int value)
         {
-            return $"{parameter} maximum value is {value}.";
+            return $"{parameter} maximum value is {value}";
         }
     }
 }

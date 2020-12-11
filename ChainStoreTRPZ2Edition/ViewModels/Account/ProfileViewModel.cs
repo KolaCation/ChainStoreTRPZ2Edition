@@ -197,6 +197,13 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             };
 
             var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is double)
+            {
+                var client = await _clientRepository.GetOne(_authenticator.GetCurrentUser().ClientId);
+                client.ReplenishBalance(double.Parse(result.ToString()));
+                await _clientRepository.UpdateOne(client);
+                ClientBalance = client.Balance;
+            }
         }
 
         private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
