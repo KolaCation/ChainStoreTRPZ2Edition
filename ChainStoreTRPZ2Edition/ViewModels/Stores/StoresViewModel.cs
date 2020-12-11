@@ -9,6 +9,7 @@ using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.Domain.DomainCore;
+using ChainStoreTRPZ2Edition.Admin.ViewModels;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Messages;
 using DevExpress.Mvvm;
@@ -43,6 +44,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand Filter { get; set; }
         public ICommand ClearFilter { get; set; }
         public ICommand ViewStoreDetails { get; set; }
+        public ICommand ViewCategories { get; set; }
 
         #endregion
 
@@ -59,6 +61,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             ViewStoreDetails = new RelayCommand(id =>
             {
                 Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid)id));
+                ClearData();
+            });
+            ViewCategories = new RelayCommand(() =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(CategoriesViewModel)));
                 ClearData();
             });
         }
