@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using ChainStore.Actions.ApplicationServices;
@@ -48,9 +49,9 @@ namespace ChainStoreTRPZ2Edition
                 {
                     Config = context.Configuration;
                     services.AddDbContext<MyDbContext>(opt =>
-                        {
-                            opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2"));
-                        });
+                    {
+                        opt.UseSqlServer(context.Configuration.GetConnectionString("ChainStoreDBTRPZ2"));
+                    });
                     services.AddSingleton<OptionsBuilderService<MyDbContext>>();
                     services.AddSingleton<IBookRepository, SqlBookRepository>();
                     services.AddSingleton<ICategoryRepository, SqlCategoryRepository>();
@@ -84,6 +85,10 @@ namespace ChainStoreTRPZ2Edition
             //await AddData(_host.Services.GetRequiredService<IProductRepository>(),
             //    _host.Services.GetRequiredService<IStoreRepository>(),
             //_host.Services.GetRequiredService<ICategoryRepository>());
+            var bookRepository = _host.Services.GetRequiredService<IBookRepository>();
+            var threadStart = new ThreadStart(async () => await CheckBooksForExpiration(bookRepository));
+            var thread = new Thread(threadStart);
+            thread.Start();
             var window = _host.Services.GetRequiredService<MainWindow>();
             window.DataContext = _host.Services.GetRequiredService<MainViewModel>();
             window.Show();
@@ -97,7 +102,17 @@ namespace ChainStoreTRPZ2Edition
             base.OnExit(e);
         }
 
-        private async Task AddData(IProductRepository productRepository, IStoreRepository storeRepository, ICategoryRepository categoryRepository)
+        private async Task CheckBooksForExpiration(IBookRepository bookRepository)
+        {
+            while (true)
+            {
+                await bookRepository.CheckBooksForExpiration();
+                Thread.Sleep(5000);
+            }
+        }
+
+        private async Task AddData(IProductRepository productRepository, IStoreRepository storeRepository,
+            ICategoryRepository categoryRepository)
         {
             var category1Id = new Guid("080917f2-e2fa-4581-a7c2-743b259852ef");
             var category2Id = new Guid("1696b27d-8452-458a-994b-fdeef9cff690");
