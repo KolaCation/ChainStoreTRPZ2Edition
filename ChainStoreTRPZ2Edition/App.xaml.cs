@@ -12,6 +12,7 @@ using ChainStore.DataAccessLayerImpl.Identity;
 using ChainStore.DataAccessLayerImpl.RepositoriesImpl;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Domain.Identity;
+using ChainStoreTRPZ2Edition.Admin.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels;
 using ChainStoreTRPZ2Edition.ViewModels.Account;
 using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
@@ -75,6 +76,7 @@ namespace ChainStoreTRPZ2Edition
                     services.AddSingleton<PurchaseViewModel>();
                     services.AddSingleton<BookViewModel>();
                     services.AddSingleton<ProfileViewModel>();
+                    services.AddSingleton<CategoriesViewModel>();
                 });
         }
 

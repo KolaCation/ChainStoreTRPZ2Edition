@@ -2,7 +2,7 @@
 using ChainStoreTRPZ2Edition.Helpers;
 using DevExpress.Mvvm;
 
-namespace ChainStoreTRPZ2Edition.ViewModels.Dialogs
+namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
 {
     public sealed class ChangeNameViewModel : ViewModelBase, IVerifiable
     {

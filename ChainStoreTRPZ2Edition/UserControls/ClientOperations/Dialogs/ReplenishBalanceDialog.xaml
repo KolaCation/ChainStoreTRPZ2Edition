@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:valueConverters="clr-namespace:ChainStoreTRPZ2Edition.ValueConverters"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -28,7 +29,13 @@
             Margin="0 6 0 0"
             FontSize="18"
             FontFamily="Champagne &amp; Limousines"
-            Text="{Binding Balance, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}"/>
+            Text="{Binding Balance, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}">
+            <b:Interaction.Triggers>
+                <b:EventTrigger EventName="PreviewTextInput" >
+                    <b:CallMethodAction TargetObject="{Binding}" MethodName="OnlyNumericInput"  />
+                </b:EventTrigger>
+            </b:Interaction.Triggers>
+        </TextBox>
         <StackPanel Orientation="Horizontal" Grid.Row="3"
                     Margin="0 16 0 0">
             <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"

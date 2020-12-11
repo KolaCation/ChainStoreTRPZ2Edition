@@ -15,7 +15,7 @@ using ChainStoreTRPZ2Edition.Messages;
 using ChainStoreTRPZ2Edition.UserControls.ClientOperations;
 using ChainStoreTRPZ2Edition.UserControls.Dialogs;
 using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
-using ChainStoreTRPZ2Edition.ViewModels.Dialogs;
+using ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs;
 using DevExpress.Mvvm;
 using MaterialDesignThemes.Wpf;
 
