@@ -5,9 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:clientOperations="clr-namespace:ChainStoreTRPZ2Edition.UserControls.ClientOperations"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Window.Resources>
+   
+        <Window.Resources>
         <Storyboard x:Key="CloseMenu">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="GridMenu">
                 <EasingDoubleKeyFrame KeyTime="0" Value="250"/>
@@ -29,7 +31,8 @@
             <BeginStoryboard Storyboard="{StaticResource OpenMenu}"/>
         </EventTrigger>
     </Window.Triggers>
-    <Grid>
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <Grid>
         <Button Name="ButtonOpen" Panel.ZIndex="{Binding LoginStatus}" Margin="6" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Width="30" Height="30" Padding="0">
             <materialDesign:PackIcon Kind="Menu" Foreground="#FF313131"/>
         </Button>
@@ -54,37 +57,31 @@
                     <ListViewItem Height="45" Padding="0">
                         <StackPanel Orientation="Horizontal" Margin="10 0">
                             <materialDesign:PackIcon Kind="FaceProfile" Width="20" Height="20" Foreground="Gray" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Profile" Margin="10"/>
+                            <TextBlock Text="Profile" Margin="10">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding NavigateToProfile}" MouseAction="LeftClick" />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
                         </StackPanel>
                     </ListViewItem>
                     <ListViewItem Height="45" Padding="0">
                         <StackPanel Orientation="Horizontal" Margin="10 0">
                             <materialDesign:PackIcon Kind="Store" Width="20" Height="20" Foreground="#FFF08033" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Stores" Margin="10"/>
+                            <TextBlock Text="Stores" Margin="10">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding NavigateToStoresIndex}" MouseAction="LeftClick" />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
                         </StackPanel>
                     </ListViewItem>
                     <ListViewItem Height="45" Padding="0">
                         <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="Lightbulb" Width="20" Height="20" Foreground="Green" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Send Feedback" Margin="10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem Height="45" Padding="0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="Heart" Width="20" Height="20" Foreground="#FFD41515" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Recommend" Margin="10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem Height="45" Padding="0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="StarCircle" Width="20" Height="20" Foreground="#FFE6A701" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Premium Subscription" Margin="10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem Height="45" Padding="0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0">
-                            <materialDesign:PackIcon Kind="Settings" Width="20" Height="20" Foreground="#FF0069C1" Margin="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="Settings" Margin="10"/>
+                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20" Foreground="Green" Margin="5" VerticalAlignment="Center"/>
+                            <TextBlock Text="Logout" Margin="10">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding Logout}" MouseAction="LeftClick" />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
                         </StackPanel>
                     </ListViewItem>
                 </ListView>
@@ -95,4 +92,5 @@
         </Grid>
         <ContentControl Content="{Binding CurrentViewModel}" />
     </Grid>
+        </materialDesign:DialogHost>
 </Window>

@@ -34,6 +34,17 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return books;
         }
 
+        public async Task<List<Product>> GetClientBookedProducts(Guid clientId)
+        {
+            await using var context = new MyDbContext(_options);
+            var bookedProductDbModels = await (from productDbModel in context.Products
+                join bookDbModel in context.Books on productDbModel.Id equals bookDbModel.ProductId
+                select productDbModel).ToListAsync();
+            var bookedProducts = (from bookedProductDbModel in bookedProductDbModels
+                select _productMapper.DbToDomain(bookedProductDbModel)).ToList();
+            return bookedProducts;
+        }
+
         public async Task CheckBooksForExpiration()
         {
             await using var context = new MyDbContext(_options);
