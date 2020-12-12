@@ -43,7 +43,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand Filter { get; set; }
         public ICommand ClearFilter { get; set; }
         public ICommand NavigateToPurchase { get; set; }
-        public ICommand NavigateToBook{ get; set; }
+        public ICommand NavigateToBook { get; set; }
 
         #endregion
 
@@ -59,12 +59,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             ClearFilter = new RelayCommand(HandleCleaning);
             NavigateToPurchase = new RelayCommand(id =>
             {
-                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid)id));
+                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid) id));
                 ClearData();
             });
             NavigateToBook = new RelayCommand(id =>
             {
-                Messenger.Default.Send(new NavigationMessage(nameof(BookViewModel), (Guid)id));
+                Messenger.Default.Send(new NavigationMessage(nameof(BookViewModel), (Guid) id));
                 ClearData();
             });
         }
@@ -83,8 +83,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 foreach (var category in store.Categories)
                 {
                     var productsToDisplay = GetListWithUniqueProducts(category);
-                    var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
-                    Categories.Add(categoryToDisplay);
+                    if (productsToDisplay.Count != 0)
+                    {
+                        var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
+                        Categories.Add(categoryToDisplay);
+                    }
                 }
             }
         }
@@ -116,12 +119,13 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         private void HandleFiltering()
         {
-            RefreshDataAsync(new RefreshDataMessage(GetType().Name, Store.Id));
             var categoriesToDisplay = new List<Category>();
             if (!string.IsNullOrEmpty(SearchProduct))
             {
                 categoriesToDisplay.AddRange(Store.Categories.Where(category =>
-                    category.Products.Any(e => e.Name.ToLower().Contains(SearchProduct.ToLower()))));
+                    category.Products.Any(e =>
+                        e.Name.ToLower().Contains(SearchProduct.ToLower()) &&
+                        e.ProductStatus.Equals(ProductStatus.OnSale))));
                 Categories.Clear();
                 foreach (var category in categoriesToDisplay)
                 {
