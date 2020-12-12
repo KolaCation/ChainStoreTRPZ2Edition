@@ -10,8 +10,8 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
 {
     public sealed class CreateEditCategoryViewModel : ViewModelBase, IVerifiable
     {
+        public Guid Id { get => GetValue<Guid>(); set => SetValue(value); }
         public string Name { get=>GetValue<string>(); set=>SetValue(value); }
-        public Guid Id { get=>GetValue<Guid>(); set=>SetValue(value); }
         public string ErrorMessage { get=>GetValue<string>(); set=>SetValue(value); }
 
         public CreateEditCategoryViewModel()

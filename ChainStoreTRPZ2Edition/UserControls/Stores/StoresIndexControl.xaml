@@ -24,14 +24,25 @@
                        FontWeight="Black" />
                 
             </StackPanel>
-            <Button Grid.Row="1" 
-                    Visibility="Visible" 
-                    Content="View Categories" 
-                    HorizontalAlignment="Right" 
-                    Margin="0 4 20 10"
-                    Panel.ZIndex="1"
-                    Command="{Binding ViewCategories}"
-                    />
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button 
+                        Visibility="Visible" 
+                        Content="Add Store" 
+                        HorizontalAlignment="Right" 
+                        Margin="0 4 20 10"
+                        Panel.ZIndex="1"
+                        Command="{Binding CreateStoreCommand}"
+                />
+                <Button
+                        Visibility="Visible" 
+                        Content="View Categories" 
+                        HorizontalAlignment="Right" 
+                        Margin="0 4 20 10"
+                        Panel.ZIndex="1"
+                        Command="{Binding ViewCategories}"
+                />
+            </StackPanel>
+         
 
             <StackPanel Grid.Row="2" Margin="4" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label FontSize="14" FontFamily="Champagne &amp; Limousines" Content="Search Store:" />

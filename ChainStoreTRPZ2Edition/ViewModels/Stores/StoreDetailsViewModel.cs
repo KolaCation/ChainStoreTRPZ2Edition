@@ -144,5 +144,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         }
 
         #endregion
+
+        #region Dialogs
+        #endregion
     }
 }

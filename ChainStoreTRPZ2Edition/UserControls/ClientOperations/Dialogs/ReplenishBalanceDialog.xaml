@@ -21,7 +21,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock FontSize="14" Foreground="Red" Text="{Binding Path=ErrorMessage, Mode=TwoWay}" />
-        <TextBlock Grid.Row="1" Text="Replenish Balance:" />
+        <TextBlock Grid.Row="1" Text="Edit User:" />
         <TextBox
             Grid.Row="2"
             materialDesign:HintAssist.Hint="Sum to replenish"
