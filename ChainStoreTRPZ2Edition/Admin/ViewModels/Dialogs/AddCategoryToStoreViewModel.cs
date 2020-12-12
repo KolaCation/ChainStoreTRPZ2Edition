@@ -38,7 +38,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
         {
             if (SelectedCategory == null)
             {
-                ErrorMessage = ErrorMessages.Required(nameof(Category));
+                ErrorMessage = "Provide category from the list.";
                 return false;
             }
             else

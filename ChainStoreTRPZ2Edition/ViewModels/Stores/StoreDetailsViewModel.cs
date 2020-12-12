@@ -11,6 +11,7 @@ using ChainStore.Domain.DomainCore;
 using ChainStoreTRPZ2Edition.Admin.UserControls.Dialogs;
 using ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs;
 using ChainStoreTRPZ2Edition.DataInterfaces;
+using ChainStoreTRPZ2Edition.Helpers;
 using ChainStoreTRPZ2Edition.Messages;
 using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
 using DevExpress.Mvvm;
@@ -51,6 +52,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         private readonly IAuthenticator _authenticator;
         private readonly IStoreRepository _storeRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductRepository _productRepository;
 
         #endregion
 
@@ -66,11 +68,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         #region Contsructor
 
         public StoreDetailsViewModel(IAuthenticator authenticator, IStoreRepository storeRepository,
-            ICategoryRepository categoryRepository)
+            ICategoryRepository categoryRepository, IProductRepository productRepository)
         {
             _authenticator = authenticator;
             _storeRepository = storeRepository;
             _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
             Categories = new ObservableCollection<Category>();
             Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
             Filter = new RelayCommand(FilterHandler);
@@ -87,6 +90,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             });
             EditStoreCommand = new RelayCommand(EditStoreHandler);
             AddCategoryToStoreCommand = new RelayCommand(AddCategoryToStoreHandler);
+            CreateProductCommand = new RelayCommand(categoryId => CreateProductHandler((Guid) categoryId));
+            EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
         }
 
         #endregion
@@ -170,6 +175,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         public ICommand EditStoreCommand { get; set; }
         public ICommand AddCategoryToStoreCommand { get; set; }
+        public ICommand CreateProductCommand { get; set; }
+        public ICommand EditProductCommand { get; set; }
 
         private async void EditStoreHandler()
         {
@@ -208,6 +215,56 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             }
         }
 
+        private async void CreateProductHandler(Guid categoryId)
+        {
+            var view = new CreateEditProductDialog
+            {
+                DataContext = new CreateEditProductViewModel(ProductOperationType.Create, categoryId)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is CreateEditProductViewModel data && data.Type == ProductOperationType.Create)
+            {
+                for (var i = 0; i < data.QuantityOfProducts; i++)
+                {
+                    var createdProduct = new Product(Guid.NewGuid(), data.Name, data.PriceInUAH, data.ProductStatus,
+                        data.CategoryId);
+                    await _productRepository.AddProductToStore(createdProduct, StoreId);
+                }
+
+                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            }
+        }
+
+        private async void EditProductHandler(Guid productId)
+        {
+            var productGroupRepresentative = await _productRepository.GetOne(productId);
+            var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
+            var productsToUpdate = storeProducts
+                .Where(e => 
+                    e.Name.Equals(productGroupRepresentative.Name) && 
+                    e.ProductStatus == ProductStatus.OnSale && 
+                    e.CategoryId.Equals(productGroupRepresentative.CategoryId))
+                .ToList();
+            var view = new CreateEditProductDialog
+            {
+                DataContext = new CreateEditProductViewModel(ProductOperationType.Edit, productGroupRepresentative)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is CreateEditProductViewModel data && data.Type == ProductOperationType.Edit)
+            {
+                foreach (var productToUpdate in productsToUpdate)
+                {
+                    var updatedProduct = new Product(productToUpdate.Id, data.Name, data.PriceInUAH, data.ProductStatus,
+                        data.CategoryId);
+                    await _productRepository.UpdateOne(updatedProduct);
+                }
+
+                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            }
+        }
+
 
         private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
@@ -232,6 +289,14 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                      eventArgs.Parameter is AddCategoryToStoreViewModel dialogViewModel1)
             {
                 if (!dialogViewModel1.IsValid())
+                {
+                    eventArgs.Cancel();
+                }
+            }
+            else if (dialogSession.Content.GetType() == typeof(CreateEditProductDialog) &&
+                     eventArgs.Parameter is CreateEditProductViewModel dialogViewModel2)
+            {
+                if (!dialogViewModel2.IsValid())
                 {
                     eventArgs.Cancel();
                 }

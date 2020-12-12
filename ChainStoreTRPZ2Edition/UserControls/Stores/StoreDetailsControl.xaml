@@ -41,12 +41,21 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <Label
-                                Content="{Binding Name}"
-                                FontSize="18"
-                                FontFamily="Champagne &amp; Limousines"
-                                FontWeight="Black"
-                                HorizontalAlignment="Left"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label
+                                    Content="{Binding Name}"
+                                    FontSize="18"
+                                    FontFamily="Champagne &amp; Limousines"
+                                    FontWeight="Black"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"/>
+                                <Button Margin="2" 
+                                        Command="{Binding DataContext.CreateProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" 
+                                        CommandParameter="{Binding Id}" 
+                                        Content="Add Product"
+                                        VerticalAlignment="Center"/>
+                            </StackPanel>
+                         
 
                             <ItemsControl Margin="4" ItemsSource="{Binding Products}">
                                 <ItemsControl.ItemTemplate>
@@ -92,6 +101,13 @@
                                                         <Button Margin="2" Command="{Binding DataContext.NavigateToPurchase, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Buy">
                                                         </Button>
                                                         <Button Margin="2" Command="{Binding DataContext.NavigateToBook, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Book">
+                                                        </Button>
+                                                    </StackPanel>
+
+                                                    <StackPanel Margin="0 4 0 2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Button Margin="2" Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Edit">
+                                                        </Button>
+                                                        <Button Margin="2" Command="{Binding DataContext.NavigateToBook, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Replenish">
                                                         </Button>
                                                     </StackPanel>
 
