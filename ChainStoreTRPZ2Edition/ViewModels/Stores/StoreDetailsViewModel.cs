@@ -92,6 +92,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             AddCategoryToStoreCommand = new RelayCommand(AddCategoryToStoreHandler);
             CreateProductCommand = new RelayCommand(categoryId => CreateProductHandler((Guid) categoryId));
             EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
+            ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid)productId));
         }
 
         #endregion
@@ -177,6 +178,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand AddCategoryToStoreCommand { get; set; }
         public ICommand CreateProductCommand { get; set; }
         public ICommand EditProductCommand { get; set; }
+        public ICommand ReplenishProductCommand { get; set; }
 
         private async void EditStoreHandler()
         {
@@ -261,6 +263,26 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     await _productRepository.UpdateOne(updatedProduct);
                 }
 
+                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            }
+        }
+
+        private async void ReplenishProductHandler(Guid productId)
+        {
+            var productGroupRepresentative = await _productRepository.GetOne(productId);
+            var view = new CreateEditProductDialog
+            {
+                DataContext = new CreateEditProductViewModel(ProductOperationType.Replenish, productGroupRepresentative)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is CreateEditProductViewModel data && data.Type == ProductOperationType.Replenish)
+            {
+                for(var i=0; i < data.QuantityOfProducts; i++)
+                {
+                    var createdProduct = new Product(Guid.NewGuid(), data.Name, data.PriceInUAH, data.ProductStatus, data.CategoryId);
+                    await _productRepository.AddProductToStore(createdProduct, StoreId);
+                }
                 RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }

@@ -107,7 +107,7 @@
                                                     <StackPanel Margin="0 4 0 2" Orientation="Horizontal" HorizontalAlignment="Center">
                                                         <Button Margin="2" Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Edit">
                                                         </Button>
-                                                        <Button Margin="2" Command="{Binding DataContext.NavigateToBook, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Replenish">
+                                                        <Button Margin="2" Command="{Binding DataContext.ReplenishProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Replenish">
                                                         </Button>
                                                     </StackPanel>
 
