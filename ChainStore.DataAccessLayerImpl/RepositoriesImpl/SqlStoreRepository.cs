@@ -28,7 +28,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var exists = await HasSameNameAndLocation(item);
+                var exists = await HasSameNameAndLocationAsync(item);
                 if (!exists)
                 {
                     var enState = await context.Stores.AddAsync(_storeMapper.DomainToDb(item));
@@ -70,7 +70,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                var exists = await HasSameNameAndLocation(item);
+                var exists = await HasSameNameAndLocationAsync(item);
                 if (!exists)
                 {
                     var enState = context.Stores.Update(_storeMapper.DomainToDb(item));
@@ -92,7 +92,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 await context.SaveChangesAsync();
             }
         }
-
 
         #region Validations
 
@@ -119,7 +118,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return products;
         }
 
-        private async Task<bool> HasSameNameAndLocation(Store store)
+        public async Task<bool> HasSameNameAndLocationAsync(Store store)
         {
             await using var context = new MyDbContext(_options);
             if (store != null)
@@ -127,6 +126,19 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 return await context.Stores.AnyAsync(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
                                                           e.Name.ToLower().Equals(store.Name.ToLower()) &&
                                                           !e.Id.Equals(store.Id));
+            }
+
+            return false;
+        }
+
+        public bool HasSameNameAndLocation(Store store)
+        {
+            using var context = new MyDbContext(_options);
+            if (store != null)
+            {
+                return context.Stores.Any(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
+                                               e.Name.ToLower().Equals(store.Name.ToLower()) &&
+                                               !e.Id.Equals(store.Id));
             }
 
             return false;

@@ -29,7 +29,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var exists = await HasSameName(item);
+                var exists = await HasSameNameAsync(item);
                 if (!exists)
                 {
                     var enState = await context.Categories.AddAsync(_categoryMapper.DomainToDb(item));
@@ -73,7 +73,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                var exists = await HasSameName(item);
+                var exists = await HasSameNameAsync(item);
                 if (!exists)
                 {
                     var enState = context.Categories.Update(_categoryMapper.DomainToDb(item));
@@ -130,12 +130,26 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         #region Validations
 
-        private async Task<bool> HasSameName(Category category)
+        public async Task<bool> HasSameNameAsync(Category category)
         {
             await using var context = new MyDbContext(_options);
             if (category != null)
             {
                 return await context.Categories.AnyAsync(e =>
+                    e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool HasSameName(Category category)
+        {
+            using var context = new MyDbContext(_options);
+            if (category != null)
+            {
+                return context.Categories.Any(e =>
                     e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
             }
             else

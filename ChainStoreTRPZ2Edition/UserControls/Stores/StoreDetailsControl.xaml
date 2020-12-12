@@ -18,13 +18,14 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
                 <materialDesign:PackIcon Kind="Store" Width="20" Height="20" Foreground="Green" Margin="5"
                                          VerticalAlignment="Center" />
-                <Label Content="{Binding Store.Name}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
+                <Label Content="{Binding StoreName}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
                        FontWeight="Black" />
+                <Button Content="Edit" HorizontalAlignment="Right"  Command="{Binding EditStoreCommand}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
                 <materialDesign:PackIcon Kind="Location" Width="20" Height="20" Foreground="DarkRed" Margin="5"
                                          VerticalAlignment="Center" />
-                <Label Content="{Binding Store.Location}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="14"
+                <Label Content="{Binding StoreLocation}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="14"
                        FontWeight="Bold" />
             </StackPanel>
 
