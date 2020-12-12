@@ -21,6 +21,7 @@
                 <Label Content="{Binding StoreName}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
                        FontWeight="Black" />
                 <Button Content="Edit" HorizontalAlignment="Right"  Command="{Binding EditStoreCommand}"/>
+                <Button Content="Add Category" HorizontalAlignment="Right" Margin="6 0 0 0" Command="{Binding AddCategoryToStoreCommand}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
                 <materialDesign:PackIcon Kind="Location" Width="20" Height="20" Foreground="DarkRed" Margin="5"

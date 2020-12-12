@@ -50,6 +50,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         private readonly IAuthenticator _authenticator;
         private readonly IStoreRepository _storeRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
         #endregion
 
@@ -64,10 +65,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         #region Contsructor
 
-        public StoreDetailsViewModel(IAuthenticator authenticator, IStoreRepository storeRepository)
+        public StoreDetailsViewModel(IAuthenticator authenticator, IStoreRepository storeRepository,
+            ICategoryRepository categoryRepository)
         {
             _authenticator = authenticator;
             _storeRepository = storeRepository;
+            _categoryRepository = categoryRepository;
             Categories = new ObservableCollection<Category>();
             Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
             Filter = new RelayCommand(FilterHandler);
@@ -83,6 +86,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 ClearData();
             });
             EditStoreCommand = new RelayCommand(EditStoreHandler);
+            AddCategoryToStoreCommand = new RelayCommand(AddCategoryToStoreHandler);
         }
 
         #endregion
@@ -101,11 +105,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 foreach (var category in store.Categories)
                 {
                     var productsToDisplay = GetListWithUniqueProducts(category);
-                    if (productsToDisplay.Count != 0)
-                    {
-                        var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
-                        Categories.Add(categoryToDisplay);
-                    }
+                    var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
+                    Categories.Add(categoryToDisplay);
                 }
             }
         }
@@ -168,6 +169,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         #region Dialogs
 
         public ICommand EditStoreCommand { get; set; }
+        public ICommand AddCategoryToStoreCommand { get; set; }
 
         private async void EditStoreHandler()
         {
@@ -188,9 +190,28 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             }
         }
 
+        private async void AddCategoryToStoreHandler()
+        {
+            var categories = await _categoryRepository.GetAll();
+            var categoriesToAdd = categories.Where(category => !Categories.Any(e => e.Id.Equals(category.Id))).ToList();
+            var view = new AddCategoryToStoreDialog
+            {
+                DataContext = new AddCategoryToStoreViewModel(categoriesToAdd)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is AddCategoryToStoreViewModel data)
+            {
+                var addedCategory = data.SelectedCategory;
+                await _categoryRepository.AddCategoryToStore(addedCategory.Id, StoreId);
+                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            }
+        }
+
+
         private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
-            var dialogHost = (DialogHost)sender;
+            var dialogHost = (DialogHost) sender;
             var dialogSession = dialogHost.CurrentSession;
             if (dialogSession.Content.GetType() == typeof(CreateEditStoreDialog) &&
                 eventArgs.Parameter is CreateEditStoreViewModel dialogViewModel)
@@ -199,10 +220,19 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 {
                     eventArgs.Cancel();
                 }
-                else if (_storeRepository.HasSameNameAndLocation(new Store(dialogViewModel.Id, dialogViewModel.Name, dialogViewModel.Location, 0)))
+                else if (_storeRepository.HasSameNameAndLocation(new Store(dialogViewModel.Id, dialogViewModel.Name,
+                    dialogViewModel.Location, 0)))
                 {
                     dialogViewModel.ErrorMessage =
                         $"Store with same name already exists on {dialogViewModel.Location}.";
+                    eventArgs.Cancel();
+                }
+            }
+            else if (dialogSession.Content.GetType() == typeof(AddCategoryToStoreDialog) &&
+                     eventArgs.Parameter is AddCategoryToStoreViewModel dialogViewModel1)
+            {
+                if (!dialogViewModel1.IsValid())
+                {
                     eventArgs.Cancel();
                 }
             }
