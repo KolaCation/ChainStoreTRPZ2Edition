@@ -26,8 +26,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Purchase item)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
+            await using var context = new MyDbContext(_options);
             if (!Exists(item.Id))
             {
                 var enState = await context.Purchases.AddAsync(_purchaseMapper.DomainToDb(item));
@@ -38,8 +38,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var purchaseDbModel = await context.Purchases.FindAsync(id);
@@ -51,13 +51,14 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public bool Exists(Guid id)
         {
-            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            using var context = new MyDbContext(_options);
             return context.Purchases.Any(item => item.Id.Equals(id));
         }
 
         public async Task<List<Purchase>> GetClientPurchases(Guid clientId)
         {
+            CustomValidator.ValidateId(clientId);
             await using var context = new MyDbContext(_options);
             var purchaseDbModels = await context.Purchases.Where(p => p.ClientId.Equals(clientId)).ToListAsync();
             var purchases = (from purchaseDbModel in purchaseDbModels
@@ -67,6 +68,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<List<Product>> GetClientPurchasedProducts(Guid clientId)
         {
+            CustomValidator.ValidateId(clientId);
             await using var context = new MyDbContext(_options);
             var purchasedProductDbModels = await (from productDbModel in context.Products
                 join purchaseDbModel in context.Purchases on productDbModel.Id equals purchaseDbModel.ProductId

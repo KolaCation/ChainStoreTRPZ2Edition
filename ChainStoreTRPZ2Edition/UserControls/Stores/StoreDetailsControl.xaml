@@ -54,6 +54,11 @@
                                         CommandParameter="{Binding Id}" 
                                         Content="Add Product"
                                         VerticalAlignment="Center"/>
+                                <Button Margin="2" 
+                                        Command="{Binding DataContext.RemoveCategoryFromStoreCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" 
+                                        CommandParameter="{Binding Id}" 
+                                        Content="Remove Category"
+                                        VerticalAlignment="Center"/>
                             </StackPanel>
                          
 

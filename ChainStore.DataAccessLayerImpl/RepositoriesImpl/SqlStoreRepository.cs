@@ -23,9 +23,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Store item)
         {
+            CustomValidator.ValidateObject(item);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
                 var exists = await HasSameNameAndLocationAsync(item);
@@ -40,9 +40,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Store> GetOne(Guid id)
         {
+            CustomValidator.ValidateId(id);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateId(id);
             if (Exists(id))
             {
                 var storeDbModel = await context.Stores.FindAsync(id);
@@ -65,9 +65,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task UpdateOne(Store item)
         {
+            CustomValidator.ValidateObject(item);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
                 var exists = await HasSameNameAndLocationAsync(item);
@@ -82,8 +82,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var storeDbModel = await context.Stores.FindAsync(id);
@@ -97,16 +97,16 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public bool Exists(Guid id)
         {
-            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            using var context = new MyDbContext(_options);
             return context.Stores.Any(item => item.Id.Equals(id));
         }
 
         public async Task<IReadOnlyCollection<Product>> GetStoreSpecificProducts(Guid storeId)
         {
+            CustomValidator.ValidateId(storeId);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateId(storeId);
             var storeDbModel = await context.Stores.FindAsync(storeId);
             var store = _storeMapper.DbToDomain(storeDbModel);
             var products = new List<Product>();

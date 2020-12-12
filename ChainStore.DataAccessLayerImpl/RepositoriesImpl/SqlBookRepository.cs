@@ -27,8 +27,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<List<Book>> GetClientBooks(Guid clientId)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(clientId);
+            await using var context = new MyDbContext(_options);
             var bookDbModels = await context.Books.Where(b => b.ClientId.Equals(clientId)).ToListAsync();
             var books = (from bookDbModel in bookDbModels select _bookMapper.DbToDomain(bookDbModel)).ToList();
             return books;
@@ -36,6 +36,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<List<Product>> GetClientBookedProducts(Guid clientId)
         {
+            CustomValidator.ValidateId(clientId);
             await using var context = new MyDbContext(_options);
             var bookedProductDbModels = await (from productDbModel in context.Products
                 join bookDbModel in context.Books on productDbModel.Id equals bookDbModel.ProductId
@@ -75,8 +76,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Book item)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
+            await using var context = new MyDbContext(_options);
             if (!Exists(item.Id))
             {
                 var enState = await context.Books.AddAsync(_bookMapper.DomainToDb(item));
@@ -87,8 +88,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var bookDbModel = await context.Books.FindAsync(id);
@@ -100,8 +101,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public bool Exists(Guid id)
         {
-            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            using var context = new MyDbContext(_options);
             return context.Books.Any(item => item.Id.Equals(id));
         }
     }

@@ -91,8 +91,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             EditStoreCommand = new RelayCommand(EditStoreHandler);
             AddCategoryToStoreCommand = new RelayCommand(AddCategoryToStoreHandler);
             CreateProductCommand = new RelayCommand(categoryId => CreateProductHandler((Guid) categoryId));
+            RemoveCategoryFromStoreCommand =
+                new RelayCommand(categoryId => RemoveCategoryFromStoreHandler((Guid) categoryId));
             EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
-            ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid)productId));
+            ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid) productId));
         }
 
         #endregion
@@ -179,6 +181,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand CreateProductCommand { get; set; }
         public ICommand EditProductCommand { get; set; }
         public ICommand ReplenishProductCommand { get; set; }
+        public ICommand RemoveCategoryFromStoreCommand { get; set; }
 
         private async void EditStoreHandler()
         {
@@ -243,9 +246,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             var productGroupRepresentative = await _productRepository.GetOne(productId);
             var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
             var productsToUpdate = storeProducts
-                .Where(e => 
-                    e.Name.Equals(productGroupRepresentative.Name) && 
-                    e.ProductStatus == ProductStatus.OnSale && 
+                .Where(e =>
+                    e.Name.Equals(productGroupRepresentative.Name) &&
+                    e.ProductStatus == ProductStatus.OnSale &&
                     e.CategoryId.Equals(productGroupRepresentative.CategoryId))
                 .ToList();
             var view = new CreateEditProductDialog
@@ -278,11 +281,38 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
             if (result is CreateEditProductViewModel data && data.Type == ProductOperationType.Replenish)
             {
-                for(var i=0; i < data.QuantityOfProducts; i++)
+                for (var i = 0; i < data.QuantityOfProducts; i++)
                 {
-                    var createdProduct = new Product(Guid.NewGuid(), data.Name, data.PriceInUAH, data.ProductStatus, data.CategoryId);
+                    var createdProduct = new Product(Guid.NewGuid(), data.Name, data.PriceInUAH, data.ProductStatus,
+                        data.CategoryId);
                     await _productRepository.AddProductToStore(createdProduct, StoreId);
                 }
+
+                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            }
+        }
+
+        private async void RemoveCategoryFromStoreHandler(Guid categoryId)
+        {
+            var categoryToRemove = Categories.First(e => e.Id.Equals(categoryId));
+            var view = new RemoveCategoryFromStoreDialog
+            {
+                DataContext = new RemoveCategoryFromStoreViewModel(categoryToRemove)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog");
+            if (result is RemoveCategoryFromStoreViewModel data)
+            {
+                var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
+                var storeProductsOnSale = storeProducts.Where(e => e.ProductStatus == ProductStatus.OnSale).ToList();
+                foreach (var storeProduct in storeProductsOnSale)
+                {
+                    if (storeProduct.CategoryId.Equals(data.Category.Id))
+                    {
+                        await _productRepository.DeleteOne(storeProduct.Id);
+                    }
+                }
+                await _categoryRepository.DeleteCategoryFromStore(data.Category.Id, StoreId);
                 RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
@@ -293,32 +323,33 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             var dialogHost = (DialogHost) sender;
             var dialogSession = dialogHost.CurrentSession;
             if (dialogSession.Content.GetType() == typeof(CreateEditStoreDialog) &&
-                eventArgs.Parameter is CreateEditStoreViewModel dialogViewModel)
+                eventArgs.Parameter is CreateEditStoreViewModel createEditStoreViewModel)
             {
-                if (!dialogViewModel.IsValid())
+                if (!createEditStoreViewModel.IsValid())
                 {
                     eventArgs.Cancel();
                 }
-                else if (_storeRepository.HasSameNameAndLocation(new Store(dialogViewModel.Id, dialogViewModel.Name,
-                    dialogViewModel.Location, 0)))
+                else if (_storeRepository.HasSameNameAndLocation(new Store(createEditStoreViewModel.Id,
+                    createEditStoreViewModel.Name,
+                    createEditStoreViewModel.Location, 0)))
                 {
-                    dialogViewModel.ErrorMessage =
-                        $"Store with same name already exists on {dialogViewModel.Location}.";
+                    createEditStoreViewModel.ErrorMessage =
+                        $"Store with same name already exists on {createEditStoreViewModel.Location}.";
                     eventArgs.Cancel();
                 }
             }
             else if (dialogSession.Content.GetType() == typeof(AddCategoryToStoreDialog) &&
-                     eventArgs.Parameter is AddCategoryToStoreViewModel dialogViewModel1)
+                     eventArgs.Parameter is AddCategoryToStoreViewModel addCategoryToStoreViewModel)
             {
-                if (!dialogViewModel1.IsValid())
+                if (!addCategoryToStoreViewModel.IsValid())
                 {
                     eventArgs.Cancel();
                 }
             }
             else if (dialogSession.Content.GetType() == typeof(CreateEditProductDialog) &&
-                     eventArgs.Parameter is CreateEditProductViewModel dialogViewModel2)
+                     eventArgs.Parameter is CreateEditProductViewModel createEditProductViewModel)
             {
-                if (!dialogViewModel2.IsValid())
+                if (!createEditProductViewModel.IsValid())
                 {
                     eventArgs.Cancel();
                 }
