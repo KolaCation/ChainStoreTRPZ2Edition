@@ -25,11 +25,9 @@ namespace ChainStoreTRPZ2Edition.Admin.UserControls
             Loaded += UserControl_Loaded;
         }
 
-        public float SlideSeconds { get; set; } = 1f;
-
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            await this.FadeIn(SlideSeconds);
+            await this.FadeIn();
         }
     }
 }
