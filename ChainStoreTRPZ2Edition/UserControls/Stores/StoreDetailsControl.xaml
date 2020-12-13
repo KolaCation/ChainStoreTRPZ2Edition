@@ -80,6 +80,39 @@
                                                     Height="140"
                                                     Width="196"
                                                     Stretch="UniformToFill" />
+                                                <Button
+                                                    Grid.Row="0"
+                                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="32 0 0 -20"
+                                                    Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Kind="Edit" />
+                                                </Button>
+                                                <Button
+                                                    Grid.Row="0"
+                                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="80 0 0 -20"
+                                                    Command="{Binding DataContext.ReplenishProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Kind="Plus" />
+                                                </Button>
+                                                <Button
+                                                    Grid.Row="0"
+                                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="128 0 0 -20"
+                                                    Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Kind="Delete" />
+                                                </Button>
 
                                                 <StackPanel Grid.Row="1" Margin="8 24 8 0">
 
@@ -109,14 +142,6 @@
                                                         <Button Margin="2" Command="{Binding DataContext.NavigateToBook, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Book">
                                                         </Button>
                                                     </StackPanel>
-
-                                                    <StackPanel Margin="0 4 0 2" Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Margin="2" Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Edit">
-                                                        </Button>
-                                                        <Button Margin="2" Command="{Binding DataContext.ReplenishProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Replenish">
-                                                        </Button>
-                                                    </StackPanel>
-
                                                 </StackPanel>
                                             </Grid>
                                         </materialDesign:Card>

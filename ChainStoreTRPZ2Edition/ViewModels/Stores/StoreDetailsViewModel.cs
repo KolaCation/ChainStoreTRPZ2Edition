@@ -96,6 +96,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
             ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid) productId));
             DeleteStoreCommand = new RelayCommand(DeleteStoreHandler);
+            DeleteProductCommand = new RelayCommand(productId=>DeleteProductHandler((Guid)productId));
         }
 
         #endregion
@@ -184,6 +185,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand ReplenishProductCommand { get; set; }
         public ICommand RemoveCategoryFromStoreCommand { get; set; }
         public ICommand DeleteStoreCommand { get; set; }
+        public ICommand DeleteProductCommand { get; set; }
 
         private async void EditStoreHandler()
         {
@@ -351,6 +353,31 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 await _storeRepository.DeleteOne(data.ItemId);
                 ClearData();
                 Messenger.Default.Send(new NavigationMessage(nameof(StoresViewModel)));
+            }
+        }
+
+        private async void DeleteProductHandler(Guid productId)
+        {
+            var productGroupRepresentative = await _productRepository.GetOne(productId);
+            var view = new RemoveItemDialog
+            {
+                DataContext = new RemoveItemViewModel(productGroupRepresentative.Id, productGroupRepresentative.Name)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog");
+            if (result is RemoveItemViewModel data)
+            {
+                var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
+                var storeProductsOnSale = storeProducts.Where(e =>
+                    e.Name.Equals(data.ItemName) &&
+                    e.ProductStatus != ProductStatus.Purchased && 
+                    e.CategoryId.Equals(productGroupRepresentative.CategoryId))
+                    .ToList();
+                foreach (var storeProduct in storeProductsOnSale)
+                {
+                    await _productRepository.DeleteOne(storeProduct.Id);
+                }
+                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
 

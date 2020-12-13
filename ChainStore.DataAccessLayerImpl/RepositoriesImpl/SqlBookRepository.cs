@@ -55,13 +55,16 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             foreach (var book in books)
             {
                 var isExpired = book.IsExpired();
-                if (!isExpired) return;
+                if (!isExpired && context.Products.Any(e => e.Id.Equals(book.ProductId))) continue;
                 var productDbModel = await context.Products.FindAsync(book.ProductId);
-                var product = _productMapper.DbToDomain(productDbModel);
-                product.ChangeStatus(ProductStatus.OnSale);
-                DetachService.Detach<ProductDbModel>(context, product.Id);
-                var enState = context.Products.Update(_productMapper.DomainToDb(product));
-                enState.State = EntityState.Modified;
+                if(productDbModel != null)
+                {
+                    var product = _productMapper.DbToDomain(productDbModel);
+                    product.ChangeStatus(ProductStatus.OnSale);
+                    DetachService.Detach<ProductDbModel>(context, product.Id);
+                    var enState = context.Products.Update(_productMapper.DomainToDb(product));
+                    enState.State = EntityState.Modified;
+                }
                 booksToRemove.Add(book);
             }
 
