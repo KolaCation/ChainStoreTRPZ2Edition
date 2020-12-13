@@ -25,7 +25,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Margin="4"
-                    Command="{Binding EditStoreCommand}">
+                    Command="{Binding EditStoreCommand}"
+                    Visibility="{Binding AdminButtonsVisibility}">
                     <materialDesign:PackIcon
                         Kind="Edit" />
                 </Button>
@@ -34,7 +35,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Margin="4"
-                    Command="{Binding DeleteStoreCommand}">
+                    Command="{Binding DeleteStoreCommand}"
+                    Visibility="{Binding AdminButtonsVisibility}">
                     <materialDesign:PackIcon
                         Kind="Delete" />
                 </Button>
@@ -43,7 +45,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Margin="4"
-                    Command="{Binding AddCategoryToStoreCommand}">
+                    Command="{Binding AddCategoryToStoreCommand}"
+                    Visibility="{Binding AdminButtonsVisibility}">
                     <materialDesign:PackIcon
                         Kind="Plus" />
                 </Button>
@@ -80,7 +83,8 @@
                                     VerticalAlignment="Center"
                                     Margin="4"
                                     Command="{Binding DataContext.CreateProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
-                                    CommandParameter="{Binding Id}">
+                                    CommandParameter="{Binding Id}"
+                                    Visibility="{Binding DataContext.AdminButtonsVisibility, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}">
                                     <materialDesign:PackIcon
                                         Kind="Plus" />
                                 </Button>
@@ -90,7 +94,8 @@
                                     VerticalAlignment="Center"
                                     Margin="4"
                                     Command="{Binding DataContext.RemoveCategoryFromStoreCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
-                                    CommandParameter="{Binding Id}">
+                                    CommandParameter="{Binding Id}"
+                                    Visibility="{Binding DataContext.AdminButtonsVisibility, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}">
                                     <materialDesign:PackIcon
                                         Kind="Delete" />
                                 </Button>
@@ -121,7 +126,8 @@
                                                     VerticalAlignment="Bottom"
                                                     Margin="32 0 0 -20"
                                                     Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
-                                                    CommandParameter="{Binding Id}">
+                                                    CommandParameter="{Binding Id}"
+                                                    Visibility="{Binding DataContext.AdminButtonsVisibility, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}">
                                                     <materialDesign:PackIcon
                                                         Kind="Edit" />
                                                 </Button>
@@ -132,7 +138,8 @@
                                                     VerticalAlignment="Bottom"
                                                     Margin="80 0 0 -20"
                                                     Command="{Binding DataContext.ReplenishProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
-                                                    CommandParameter="{Binding Id}">
+                                                    CommandParameter="{Binding Id}"
+                                                    Visibility="{Binding DataContext.AdminButtonsVisibility, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}">
                                                     <materialDesign:PackIcon
                                                         Kind="Plus" />
                                                 </Button>
@@ -143,7 +150,8 @@
                                                     VerticalAlignment="Bottom"
                                                     Margin="128 0 0 -20"
                                                     Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
-                                                    CommandParameter="{Binding Id}">
+                                                    CommandParameter="{Binding Id}"
+                                                    Visibility="{Binding DataContext.AdminButtonsVisibility, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}">
                                                     <materialDesign:PackIcon
                                                         Kind="Delete" />
                                                 </Button>

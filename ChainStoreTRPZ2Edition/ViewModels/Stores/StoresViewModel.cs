@@ -40,6 +40,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             set => SetValue(value);
         }
 
+        public string AdminButtonsVisibility
+        {
+            get => GetValue<string>();
+            set => SetValue(value);
+        }
+
         #endregion
 
         #region Commands
@@ -72,11 +78,18 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 ClearData();
             });
             CreateStoreCommand = new RelayCommand(CreateStoreHandler);
+            AdminButtonsVisibility = "Collapsed";
         }
 
         #endregion
 
         #region Methods
+
+        private async Task CurrentUserIsAdmin()
+        {
+            var isAdmin = await _authenticator.CurrentUserIsInRole("Admin");
+            AdminButtonsVisibility = isAdmin ? "Visible" : "Collapsed";
+        }
 
         public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
         {
@@ -88,6 +101,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 {
                     Stores.Add(store);
                 }
+                await CurrentUserIsAdmin();
             }
         }
 
