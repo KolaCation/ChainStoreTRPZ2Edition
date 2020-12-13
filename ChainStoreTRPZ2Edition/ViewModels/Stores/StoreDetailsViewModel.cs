@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
@@ -44,6 +45,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ObservableCollection<Category> Categories { get; set; }
 
         public string SearchProduct
+        {
+            get => GetValue<string>();
+            set => SetValue(value);
+        }
+
+        public string AdminButtonsVisibility
         {
             get => GetValue<string>();
             set => SetValue(value);
@@ -97,11 +104,18 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid) productId));
             DeleteStoreCommand = new RelayCommand(DeleteStoreHandler);
             DeleteProductCommand = new RelayCommand(productId=>DeleteProductHandler((Guid)productId));
+            AdminButtonsVisibility = "Collapsed";
         }
 
         #endregion
 
         #region Methods
+
+        private async Task CurrentUserIsAdmin()
+        {
+            var isAdmin = await _authenticator.CurrentUserIsInRole("Admin");
+            AdminButtonsVisibility = isAdmin ? "Visible" : "Collapsed";
+        }
 
         public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
         {
@@ -118,6 +132,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
                     Categories.Add(categoryToDisplay);
                 }
+                await CurrentUserIsAdmin();
             }
         }
 

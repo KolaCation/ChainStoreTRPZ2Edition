@@ -9,7 +9,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Background="Wheat">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -26,20 +26,20 @@
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button 
-                        Visibility="Visible" 
-                        Content="Add Store" 
+                    Content="Add Store" 
                         HorizontalAlignment="Right" 
                         Margin="0 4 20 10"
                         Panel.ZIndex="1"
                         Command="{Binding CreateStoreCommand}"
+                        Visibility="{Binding AdminButtonsVisibility}"
                 />
                 <Button
-                        Visibility="Visible" 
-                        Content="View Categories" 
+                    Content="View Categories" 
                         HorizontalAlignment="Right" 
                         Margin="0 4 20 10"
                         Panel.ZIndex="1"
                         Command="{Binding ViewCategories}"
+                        Visibility="{Binding AdminButtonsVisibility}"
                 />
             </StackPanel>
          

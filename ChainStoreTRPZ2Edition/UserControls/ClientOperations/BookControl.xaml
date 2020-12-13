@@ -13,7 +13,7 @@
         <valueConverters:StringToIntConverter x:Key="StringToIntConverter"/>
     </UserControl.Resources>
     <Grid>
-        <Grid Background="Wheat">
+        <Grid>
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock FontSize="14" HorizontalAlignment="Center" Margin="10" FontFamily="Champagne &amp; Limousines" Foreground="Red" Text="{Binding ErrorMessage}"/>
                 <materialDesign:Card
