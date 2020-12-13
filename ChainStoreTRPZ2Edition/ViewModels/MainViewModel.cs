@@ -86,6 +86,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
                 {
                     HandleNavigation(new NavigationMessage(nameof(ProfileViewModel),
                         _authenticator.GetCurrentUser().ClientId));
+                    
                 }
                 else
                 {
