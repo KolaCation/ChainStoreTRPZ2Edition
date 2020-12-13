@@ -25,7 +25,7 @@ namespace ChainStoreTRPZ2Edition.UserControls.Stores
             Loaded += UserControl_Loaded;
         }
 
-        public float SlideSeconds { get; set; } = 0.8f;
+        public float SlideSeconds { get; set; } = 1f;
 
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {

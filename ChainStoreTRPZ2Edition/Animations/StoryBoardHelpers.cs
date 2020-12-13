@@ -13,7 +13,7 @@ namespace ChainStoreTRPZ2Edition.Animations
             var animation = new DoubleAnimation
             {
                 Duration = new Duration(TimeSpan.FromSeconds(seconds)),
-                From = 0.2,
+                From = 0,
                 To = 1,
             };
 
@@ -27,7 +27,7 @@ namespace ChainStoreTRPZ2Edition.Animations
             {
                 Duration = new Duration(TimeSpan.FromSeconds(seconds)),
                 From = 1,
-                To = 0.2,
+                To = 0,
             };
 
             Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));
