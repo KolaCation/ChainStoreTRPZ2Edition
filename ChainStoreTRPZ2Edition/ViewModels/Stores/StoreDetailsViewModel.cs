@@ -95,6 +95,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 new RelayCommand(categoryId => RemoveCategoryFromStoreHandler((Guid) categoryId));
             EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
             ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid) productId));
+            DeleteStoreCommand = new RelayCommand(DeleteStoreHandler);
         }
 
         #endregion
@@ -182,6 +183,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand EditProductCommand { get; set; }
         public ICommand ReplenishProductCommand { get; set; }
         public ICommand RemoveCategoryFromStoreCommand { get; set; }
+        public ICommand DeleteStoreCommand { get; set; }
 
         private async void EditStoreHandler()
         {
@@ -295,25 +297,60 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         private async void RemoveCategoryFromStoreHandler(Guid categoryId)
         {
             var categoryToRemove = Categories.First(e => e.Id.Equals(categoryId));
-            var view = new RemoveCategoryFromStoreDialog
+            var view = new RemoveItemDialog
             {
-                DataContext = new RemoveCategoryFromStoreViewModel(categoryToRemove)
+                DataContext = new RemoveItemViewModel(categoryToRemove.Id, categoryToRemove.Name)
             };
 
             var result = await DialogHost.Show(view, "RootDialog");
-            if (result is RemoveCategoryFromStoreViewModel data)
+            if (result is RemoveItemViewModel data)
             {
                 var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
                 var storeProductsOnSale = storeProducts.Where(e => e.ProductStatus == ProductStatus.OnSale).ToList();
                 foreach (var storeProduct in storeProductsOnSale)
                 {
-                    if (storeProduct.CategoryId.Equals(data.Category.Id))
+                    if (storeProduct.CategoryId.Equals(data.ItemId))
                     {
                         await _productRepository.DeleteOne(storeProduct.Id);
                     }
                 }
-                await _categoryRepository.DeleteCategoryFromStore(data.Category.Id, StoreId);
+                await _categoryRepository.DeleteCategoryFromStore(data.ItemId, StoreId);
                 RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            }
+        }
+
+        private async void DeleteStoreHandler()
+        {
+            var view = new RemoveItemDialog
+            {
+                DataContext = new RemoveItemViewModel(StoreId, StoreName)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog");
+            if (result is RemoveItemViewModel data)
+            {
+                var storeProducts = await _storeRepository.GetStoreSpecificProducts(data.ItemId);
+                foreach (var storeProduct in storeProducts)
+                {
+                    if (storeProduct.ProductStatus == ProductStatus.OnSale ||
+                        storeProduct.ProductStatus == ProductStatus.Booked)
+                    {
+                        await _productRepository.DeleteOne(storeProduct.Id);
+                    }
+                    else
+                    {
+                        await _productRepository.DeleteProductFromStore(storeProduct, data.ItemId);
+                    }
+                }
+
+                foreach (var category in Categories)
+                {
+                    await _categoryRepository.DeleteCategoryFromStore(category.Id, data.ItemId);
+                }
+
+                await _storeRepository.DeleteOne(data.ItemId);
+                ClearData();
+                Messenger.Default.Send(new NavigationMessage(nameof(StoresViewModel)));
             }
         }
 
@@ -321,6 +358,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
             var dialogHost = (DialogHost) sender;
+
             var dialogSession = dialogHost.CurrentSession;
             if (dialogSession.Content.GetType() == typeof(CreateEditStoreDialog) &&
                 eventArgs.Parameter is CreateEditStoreViewModel createEditStoreViewModel)

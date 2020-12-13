@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace ChainStoreTRPZ2Edition.Admin.UserControls.Dialogs
 {
     /// <summary>
-    /// Interaction logic for RemoveCategoryFromStoreDialog.xaml
+    /// Interaction logic for RemoveItemDialog.xaml
     /// </summary>
-    public partial class RemoveCategoryFromStoreDialog : UserControl
+    public partial class RemoveItemDialog : UserControl
     {
-        public RemoveCategoryFromStoreDialog()
+        public RemoveItemDialog()
         {
             InitializeComponent();
         }
