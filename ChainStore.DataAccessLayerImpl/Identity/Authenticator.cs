@@ -10,12 +10,14 @@ namespace ChainStore.DataAccessLayerImpl.Identity
     public sealed class Authenticator : IAuthenticator
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly ICustomRoleManager _customRoleManager;
 
         public User CurrentUser { get; private set; }
 
-        public Authenticator(IAuthenticationService authenticationService)
+        public Authenticator(IAuthenticationService authenticationService, ICustomRoleManager customRoleManager)
         {
             _authenticationService = authenticationService;
+            _customRoleManager = customRoleManager;
         }
 
         public bool IsLoggedIn()
@@ -43,6 +45,18 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public User GetCurrentUser()
         {
             return CurrentUser;
+        }
+
+        public async Task<bool> CurrentUserIsInRole(string roleName)
+        {
+            if (!string.IsNullOrEmpty(roleName) && IsLoggedIn())
+            {
+                return await _customRoleManager.IsInRole(CurrentUser, roleName);
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

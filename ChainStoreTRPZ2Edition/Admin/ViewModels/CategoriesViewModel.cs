@@ -47,6 +47,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
             Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
             CreateCategoryCommand = new RelayCommand(CreateCategoryHandler);
             EditCategoryCommand = new RelayCommand(categoryId => EditCategoryHandler((Guid) categoryId));
+            DeleteCategoryCommand = new RelayCommand(categoryId => DeleteCategoryHandler((Guid) categoryId));
         }
 
         #endregion
@@ -97,7 +98,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
 
         private async void EditCategoryHandler(Guid categoryId)
         {
-            var categoryToEdit = await _categoryRepository.GetOne(categoryId);
+            var categoryToEdit = Categories.First(e => e.Id.Equals(categoryId));
             var view = new CreateEditCategoryDialog
             {
                 DataContext = new CreateEditCategoryViewModel(categoryToEdit)
@@ -111,6 +112,22 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
                 var categoryToReplace = Categories.First(e=>e.Id.Equals(data.Id));
                 Categories.Remove(categoryToReplace);
                 Categories.Add(editedCategory);
+            }
+        }
+
+        private async void DeleteCategoryHandler(Guid categoryId)
+        {
+            var categoryToDelete = Categories.First(e => e.Id.Equals(categoryId));
+            var view = new RemoveItemDialog
+            {
+                DataContext = new RemoveItemViewModel(categoryToDelete.Id, categoryToDelete.Name)
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is RemoveItemViewModel data)
+            {
+                await _categoryRepository.DeleteOne(data.ItemId);
+                Categories.Remove(categoryToDelete);
             }
         }
 

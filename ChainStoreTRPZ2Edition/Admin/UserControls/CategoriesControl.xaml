@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ChainStoreTRPZ2Edition.Admin.UserControls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:stores="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -15,14 +16,19 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
                         Margin="6">
-                <materialDesign:PackIcon Kind="Category" Width="20" Height="20" Foreground="Green" Margin="4"
+                <materialDesign:PackIcon Kind="Category" Width="28" Height="28" Foreground="Green" Margin="4"
                                          VerticalAlignment="Center" />
                 <Label Content="Categories" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
-                       FontWeight="Black" />
+                       FontWeight="Black" VerticalAlignment="Center" />
                 <Button
-                    Margin="4 0 0 0"
-                    Content="Add Category"
-                    Command="{Binding CreateCategoryCommand}" />
+                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="4"
+                    Command="{Binding CreateCategoryCommand}">
+                    <materialDesign:PackIcon
+                        Kind="Plus" />
+                </Button>
             </StackPanel>
             <ItemsControl Grid.Row="1" ItemsSource="{Binding Categories}" VerticalAlignment="Top" Margin="20"
                           HorizontalAlignment="Left">
@@ -34,8 +40,9 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray">
-                                <StackPanel Orientation="Horizontal" Margin="20">
+                                <StackPanel Orientation="Horizontal" Margin="10">
                                     <TextBlock
+                                        Width="60"
                                         FontSize="16"
                                         FontFamily="Champagne &amp; Limousines"
                                         FontWeight="Bold"
@@ -43,6 +50,7 @@
                                         Text="Name:"
                                         VerticalAlignment="Center" />
                                     <TextBlock
+                                        Width="100"
                                         FontSize="16"
                                         FontFamily="Champagne &amp; Limousines"
                                         FontWeight="Normal"
@@ -51,19 +59,27 @@
                                         VerticalAlignment="Center" />
                                 </StackPanel>
                             </Border>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20">
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10">
                                 <Button
-                                    Content="Edit"
+                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="4"
                                     Command="{Binding DataContext.EditCategoryCommand, RelativeSource={RelativeSource AncestorType=local:CategoriesControl}}"
-                                    CommandParameter="{Binding Id}"
-                                    Margin="4 0 0 0"
-                                    VerticalAlignment="Center" />
+                                    CommandParameter="{Binding Id}">
+                                    <materialDesign:PackIcon
+                                        Kind="Edit" />
+                                </Button>
                                 <Button
-                                    Content="Delete"
+                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="4"
                                     Command="{Binding DataContext.DeleteCategoryCommand, RelativeSource={RelativeSource AncestorType=local:CategoriesControl}}"
-                                    CommandParameter="{Binding Id}"
-                                    Margin="12 0 0 0"
-                                    VerticalAlignment="Center" />
+                                    CommandParameter="{Binding Id}">
+                                    <materialDesign:PackIcon
+                                        Kind="Delete" />
+                                </Button>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

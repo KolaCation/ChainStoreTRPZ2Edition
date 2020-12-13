@@ -89,7 +89,27 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
-                var categoryDbModel = await context.Categories.FindAsync(id);
+                var categoryDbModel = await context.Categories.Where(e=>e.Id.Equals(id)).Include(e=>e.ProductDbModels).FirstOrDefaultAsync();
+                var storeCategoryRelations = await context.StoreCategoryRelation.Where(e => e.CategoryDbModelId.Equals(id))
+                    .ToListAsync();
+                context.StoreCategoryRelation.RemoveRange(storeCategoryRelations);
+                var storeProductRelations = new List<StoreProductDbModel>();
+                var purchases = new List<PurchaseDbModel>();
+                foreach (var productDbModel in categoryDbModel.ProductDbModels)
+                {
+                    var storeProductRelationToRemove =
+                        await context.StoreProductRelation.FirstAsync(e => e.ProductDbModelId.Equals(productDbModel.Id));
+                    storeProductRelations.Add(storeProductRelationToRemove);
+                    var purchaseToRemove = await context.Purchases.FirstOrDefaultAsync(e => e.ProductId.Equals(productDbModel.Id));
+                    if (purchaseToRemove != null)
+                    {
+                        purchases.Add(purchaseToRemove);
+                    }
+                   
+                }
+                context.StoreProductRelation.RemoveRange(storeProductRelations);
+                context.Products.RemoveRange(categoryDbModel.ProductDbModels);
+                context.Purchases.RemoveRange(purchases);
                 var enState = context.Categories.Remove(categoryDbModel);
                 enState.State = EntityState.Deleted;
                 await context.SaveChangesAsync();
