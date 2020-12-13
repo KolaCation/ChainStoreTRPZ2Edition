@@ -23,12 +23,12 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Store item)
         {
+            CustomValidator.ValidateObject(item);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var exists = await HasSameNameAndLocation(item);
+                var exists = await HasSameNameAndLocationAsync(item);
                 if (!exists)
                 {
                     var enState = await context.Stores.AddAsync(_storeMapper.DomainToDb(item));
@@ -40,9 +40,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Store> GetOne(Guid id)
         {
+            CustomValidator.ValidateId(id);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateId(id);
             if (Exists(id))
             {
                 var storeDbModel = await context.Stores.FindAsync(id);
@@ -65,12 +65,12 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task UpdateOne(Store item)
         {
+            CustomValidator.ValidateObject(item);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                var exists = await HasSameNameAndLocation(item);
+                var exists = await HasSameNameAndLocationAsync(item);
                 if (!exists)
                 {
                     var enState = context.Stores.Update(_storeMapper.DomainToDb(item));
@@ -82,8 +82,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var storeDbModel = await context.Stores.FindAsync(id);
@@ -93,21 +93,20 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-
         #region Validations
 
         public bool Exists(Guid id)
         {
-            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            using var context = new MyDbContext(_options);
             return context.Stores.Any(item => item.Id.Equals(id));
         }
 
         public async Task<IReadOnlyCollection<Product>> GetStoreSpecificProducts(Guid storeId)
         {
+            CustomValidator.ValidateId(storeId);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateId(storeId);
             var storeDbModel = await context.Stores.FindAsync(storeId);
             var store = _storeMapper.DbToDomain(storeDbModel);
             var products = new List<Product>();
@@ -119,7 +118,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return products;
         }
 
-        private async Task<bool> HasSameNameAndLocation(Store store)
+        public async Task<bool> HasSameNameAndLocationAsync(Store store)
         {
             await using var context = new MyDbContext(_options);
             if (store != null)
@@ -127,6 +126,19 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 return await context.Stores.AnyAsync(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
                                                           e.Name.ToLower().Equals(store.Name.ToLower()) &&
                                                           !e.Id.Equals(store.Id));
+            }
+
+            return false;
+        }
+
+        public bool HasSameNameAndLocation(Store store)
+        {
+            using var context = new MyDbContext(_options);
+            if (store != null)
+            {
+                return context.Stores.Any(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
+                                               e.Name.ToLower().Equals(store.Name.ToLower()) &&
+                                               !e.Id.Equals(store.Id));
             }
 
             return false;

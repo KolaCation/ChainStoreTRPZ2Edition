@@ -9,9 +9,13 @@ using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
 using ChainStore.Domain.DomainCore;
+using ChainStoreTRPZ2Edition.Admin.UserControls.Dialogs;
+using ChainStoreTRPZ2Edition.Admin.ViewModels;
+using ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Messages;
 using DevExpress.Mvvm;
+using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Stores
@@ -43,6 +47,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         public ICommand Filter { get; set; }
         public ICommand ClearFilter { get; set; }
         public ICommand ViewStoreDetails { get; set; }
+        public ICommand ViewCategories { get; set; }
 
         #endregion
 
@@ -54,13 +59,19 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             _storeRepository = storeRepository;
             Stores = new ObservableCollection<Store>();
             Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            Filter = new RelayCommand(HandleFiltering);
-            ClearFilter = new RelayCommand(HandleCleaning);
+            Filter = new RelayCommand(FilterHandler);
+            ClearFilter = new RelayCommand(CleanerHandler);
             ViewStoreDetails = new RelayCommand(id =>
             {
-                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid)id));
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid) id));
                 ClearData();
             });
+            ViewCategories = new RelayCommand(() =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(CategoriesViewModel)));
+                ClearData();
+            });
+            CreateStoreCommand = new RelayCommand(CreateStoreHandler);
         }
 
         #endregion
@@ -86,11 +97,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             SearchStore = string.Empty;
             SearchProduct = string.Empty;
         }
+
         #endregion
 
         #region Handlers
 
-        private async void HandleFiltering()
+        private async void FilterHandler()
         {
             var stores = await _storeRepository.GetAll();
             var storesToDisplay = new List<Store>();
@@ -148,7 +160,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             }
         }
 
-        private void HandleCleaning()
+        private void CleanerHandler()
         {
             SearchStore = string.Empty;
             SearchProduct = string.Empty;
@@ -157,5 +169,50 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         #endregion
 
+
+        #region Dialogs
+
+        public ICommand CreateStoreCommand { get; set; }
+
+        private async void CreateStoreHandler()
+        {
+            var view = new CreateEditStoreDialog
+            {
+                DataContext = new CreateEditStoreViewModel()
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            if (result is CreateEditStoreViewModel data)
+            {
+                var createdStore = new Store(Guid.NewGuid(), data.Name, data.Location, 0);
+                await _storeRepository.AddOne(createdStore);
+                Stores.Add(createdStore);
+            }
+        }
+
+        private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+        {
+            var dialogHost = (DialogHost) sender;
+            var dialogSession = dialogHost.CurrentSession;
+            if (dialogSession.Content.GetType() == typeof(CreateEditStoreDialog) &&
+                eventArgs.Parameter is CreateEditStoreViewModel dialogViewModel)
+            {
+                if (!dialogViewModel.IsValid())
+                {
+                    eventArgs.Cancel();
+                }
+                else if (Stores.Any(e =>
+                    e.Name.ToLower().Equals(dialogViewModel.Name.ToLower()) &&
+                    e.Location.ToLower().Equals(dialogViewModel.Location.ToLower()) &&
+                    !e.Id.Equals(dialogViewModel.Id)))
+                {
+                    dialogViewModel.ErrorMessage =
+                        $"Store with same name already exists on {dialogViewModel.Location}.";
+                    eventArgs.Cancel();
+                }
+            }
+        }
+
+        #endregion
     }
 }

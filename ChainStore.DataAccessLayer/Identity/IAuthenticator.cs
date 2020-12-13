@@ -13,5 +13,6 @@ namespace ChainStore.DataAccessLayer.Identity
         Task<RegistrationResult> Register(string name, string email, string password, string confirmPassword);
         void Logout();
         User GetCurrentUser();
+        Task<bool> CurrentUserIsInRole(string roleName);
     }
 }

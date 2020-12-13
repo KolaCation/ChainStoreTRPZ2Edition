@@ -24,12 +24,12 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Category item)
         {
+            CustomValidator.ValidateObject(item);
             await using var context = new MyDbContext(_options);
             _categoryMapper = new CategoryMapper(context);
-            CustomValidator.ValidateObject(item);
             if (!Exists(item.Id))
             {
-                var exists = await HasSameName(item);
+                var exists = await HasSameNameAsync(item);
                 if (!exists)
                 {
                     var enState = await context.Categories.AddAsync(_categoryMapper.DomainToDb(item));
@@ -41,9 +41,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Category> GetOne(Guid id)
         {
+            CustomValidator.ValidateId(id);
             await using var context = new MyDbContext(_options);
             _categoryMapper = new CategoryMapper(context);
-            CustomValidator.ValidateId(id);
             if (Exists(id))
             {
                 var categoryDbModel = await context.Categories.FindAsync(id);
@@ -68,12 +68,12 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task UpdateOne(Category item)
         {
+            CustomValidator.ValidateObject(item);
             await using var context = new MyDbContext(_options);
             _categoryMapper = new CategoryMapper(context);
-            CustomValidator.ValidateObject(item);
             if (Exists(item.Id))
             {
-                var exists = await HasSameName(item);
+                var exists = await HasSameNameAsync(item);
                 if (!exists)
                 {
                     var enState = context.Categories.Update(_categoryMapper.DomainToDb(item));
@@ -85,11 +85,31 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
-                var categoryDbModel = await context.Categories.FindAsync(id);
+                var categoryDbModel = await context.Categories.Where(e=>e.Id.Equals(id)).Include(e=>e.ProductDbModels).FirstOrDefaultAsync();
+                var storeCategoryRelations = await context.StoreCategoryRelation.Where(e => e.CategoryDbModelId.Equals(id))
+                    .ToListAsync();
+                context.StoreCategoryRelation.RemoveRange(storeCategoryRelations);
+                var storeProductRelations = new List<StoreProductDbModel>();
+                var purchases = new List<PurchaseDbModel>();
+                foreach (var productDbModel in categoryDbModel.ProductDbModels)
+                {
+                    var storeProductRelationToRemove =
+                        await context.StoreProductRelation.FirstAsync(e => e.ProductDbModelId.Equals(productDbModel.Id));
+                    storeProductRelations.Add(storeProductRelationToRemove);
+                    var purchaseToRemove = await context.Purchases.FirstOrDefaultAsync(e => e.ProductId.Equals(productDbModel.Id));
+                    if (purchaseToRemove != null)
+                    {
+                        purchases.Add(purchaseToRemove);
+                    }
+                   
+                }
+                context.StoreProductRelation.RemoveRange(storeProductRelations);
+                context.Products.RemoveRange(categoryDbModel.ProductDbModels);
+                context.Purchases.RemoveRange(purchases);
                 var enState = context.Categories.Remove(categoryDbModel);
                 enState.State = EntityState.Deleted;
                 await context.SaveChangesAsync();
@@ -99,9 +119,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddCategoryToStore(Guid categoryId, Guid storeId)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(categoryId);
             CustomValidator.ValidateId(storeId);
+            await using var context = new MyDbContext(_options);
             var exists = await StoreCategoryRelationExists(storeId, categoryId);
             if (!exists)
             {
@@ -114,9 +134,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteCategoryFromStore(Guid categoryId, Guid storeId)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(categoryId);
             CustomValidator.ValidateId(storeId);
+            await using var context = new MyDbContext(_options);
             var exists = await StoreCategoryRelationExists(storeId, categoryId);
             if (exists)
             {
@@ -130,12 +150,26 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         #region Validations
 
-        private async Task<bool> HasSameName(Category category)
+        public async Task<bool> HasSameNameAsync(Category category)
         {
             await using var context = new MyDbContext(_options);
             if (category != null)
             {
                 return await context.Categories.AnyAsync(e =>
+                    e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool HasSameName(Category category)
+        {
+            using var context = new MyDbContext(_options);
+            if (category != null)
+            {
+                return context.Categories.Any(e =>
                     e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
             }
             else

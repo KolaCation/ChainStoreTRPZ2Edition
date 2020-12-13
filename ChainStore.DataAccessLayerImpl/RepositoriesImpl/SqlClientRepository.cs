@@ -25,8 +25,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Client item)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
+            await using var context = new MyDbContext(_options);
             if (!Exists(item.Id))
             {
                 var enState = await context.Clients.AddAsync(_clientMapper.DomainToDb(item));
@@ -37,8 +37,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Client> GetOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var clientDbModel = await context.Clients.FindAsync(id);
@@ -61,8 +61,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task UpdateOne(Client item)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
+            await using var context = new MyDbContext(_options);
             if (Exists(item.Id))
             {
                 var enState = context.Clients.Update(_clientMapper.DomainToDb(item));
@@ -73,8 +73,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var clientDbModel = await context.Clients.FindAsync(id);
@@ -86,8 +86,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public bool Exists(Guid id)
         {
-            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            using var context = new MyDbContext(_options);
             return context.Clients.Any(item => item.Id.Equals(id));
         }
     }

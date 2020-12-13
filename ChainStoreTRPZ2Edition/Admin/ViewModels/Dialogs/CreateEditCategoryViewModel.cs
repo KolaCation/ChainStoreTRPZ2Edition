@@ -1,27 +1,28 @@
-﻿using ChainStoreTRPZ2Edition.DataInterfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ChainStore.Domain.DomainCore;
+using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Helpers;
 using DevExpress.Mvvm;
 
-namespace ChainStoreTRPZ2Edition.ViewModels.Dialogs
+namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
 {
-    public sealed class ChangeNameViewModel : ViewModelBase, IVerifiable
+    public sealed class CreateEditCategoryViewModel : ViewModelBase, IVerifiable
     {
-        public string Name
+        public Guid Id { get => GetValue<Guid>(); set => SetValue(value); }
+        public string Name { get=>GetValue<string>(); set=>SetValue(value); }
+        public string ErrorMessage { get=>GetValue<string>(); set=>SetValue(value); }
+
+        public CreateEditCategoryViewModel()
         {
-            get => GetValue<string>();
-            set => SetValue(value);
+            
         }
 
-        public string ErrorMessage
+        public CreateEditCategoryViewModel(Category categoryToEdit)
         {
-            get => GetValue<string>();
-            set => SetValue(value);
-        }
-
-
-        public ChangeNameViewModel(string name)
-        {
-            Name = name;
+            Id = categoryToEdit.Id;
+            Name = categoryToEdit.Name;
         }
 
         public bool IsValid()

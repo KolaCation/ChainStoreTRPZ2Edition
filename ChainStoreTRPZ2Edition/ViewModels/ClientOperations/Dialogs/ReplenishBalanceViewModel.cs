@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text.RegularExpressions;
+using System.Windows.Input;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Helpers;
 using DevExpress.Mvvm;
 
-namespace ChainStoreTRPZ2Edition.ViewModels.Dialogs
+namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
 {
     public sealed class ReplenishBalanceViewModel : ViewModelBase, IVerifiable
     {
@@ -42,6 +41,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Dialogs
                 ErrorMessage = string.Empty;
                 return true;
             }
+        }
+
+        public void OnlyNumericInput(object sender, TextCompositionEventArgs e)
+        {
+            var numberRegex = new Regex("[^0-9]+");
+            e.Handled = numberRegex.IsMatch(e.Text);
         }
     }
 }

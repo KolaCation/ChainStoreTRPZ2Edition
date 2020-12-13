@@ -16,15 +16,42 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
-                <materialDesign:PackIcon Kind="Store" Width="20" Height="20" Foreground="Green" Margin="5"
+                <materialDesign:PackIcon Kind="Store" Width="28" Height="28" Foreground="Green" Margin="4"
                                          VerticalAlignment="Center" />
-                <Label Content="{Binding Store.Name}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
-                       FontWeight="Black" />
+                <Label Content="{Binding StoreName}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
+                       FontWeight="Black" VerticalAlignment="Center" />
+                <Button
+                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="4"
+                    Command="{Binding EditStoreCommand}">
+                    <materialDesign:PackIcon
+                        Kind="Edit" />
+                </Button>
+                <Button
+                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="4"
+                    Command="{Binding DeleteStoreCommand}">
+                    <materialDesign:PackIcon
+                        Kind="Delete" />
+                </Button>
+                <Button
+                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="4"
+                    Command="{Binding AddCategoryToStoreCommand}">
+                    <materialDesign:PackIcon
+                        Kind="Plus" />
+                </Button>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
                 <materialDesign:PackIcon Kind="Location" Width="20" Height="20" Foreground="DarkRed" Margin="5"
                                          VerticalAlignment="Center" />
-                <Label Content="{Binding Store.Location}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="14"
+                <Label Content="{Binding StoreLocation}" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="14"
                        FontWeight="Bold" />
             </StackPanel>
 
@@ -39,12 +66,36 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <Label
-                                Content="{Binding Name}"
-                                FontSize="18"
-                                FontFamily="Champagne &amp; Limousines"
-                                FontWeight="Black"
-                                HorizontalAlignment="Left"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label
+                                    Content="{Binding Name}"
+                                    FontSize="18"
+                                    FontFamily="Champagne &amp; Limousines"
+                                    FontWeight="Black"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"/>
+                                <Button
+                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="4"
+                                    Command="{Binding DataContext.CreateProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                    CommandParameter="{Binding Id}">
+                                    <materialDesign:PackIcon
+                                        Kind="Plus" />
+                                </Button>
+                                <Button
+                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="4"
+                                    Command="{Binding DataContext.RemoveCategoryFromStoreCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                    CommandParameter="{Binding Id}">
+                                    <materialDesign:PackIcon
+                                        Kind="Delete" />
+                                </Button>
+                            </StackPanel>
+                         
 
                             <ItemsControl Margin="4" ItemsSource="{Binding Products}">
                                 <ItemsControl.ItemTemplate>
@@ -63,6 +114,39 @@
                                                     Height="140"
                                                     Width="196"
                                                     Stretch="UniformToFill" />
+                                                <Button
+                                                    Grid.Row="0"
+                                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="32 0 0 -20"
+                                                    Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Kind="Edit" />
+                                                </Button>
+                                                <Button
+                                                    Grid.Row="0"
+                                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="80 0 0 -20"
+                                                    Command="{Binding DataContext.ReplenishProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Kind="Plus" />
+                                                </Button>
+                                                <Button
+                                                    Grid.Row="0"
+                                                    Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="128 0 0 -20"
+                                                    Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Kind="Delete" />
+                                                </Button>
 
                                                 <StackPanel Grid.Row="1" Margin="8 24 8 0">
 
@@ -92,7 +176,6 @@
                                                         <Button Margin="2" Command="{Binding DataContext.NavigateToBook, RelativeSource={RelativeSource AncestorType=local:StoreDetailsControl}}" CommandParameter="{Binding Id}" Content="Book">
                                                         </Button>
                                                     </StackPanel>
-
                                                 </StackPanel>
                                             </Grid>
                                         </materialDesign:Card>

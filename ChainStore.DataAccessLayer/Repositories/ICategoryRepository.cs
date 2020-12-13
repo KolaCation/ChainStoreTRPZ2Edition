@@ -9,5 +9,7 @@ namespace ChainStore.DataAccessLayer.Repositories
     {
         Task AddCategoryToStore(Guid categoryId, Guid storeId);
         Task DeleteCategoryFromStore(Guid categoryId, Guid storeId);
+        bool HasSameName(Category category);
+        Task<bool> HasSameNameAsync(Category category);
     }
 }

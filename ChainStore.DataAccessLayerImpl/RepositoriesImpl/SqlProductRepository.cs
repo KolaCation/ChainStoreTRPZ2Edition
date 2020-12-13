@@ -26,8 +26,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddOne(Product item)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
+            await using var context = new MyDbContext(_options);
             if (!Exists(item.Id))
             {
                 var enState = await context.Products.AddAsync(_productMapper.DomainToDb(item));
@@ -38,8 +38,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Product> GetOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var productDbModel = await context.Products.FindAsync(id);
@@ -62,8 +62,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task UpdateOne(Product item)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(item);
+            await using var context = new MyDbContext(_options);
             if (Exists(item.Id))
             {
                 var enState = context.Products.Update(_productMapper.DomainToDb(item));
@@ -74,18 +74,18 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteOne(Guid id)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
                 var productDbModel = await context.Products.FindAsync(id);
                 var storeProdRel =
                     await context.StoreProductRelation.FirstAsync(e =>
                         e.ProductDbModelId.Equals(productDbModel.Id));
-                await DeleteProductFromStore(_productMapper.DbToDomain(productDbModel),
-                    storeProdRel.StoreDbModelId);
-                var enState = context.Products.Remove(productDbModel);
-                enState.State = EntityState.Deleted;
+                var enState1 = context.StoreProductRelation.Remove(storeProdRel);
+                enState1.State = EntityState.Deleted;
+                var enState2 = context.Products.Remove(productDbModel);
+                enState2.State = EntityState.Deleted;
                 await context.SaveChangesAsync();
             }
         }
@@ -94,9 +94,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task<Store> GetStoreOfSpecificProduct(Guid productId)
         {
+            CustomValidator.ValidateId(productId);
             await using var context = new MyDbContext(_options);
             _storeMapper = new StoreMapper(context);
-            CustomValidator.ValidateId(productId);
             var res = await context.StoreProductRelation.FirstOrDefaultAsync(e =>
                 e.ProductDbModelId.Equals(productId));
             if (res != null)
@@ -113,9 +113,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task AddProductToStore(Product product, Guid storeId)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(product);
             CustomValidator.ValidateId(storeId);
+            await using var context = new MyDbContext(_options);
             if (!Exists(product.Id))
             {
                 await AddOne(product);
@@ -133,9 +133,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         public async Task DeleteProductFromStore(Product product, Guid storeId)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateObject(product);
             CustomValidator.ValidateId(storeId);
+            await using var context = new MyDbContext(_options);
             var storeProdRelToRemove = await context.StoreProductRelation.FirstAsync(e =>
                 e.ProductDbModelId.Equals(product.Id) && e.StoreDbModelId.Equals(storeId));
             var enState = context.StoreProductRelation.Remove(storeProdRelToRemove);
@@ -147,16 +147,16 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 
         private async Task<bool> StoreProductRelationExists(Guid storeId, Guid productId)
         {
-            await using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(storeId);
             CustomValidator.ValidateId(productId);
+            await using var context = new MyDbContext(_options);
             return await context.StoreProductRelation
                 .AnyAsync(e => e.StoreDbModelId.Equals(storeId) && e.ProductDbModelId.Equals(productId));
         }
         public bool Exists(Guid id)
         {
-            using var context = new MyDbContext(_options);
             CustomValidator.ValidateId(id);
+            using var context = new MyDbContext(_options);
             return context.Products.Any(item => item.Id.Equals(id));
         }
 
