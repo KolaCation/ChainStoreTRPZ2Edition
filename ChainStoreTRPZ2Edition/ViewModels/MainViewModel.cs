@@ -24,7 +24,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         public List<ViewModelBase> ViewModels { get; }
 
         private ViewModelBase _currentViewModel;
-        private int _loginStatus;
+        private string _menuIconVisibility;
+        private int _menuIconZIndex;
         private string _username;
 
         public ViewModelBase CurrentViewModel
@@ -37,12 +38,22 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             }
         }
 
-        public int LoginStatus
+        public string MenuIconVisibility
         {
-            get => _loginStatus;
+            get => _menuIconVisibility;
             set
             {
-                _loginStatus = value;
+                _menuIconVisibility = value;
+                SetValue(value);
+            }
+        }
+
+        public int MenuIconZIndex
+        {
+            get => _menuIconZIndex;
+            set
+            {
+                _menuIconZIndex = value;
                 SetValue(value);
             }
         }
@@ -133,6 +144,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             CategoriesViewModel categoriesViewModel) : this(authenticator)
         {
             Username = "Unauthorized";
+            MenuIconVisibility = "Collapsed";
             ViewModels = new List<ViewModelBase>
             {
                 registerViewModel, loginViewModel, storeViewModel, storeDetailsViewModel, purchaseViewModel,
@@ -165,12 +177,14 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             if (loginMessage.IsLoggedIn)
             {
                 Username = _authenticator.GetCurrentUser().UserName;
-                LoginStatus = 2;
+                MenuIconVisibility = "Visible";
+                MenuIconZIndex = 2;
             }
             else
             {
                 Username = "Unauthorized";
-                LoginStatus = 0;
+                MenuIconVisibility = "Collapsed";
+                MenuIconZIndex = 0;
             }
         }
 

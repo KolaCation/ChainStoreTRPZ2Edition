@@ -135,12 +135,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
             ErrorMessage = string.Empty;
         }
 
-        public void OnlyNumericInput(object sender, TextCompositionEventArgs e)
-        {
-            var numberRegex = new Regex("[^0-9]+");
-            e.Handled = numberRegex.IsMatch(e.Text);
-        }
-
         #endregion
 
         #region Handlers

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ChainStoreTRPZ2Edition.Animations;
 
 namespace ChainStoreTRPZ2Edition.UserControls.Stores
 {
@@ -21,6 +22,12 @@ namespace ChainStoreTRPZ2Edition.UserControls.Stores
         public StoreDetailsControl()
         {
             InitializeComponent();
+            Loaded += UserControl_Loaded;
+        }
+
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            await this.FadeIn();
         }
     }
 }

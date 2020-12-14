@@ -156,11 +156,5 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
                 return true;
             }
         }
-
-        public void OnlyNumericInput(object sender, TextCompositionEventArgs e)
-        {
-            var numberRegex = new Regex("[^0-9]+");
-            e.Handled = numberRegex.IsMatch(e.Text);
-        }
     }
 }

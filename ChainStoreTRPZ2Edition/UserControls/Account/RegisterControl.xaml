@@ -21,7 +21,7 @@
     </UserControl.Resources>
 
 
-    <Grid Background="Wheat">
+    <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
 
             <!-- SIGN UP -->

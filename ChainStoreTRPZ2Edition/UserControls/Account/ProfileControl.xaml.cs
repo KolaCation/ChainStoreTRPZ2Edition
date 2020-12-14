@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ChainStoreTRPZ2Edition.Animations;
 
 namespace ChainStoreTRPZ2Edition.UserControls.Account
 {
@@ -21,6 +22,12 @@ namespace ChainStoreTRPZ2Edition.UserControls.Account
         public ProfileControl()
         {
             InitializeComponent();
+            Loaded += UserControl_Loaded;
+        }
+
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            await this.FadeIn();
         }
     }
 }
