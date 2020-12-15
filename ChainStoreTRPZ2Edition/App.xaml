@@ -12,39 +12,48 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Popupbox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Popupbox.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type account:LoginViewModel}">
-                <account1:LoginControl DataContext="{Binding}"/>
+                <account1:LoginControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type account:RegisterViewModel}">
-                <account1:RegisterControl DataContext="{Binding}"/>
+                <account1:RegisterControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type stores:StoresViewModel}">
-                <stores1:StoresIndexControl DataContext="{Binding}"/>
+                <stores1:StoresIndexControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type stores:StoreDetailsViewModel}">
-                <stores1:StoreDetailsControl DataContext="{Binding}"/>
+                <stores1:StoreDetailsControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type clientOperations:PurchaseViewModel}">
-                <clientOperations1:PurchaseControl DataContext="{Binding}"/>
+                <clientOperations1:PurchaseControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type clientOperations:BookViewModel}">
-                <clientOperations1:BookControl DataContext="{Binding}"/>
+                <clientOperations1:BookControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type account:ProfileViewModel}">
-                <account1:ProfileControl DataContext="{Binding}"/>
+                <account1:ProfileControl DataContext="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:CategoriesViewModel}">
-                <userControls:CategoriesControl DataContext="{Binding}"/>
+                <userControls:CategoriesControl DataContext="{Binding}" />
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

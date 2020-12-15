@@ -5,12 +5,6 @@ namespace ChainStore.Domain.DomainCore
 {
     public sealed class Product
     {
-        public Guid Id { get; }
-        public string Name { get; }
-        public double PriceInUAH { get; }
-        public ProductStatus ProductStatus { get; private set; }
-        public Guid CategoryId { get; }
-
         public Product(Guid id, string name, double priceInUAH, ProductStatus productStatus, Guid categoryId)
         {
             DomainValidator.ValidateId(id);
@@ -23,6 +17,12 @@ namespace ChainStore.Domain.DomainCore
             ProductStatus = productStatus;
             CategoryId = categoryId;
         }
+
+        public Guid Id { get; }
+        public string Name { get; }
+        public double PriceInUAH { get; }
+        public ProductStatus ProductStatus { get; private set; }
+        public Guid CategoryId { get; }
 
         public void ChangeStatus(ProductStatus productStatus)
         {

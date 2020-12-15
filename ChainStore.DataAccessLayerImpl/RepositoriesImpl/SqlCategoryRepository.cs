@@ -14,8 +14,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public class SqlCategoryRepository : ICategoryRepository
     {
-        private CategoryMapper _categoryMapper;
         private readonly DbContextOptions<MyDbContext> _options;
+        private CategoryMapper _categoryMapper;
 
         public SqlCategoryRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
@@ -49,10 +49,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var categoryDbModel = await context.Categories.FindAsync(id);
                 return _categoryMapper.DbToDomain(categoryDbModel);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task<IReadOnlyCollection<Category>> GetAll()
@@ -89,8 +87,10 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             await using var context = new MyDbContext(_options);
             if (Exists(id))
             {
-                var categoryDbModel = await context.Categories.Where(e=>e.Id.Equals(id)).Include(e=>e.ProductDbModels).FirstOrDefaultAsync();
-                var storeCategoryRelations = await context.StoreCategoryRelation.Where(e => e.CategoryDbModelId.Equals(id))
+                var categoryDbModel = await context.Categories.Where(e => e.Id.Equals(id))
+                    .Include(e => e.ProductDbModels).FirstOrDefaultAsync();
+                var storeCategoryRelations = await context.StoreCategoryRelation
+                    .Where(e => e.CategoryDbModelId.Equals(id))
                     .ToListAsync();
                 context.StoreCategoryRelation.RemoveRange(storeCategoryRelations);
                 var storeProductRelations = new List<StoreProductDbModel>();
@@ -98,15 +98,14 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 foreach (var productDbModel in categoryDbModel.ProductDbModels)
                 {
                     var storeProductRelationToRemove =
-                        await context.StoreProductRelation.FirstAsync(e => e.ProductDbModelId.Equals(productDbModel.Id));
+                        await context.StoreProductRelation.FirstAsync(e =>
+                            e.ProductDbModelId.Equals(productDbModel.Id));
                     storeProductRelations.Add(storeProductRelationToRemove);
-                    var purchaseToRemove = await context.Purchases.FirstOrDefaultAsync(e => e.ProductId.Equals(productDbModel.Id));
-                    if (purchaseToRemove != null)
-                    {
-                        purchases.Add(purchaseToRemove);
-                    }
-                   
+                    var purchaseToRemove =
+                        await context.Purchases.FirstOrDefaultAsync(e => e.ProductId.Equals(productDbModel.Id));
+                    if (purchaseToRemove != null) purchases.Add(purchaseToRemove);
                 }
+
                 context.StoreProductRelation.RemoveRange(storeProductRelations);
                 context.Products.RemoveRange(categoryDbModel.ProductDbModels);
                 context.Purchases.RemoveRange(purchases);
@@ -154,28 +153,18 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             await using var context = new MyDbContext(_options);
             if (category != null)
-            {
                 return await context.Categories.AnyAsync(e =>
                     e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool HasSameName(Category category)
         {
             using var context = new MyDbContext(_options);
             if (category != null)
-            {
                 return context.Categories.Any(e =>
                     e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         private async Task<bool> StoreCategoryRelationExists(Guid storeId, Guid categoryId)

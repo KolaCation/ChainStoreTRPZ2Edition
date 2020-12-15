@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Input;
 using ChainStore.Actions.ApplicationServices;
 using ChainStore.DataAccessLayer.Identity;
@@ -15,6 +12,56 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
 {
     public sealed class BookViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
+        #region Contructor
+
+        public BookViewModel(IAuthenticator authenticator, IClientRepository clientRepository,
+            IProductRepository productRepository, IReservationService reservationService,
+            IBookRepository bookRepository)
+        {
+            _authenticator = authenticator;
+            _clientRepository = clientRepository;
+            _productRepository = productRepository;
+            _reservationService = reservationService;
+            _bookRepository = bookRepository;
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Submit = new RelayCommand(productId => HandleOperation((Guid) productId));
+            Cancel = new RelayCommand(storeId =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid) storeId));
+                ClearData();
+            });
+        }
+
+        #endregion
+
+        #region Handlers
+
+        private async void HandleOperation(Guid productId)
+        {
+            var result =
+                await _reservationService.HandleOperation(_authenticator.GetCurrentUser().ClientId, productId,
+                    DaysCount);
+            if (result == ReservationOperationResult.Success)
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), StoreId));
+                ClearData();
+            }
+            else if (result == ReservationOperationResult.InvalidParameters)
+            {
+                ErrorMessage = "Min: 1 day. Max value: 7 days.";
+            }
+            else if (result == ReservationOperationResult.LimitExceeded)
+            {
+                ErrorMessage = "Books limit is exceeded: buy reserved products or wait limit till it ends.";
+            }
+            else
+            {
+                ErrorMessage = "Something went wrong. Try to repeat operation later.";
+            }
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
@@ -81,28 +128,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
 
         #endregion
 
-        #region Contructor
-
-        public BookViewModel(IAuthenticator authenticator, IClientRepository clientRepository,
-            IProductRepository productRepository, IReservationService reservationService,
-            IBookRepository bookRepository)
-        {
-            _authenticator = authenticator;
-            _clientRepository = clientRepository;
-            _productRepository = productRepository;
-            _reservationService = reservationService;
-            _bookRepository = bookRepository;
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            Submit = new RelayCommand(productId => HandleOperation((Guid)productId));
-            Cancel = new RelayCommand(storeId =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid)storeId));
-                ClearData();
-            });
-        }
-
-        #endregion
-
         #region Methods
 
         public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
@@ -133,32 +158,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
             ClientBooksCount = 0;
             DaysCount = 0;
             ErrorMessage = string.Empty;
-        }
-
-        #endregion
-
-        #region Handlers
-
-        private async void HandleOperation(Guid productId)
-        {
-            var result = await _reservationService.HandleOperation(_authenticator.GetCurrentUser().ClientId, productId, DaysCount);
-            if (result == ReservationOperationResult.Success)
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), StoreId));
-                ClearData();
-            }
-            else if (result == ReservationOperationResult.InvalidParameters)
-            {
-                ErrorMessage = "Min: 1 day. Max value: 7 days.";
-            }
-            else if (result == ReservationOperationResult.LimitExceeded)
-            {
-                ErrorMessage = "Books limit is exceeded: buy reserved products or wait limit till it ends.";
-            }
-            else
-            {
-                ErrorMessage = "Something went wrong. Try to repeat operation later.";
-            }
         }
 
         #endregion

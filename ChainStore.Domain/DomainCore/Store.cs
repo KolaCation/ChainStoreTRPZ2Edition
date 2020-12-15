@@ -6,14 +6,7 @@ namespace ChainStore.Domain.DomainCore
 {
     public sealed class Store
     {
-        public Guid Id { get; }
-        public string Name { get; }
-        public string Location { get; }
-
         private readonly List<Category> _categories;
-        public IReadOnlyCollection<Category> Categories => _categories.AsReadOnly();
-
-        public double Profit { get; private set; }
 
         public Store(Guid id, string name, string location, double profit)
         {
@@ -28,11 +21,19 @@ namespace ChainStore.Domain.DomainCore
             _categories = new List<Category>();
         }
 
-        public Store(List<Category> categories, Guid id, string name, string location, double profit) : this(id, name, location, profit)
+        public Store(List<Category> categories, Guid id, string name, string location, double profit) : this(id, name,
+            location, profit)
         {
             DomainValidator.ValidateObject(categories);
             _categories = categories;
         }
+
+        public Guid Id { get; }
+        public string Name { get; }
+        public string Location { get; }
+        public IReadOnlyCollection<Category> Categories => _categories.AsReadOnly();
+
+        public double Profit { get; private set; }
 
         public void GetProfit(double sum)
         {

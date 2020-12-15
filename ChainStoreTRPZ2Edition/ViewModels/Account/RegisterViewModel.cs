@@ -13,9 +13,47 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
     public sealed class RegisterViewModel : ViewModelBase, ICleanable
     {
+        #region Constructor
+
+        public RegisterViewModel(IAuthenticator authenticator)
+        {
+            _authenticator = authenticator;
+            Register = new RelayCommand(async passwordInputBoxes => await HandleRegistration(passwordInputBoxes));
+            NavigateToLogin = new RelayCommand(() =>
+            {
+                ClearData();
+                Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel)));
+            });
+        }
+
+        #endregion
+
+        #region Handlers
+
+        private async Task HandleRegistration(object passwordInputBoxes)
+        {
+            var unpackedPasswordInputBoxes = (object[]) passwordInputBoxes;
+            var validationSucceeded = Validate(unpackedPasswordInputBoxes);
+            if (validationSucceeded)
+            {
+                var tryRegister = await _authenticator.Register(Name, Email,
+                    ((PasswordBox) unpackedPasswordInputBoxes[0]).Password,
+                    ((PasswordBox) unpackedPasswordInputBoxes[1]).Password);
+                if (tryRegister == RegistrationResult.Success)
+                    NavigateToLogin.Execute(null);
+                else if (tryRegister == RegistrationResult.EmailAlreadyTaken)
+                    ErrorMessage = "Email is already taken.";
+                else
+                    ErrorMessage = "Something went wrong. Try to register later.";
+            }
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
+
         public string Name
         {
             get => GetValue<string>();
@@ -43,21 +81,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 
         #endregion
 
-        #region Constructor
-        public RegisterViewModel(IAuthenticator authenticator)
-        {
-            _authenticator = authenticator;
-            Register = new RelayCommand(async passwordInputBoxes => await HandleRegistration(passwordInputBoxes));
-            NavigateToLogin = new RelayCommand(() =>
-            {
-                ClearData();
-                Messenger.Default.Send(new NavigationMessage(nameof(LoginViewModel)));
-            });
-        }
-
-        #endregion
-
         #region Methods
+
         public void ClearData()
         {
             Name = string.Empty;
@@ -87,54 +112,31 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                 return false;
             }
 
-            if (passwords == null || !hasMinimum8Chars.IsMatch(((PasswordBox)passwords[0]).Password))
+            if (passwords == null || !hasMinimum8Chars.IsMatch(((PasswordBox) passwords[0]).Password))
             {
                 ErrorMessage = "Password must contain at least 6 characters.";
                 return false;
             }
-            else if (!hasUpperChar.IsMatch(((PasswordBox)passwords[0]).Password))
+
+            if (!hasUpperChar.IsMatch(((PasswordBox) passwords[0]).Password))
             {
                 ErrorMessage = "Password must contain at least 1 upper.";
                 return false;
             }
-            else if (!hasNumber.IsMatch(((PasswordBox)passwords[0]).Password))
+
+            if (!hasNumber.IsMatch(((PasswordBox) passwords[0]).Password))
             {
                 ErrorMessage = "Password must contain at least 1 number.";
                 return false;
             }
-            else if (((PasswordBox)passwords[0]).Password != ((PasswordBox)passwords[1]).Password)
+
+            if (((PasswordBox) passwords[0]).Password != ((PasswordBox) passwords[1]).Password)
             {
                 ErrorMessage = "Passwords do not match.";
                 return false;
             }
 
             return true;
-        }
-        #endregion
-
-        #region Handlers
-        private async Task HandleRegistration(object passwordInputBoxes)
-        {
-            var unpackedPasswordInputBoxes = (object[])passwordInputBoxes;
-            var validationSucceeded = Validate(unpackedPasswordInputBoxes);
-            if (validationSucceeded)
-            {
-                var tryRegister = await _authenticator.Register(Name, Email,
-                    ((PasswordBox)unpackedPasswordInputBoxes[0]).Password,
-                    ((PasswordBox)unpackedPasswordInputBoxes[1]).Password);
-                if (tryRegister == RegistrationResult.Success)
-                {
-                    NavigateToLogin.Execute(null);
-                }
-                else if (tryRegister == RegistrationResult.EmailAlreadyTaken)
-                {
-                    ErrorMessage = "Email is already taken.";
-                }
-                else
-                {
-                    ErrorMessage = "Something went wrong. Try to register later.";
-                }
-            }
         }
 
         #endregion

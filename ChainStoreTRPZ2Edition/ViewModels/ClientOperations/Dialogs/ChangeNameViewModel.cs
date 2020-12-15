@@ -6,6 +6,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
 {
     public sealed class ChangeNameViewModel : ViewModelBase, IVerifiable
     {
+        public ChangeNameViewModel(string name)
+        {
+            Name = name;
+        }
+
         public string Name
         {
             get => GetValue<string>();
@@ -18,12 +23,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
             set => SetValue(value);
         }
 
-
-        public ChangeNameViewModel(string name)
-        {
-            Name = name;
-        }
-
         public bool IsValid()
         {
             if (string.IsNullOrEmpty(Name))
@@ -31,21 +30,21 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
                 ErrorMessage = ErrorMessages.Required(nameof(Name));
                 return false;
             }
-            else if (Name.Length < 2)
+
+            if (Name.Length < 2)
             {
                 ErrorMessage = ErrorMessages.StringMinLength(nameof(Name), 2);
                 return false;
             }
-            else if (Name.Length > 60)
+
+            if (Name.Length > 60)
             {
                 ErrorMessage = ErrorMessages.StringMaxLength(nameof(Name), 60);
                 return false;
             }
-            else
-            {
-                ErrorMessage = string.Empty;
-                return true;
-            }
+
+            ErrorMessage = string.Empty;
+            return true;
         }
     }
 }

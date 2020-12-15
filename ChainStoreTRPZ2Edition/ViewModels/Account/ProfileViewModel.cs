@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
-using ChainStore.Domain.DomainCore;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Helpers;
 using ChainStoreTRPZ2Edition.Messages;
-using ChainStoreTRPZ2Edition.UserControls.ClientOperations;
 using ChainStoreTRPZ2Edition.UserControls.Dialogs;
 using ChainStoreTRPZ2Edition.ViewModels.ClientOperations;
 using ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs;
@@ -23,6 +17,29 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
     public sealed class ProfileViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
+        #region Constructor
+
+        public ProfileViewModel(IAuthenticator authenticator, IClientRepository clientRepository,
+            IPurchaseRepository purchaseRepository, IBookRepository bookRepository)
+        {
+            _authenticator = authenticator;
+            _clientRepository = clientRepository;
+            _purchaseRepository = purchaseRepository;
+            _bookRepository = bookRepository;
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            NavigateToPurchase = new RelayCommand(productId =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid) productId));
+                ClearData();
+            });
+            ClientBooks = new ObservableCollection<BookInfo>();
+            ClientPurchases = new ObservableCollection<PurchaseInfo>();
+            Filter = new RelayCommand(HandleFiltering);
+            ClearFilter = new RelayCommand(HandleCleaning);
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
@@ -60,32 +77,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
         #endregion
 
         #region Commands
+
         public ICommand NavigateToPurchase { get; set; }
         public ICommand Filter { get; set; }
         public ICommand ClearFilter { get; set; }
-
-        #endregion
-
-        #region Constructor
-
-        public ProfileViewModel(IAuthenticator authenticator, IClientRepository clientRepository,
-            IPurchaseRepository purchaseRepository, IBookRepository bookRepository)
-        {
-            _authenticator = authenticator;
-            _clientRepository = clientRepository;
-            _purchaseRepository = purchaseRepository;
-            _bookRepository = bookRepository;
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            NavigateToPurchase = new RelayCommand(productId =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid) productId));
-                ClearData();
-            });
-            ClientBooks = new ObservableCollection<BookInfo>();
-            ClientPurchases = new ObservableCollection<PurchaseInfo>();
-            Filter = new RelayCommand(HandleFiltering);
-            ClearFilter = new RelayCommand(HandleCleaning);
-        }
 
         #endregion
 
@@ -108,10 +103,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                         clientBookedProduct.Id
                     select new BookInfo(clientBookedProduct, clientBook)).ToList();
                 ClientBooks.Clear();
-                foreach (var bookInfo in bookInfos)
-                {
-                    ClientBooks.Add(bookInfo);
-                }
+                foreach (var bookInfo in bookInfos) ClientBooks.Add(bookInfo);
 
                 var clientPurchases = await _purchaseRepository.GetClientPurchases(clientId);
                 var clientPurchasedProducts = await _purchaseRepository.GetClientPurchasedProducts(clientId);
@@ -120,10 +112,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                         clientPurchasedProduct.Id
                     select new PurchaseInfo(clientPurchasedProduct, clientPurchase)).ToList();
                 ClientPurchases.Clear();
-                foreach (var purchaseInfo in purchaseInfos)
-                {
-                    ClientPurchases.Add(purchaseInfo);
-                }
+                foreach (var purchaseInfo in purchaseInfos) ClientPurchases.Add(purchaseInfo);
             }
         }
 
@@ -148,10 +137,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                 var purchaseInfosToDisplay = ClientPurchases.Where(purchaseInfo =>
                     purchaseInfo.ProductName.ToLower().Contains(SearchProduct.ToLower())).ToList();
                 ClientPurchases.Clear();
-                foreach (var purchaseInfo in purchaseInfosToDisplay)
-                {
-                    ClientPurchases.Add(purchaseInfo);
-                }
+                foreach (var purchaseInfo in purchaseInfosToDisplay) ClientPurchases.Add(purchaseInfo);
             }
             else
             {
@@ -214,20 +200,14 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             {
                 var dialogDataContext = ((ChangeNameDialog) dialogSession.Content).DataContext;
                 var dialogViewModel = (ChangeNameViewModel) dialogDataContext;
-                if (!dialogViewModel.IsValid())
-                {
-                    eventArgs.Cancel();
-                }
+                if (!dialogViewModel.IsValid()) eventArgs.Cancel();
             }
             else if (dialogSession.Content.GetType() == typeof(ReplenishBalanceDialog) &&
                      eventArgs.Parameter is double)
             {
-                var dialogDataContext = ((ReplenishBalanceDialog)dialogSession.Content).DataContext;
-                var dialogViewModel = (ReplenishBalanceViewModel)dialogDataContext;
-                if (!dialogViewModel.IsValid())
-                {
-                    eventArgs.Cancel();
-                }
+                var dialogDataContext = ((ReplenishBalanceDialog) dialogSession.Content).DataContext;
+                var dialogViewModel = (ReplenishBalanceViewModel) dialogDataContext;
+                if (!dialogViewModel.IsValid()) eventArgs.Cancel();
             }
         }
 

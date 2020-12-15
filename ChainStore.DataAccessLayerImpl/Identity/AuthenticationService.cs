@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
@@ -12,12 +10,13 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 {
     public sealed class AuthenticationService : IAuthenticationService
     {
-        private readonly ICustomUserManager _customUserManager;
-        private readonly ICustomRoleManager _customRoleManager;
-        private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IClientRepository _clientRepository;
+        private readonly ICustomRoleManager _customRoleManager;
+        private readonly ICustomUserManager _customUserManager;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public AuthenticationService(ICustomUserManager customUserManager, ICustomRoleManager customRoleManager, IPasswordHasher<User> passwordHasher, IClientRepository clientRepository)
+        public AuthenticationService(ICustomUserManager customUserManager, ICustomRoleManager customRoleManager,
+            IPasswordHasher<User> passwordHasher, IClientRepository clientRepository)
         {
             _customUserManager = customUserManager;
             _customRoleManager = customRoleManager;
@@ -34,16 +33,15 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
                 return verificationResult == PasswordVerificationResult.Success ? user : null;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
-        public async Task<RegistrationResult> Register(string name, string email, string password, string confirmPassword)
+        public async Task<RegistrationResult> Register(string name, string email, string password,
+            string confirmPassword)
         {
-            
-            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(confirmPassword))
+            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password) &&
+                !string.IsNullOrEmpty(confirmPassword))
             {
                 if (password != confirmPassword) return RegistrationResult.Fail;
                 var userWithProvidedEmailExists = await _customUserManager.UserExists(email);
@@ -60,10 +58,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 await _customRoleManager.AddToRole(user, "Client");
                 return RegistrationResult.Success;
             }
-            else
-            {
-                return RegistrationResult.Fail;
-            }
+
+            return RegistrationResult.Fail;
         }
     }
 }

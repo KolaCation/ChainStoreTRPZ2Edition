@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Repositories;
-using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.DataAccessLayerImpl.Mappers;
 using ChainStore.Domain.DomainCore;
@@ -44,10 +43,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var clientDbModel = await context.Clients.FindAsync(id);
                 return _clientMapper.DbToDomain(clientDbModel);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task<IReadOnlyCollection<Client>> GetAll()

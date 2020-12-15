@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ChainStore.DataAccessLayerImpl.DbModels;
-using ChainStore.DataAccessLayerImpl.Helpers;
+﻿using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ChainStore.DataAccessLayerImpl.Mappers
 {
     internal sealed class ClientMapper : IMapper<Client, ClientDbModel>
     {
-        public ClientMapper()
-        {
-            
-        }
         public ClientDbModel DomainToDb(Client item)
         {
             CustomValidator.ValidateObject(item);

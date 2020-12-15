@@ -1,18 +1,10 @@
 ﻿using System;
-using ChainStore.Domain.DomainCore;
 using ChainStore.Domain.Util;
 
 namespace ChainStore.Domain.DomainCore
 {
     public sealed class Book
     {
-        public Guid Id { get; }
-        public Guid ClientId { get; }
-        public Guid ProductId { get; }
-        public DateTimeOffset CreationTime { get; }
-        public DateTimeOffset ExpirationTime { get; }
-        public int ReserveDaysCount { get; }
-
         public Book(Guid id, Guid clientId, Guid productId, int reserveDaysCount)
         {
             DomainValidator.ValidateNumber(reserveDaysCount, 1, 7);
@@ -33,6 +25,13 @@ namespace ChainStore.Domain.DomainCore
             CreationTime = creationTime;
             ExpirationTime = expirationTime;
         }
+
+        public Guid Id { get; }
+        public Guid ClientId { get; }
+        public Guid ProductId { get; }
+        public DateTimeOffset CreationTime { get; }
+        public DateTimeOffset ExpirationTime { get; }
+        public int ReserveDaysCount { get; }
 
         public bool IsExpired()
         {

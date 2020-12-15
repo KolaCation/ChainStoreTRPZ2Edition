@@ -1,12 +1,11 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using ChainStoreTRPZ2Edition.Animations;
 
 namespace ChainStoreTRPZ2Edition.UserControls.Account
 {
     /// <summary>
-    /// Interaction logic for LoginControl.xaml
+    ///     Interaction logic for LoginControl.xaml
     /// </summary>
     public partial class LoginControl : UserControl
     {

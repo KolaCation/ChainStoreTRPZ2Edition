@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ChainStore.DataAccessLayerImpl.DbModels;
+﻿using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
 
@@ -12,7 +9,8 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
         public PurchaseDbModel DomainToDb(Purchase item)
         {
             CustomValidator.ValidateObject(item);
-            return new PurchaseDbModel(item.Id, item.ClientId, item.ProductId, item.CreationTime, item.PriceAtPurchaseMoment);
+            return new PurchaseDbModel(item.Id, item.ClientId, item.ProductId, item.CreationTime,
+                item.PriceAtPurchaseMoment);
         }
 
         public Purchase DbToDomain(PurchaseDbModel item)

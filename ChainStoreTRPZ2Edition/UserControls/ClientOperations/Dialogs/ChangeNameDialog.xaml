@@ -30,7 +30,7 @@
                     Command="{x:Static wpf:DialogHost.CloseDialogCommand}" FontFamily="Champagne &amp; Limousines"
                     Content="ACCEPT">
                 <Button.CommandParameter>
-                    <Binding Path="Name"/>
+                    <Binding Path="Name" />
                 </Button.CommandParameter>
             </Button>
             <Button IsCancel="True" Margin="8 0 0 0" Style="{DynamicResource MaterialDesignFlatButton}"

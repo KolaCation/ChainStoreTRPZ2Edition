@@ -9,9 +9,9 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
 {
     public class ReservationService : IReservationService
     {
-        private readonly IProductRepository _productRepository;
         private readonly IBookRepository _bookRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly IProductRepository _productRepository;
 
 
         public ReservationService(IProductRepository productRepository,
@@ -22,7 +22,8 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
             _clientRepository = clientRepository;
         }
 
-        public async Task<ReservationOperationResult> HandleOperation(Guid clientId, Guid productId, int reserveDaysCount)
+        public async Task<ReservationOperationResult> HandleOperation(Guid clientId, Guid productId,
+            int reserveDaysCount)
         {
             CustomValidator.ValidateId(clientId);
             CustomValidator.ValidateId(productId);
@@ -41,10 +42,8 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
                 await _bookRepository.AddOne(book);
                 return ReservationOperationResult.Success;
             }
-            else
-            {
-                return ReservationOperationResult.Fail;
-            }
+
+            return ReservationOperationResult.Fail;
         }
     }
 }

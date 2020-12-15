@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.Domain.Identity;
@@ -21,13 +19,12 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var user = await _context.Users.FirstOrDefaultAsync(e => e.UserName.ToLower().Equals(userName.ToLower()));
+                var user = await _context.Users.FirstOrDefaultAsync(
+                    e => e.UserName.ToLower().Equals(userName.ToLower()));
                 return user;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task<User> FindById(Guid userId)
@@ -37,10 +34,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 var user = await _context.Users.FirstOrDefaultAsync(e => e.Id.Equals(userId));
                 return user;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task<bool> CreateUser(User user)
@@ -51,10 +46,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 await _context.SaveChangesAsync();
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public async Task<bool> UpdateUser(User user)
@@ -65,10 +58,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 await _context.SaveChangesAsync();
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public async Task<bool> DeleteUser(User user)
@@ -79,22 +70,15 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 await _context.SaveChangesAsync();
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public async Task<bool> UserExists(string userName)
         {
             if (!string.IsNullOrEmpty(userName))
-            {
                 return await _context.Users.AnyAsync(e => e.UserName.ToLower().Equals(userName.ToLower()));
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

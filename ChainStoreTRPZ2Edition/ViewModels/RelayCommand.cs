@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace ChainStoreTRPZ2Edition.ViewModels
 {
     public sealed class RelayCommand : ICommand
     {
-        #region Private Members
-
-        private Action _action;
-        private Action<object> _actionWithParam;
-        private Func<object, bool> _canExecute;
-
-        #endregion
-
         #region Public events
 
         public event EventHandler CanExecuteChanged = (sender, e) => { };
+
+        #endregion
+
+        #region Private Members
+
+        private readonly Action _action;
+        private readonly Action<object> _actionWithParam;
+        private readonly Func<object, bool> _canExecute;
 
         #endregion
 
@@ -47,13 +45,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         public void Execute(object parameter)
         {
             if (_action == null)
-            {
                 _actionWithParam(parameter);
-            }
             else
-            {
                 _action();
-            }
         }
 
         #endregion

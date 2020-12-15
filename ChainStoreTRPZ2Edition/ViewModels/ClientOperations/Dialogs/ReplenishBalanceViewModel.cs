@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Windows.Input;
-using ChainStoreTRPZ2Edition.DataInterfaces;
+﻿using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Helpers;
 using DevExpress.Mvvm;
 
@@ -20,10 +18,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
             set => SetValue(value);
         }
 
-        public ReplenishBalanceViewModel()
-        {
-        }
-
         public bool IsValid()
         {
             if (Balance < 10)
@@ -31,16 +25,15 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs
                 ErrorMessage = ErrorMessages.MinValue("Sum to replenish", 10) + " UAH";
                 return false;
             }
-            else if(Balance > 100_000_000)
+
+            if (Balance > 100_000_000)
             {
                 ErrorMessage = ErrorMessages.MaxValue("Sum to replenish", 100_000_000) + " UAH";
                 return false;
             }
-            else
-            {
-                ErrorMessage = string.Empty;
-                return true;
-            }
+
+            ErrorMessage = string.Empty;
+            return true;
         }
     }
 }

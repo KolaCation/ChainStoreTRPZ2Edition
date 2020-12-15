@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStoreTRPZ2Edition.Admin.ViewModels;
@@ -18,6 +13,15 @@ namespace ChainStoreTRPZ2Edition.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        #region Methods
+
+        private ViewModelBase GetAppropriateViewModel(string viewModelName)
+        {
+            return ViewModels.Find(e => e.GetType().Name.Equals(viewModelName));
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
@@ -82,7 +86,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         #region Constructor
 
         /// <summary>
-        /// Constructor for creating commands, handling messages
+        ///     Constructor for creating commands, handling messages
         /// </summary>
         public MainViewModel(IAuthenticator authenticator)
         {
@@ -94,26 +98,17 @@ namespace ChainStoreTRPZ2Edition.ViewModels
             NavigateToProfile = new RelayCommand(() =>
             {
                 if (_authenticator.IsLoggedIn())
-                {
                     HandleNavigation(new NavigationMessage(nameof(ProfileViewModel),
                         _authenticator.GetCurrentUser().ClientId));
-                    
-                }
                 else
-                {
                     MessageBox.Show("Login to access profile.");
-                }
             });
             NavigateToStoresIndex = new RelayCommand(() =>
             {
                 if (_authenticator.IsLoggedIn())
-                {
                     HandleNavigation(new NavigationMessage(nameof(StoresViewModel)));
-                }
                 else
-                {
                     MessageBox.Show("Login to access stores.");
-                }
             });
             Logout = new RelayCommand(() =>
             {
@@ -126,7 +121,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         }
 
         /// <summary>
-        /// Constructor for injecting ViewModels
+        ///     Constructor for injecting ViewModels
         /// </summary>
         /// <param name="authenticator">For providing current user's email in sidebar menu</param>
         /// <param name="registerViewModel"></param>
@@ -151,15 +146,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels
                 bookViewModel, profileViewModel, categoriesViewModel
             };
             CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
-        }
-
-        #endregion
-
-        #region Methods
-
-        private ViewModelBase GetAppropriateViewModel(string viewModelName)
-        {
-            return ViewModels.Find(e => e.GetType().Name.Equals(viewModelName));
         }
 
         #endregion
