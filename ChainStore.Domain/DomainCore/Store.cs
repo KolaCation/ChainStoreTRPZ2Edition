@@ -11,8 +11,8 @@ namespace ChainStore.Domain.DomainCore
         public Store(Guid id, string name, string location, double profit)
         {
             DomainValidator.ValidateId(id);
-            DomainValidator.ValidateString(name, 2, 40);
-            DomainValidator.ValidateString(location, 2, 40);
+            DomainValidator.ValidateString(name, 2, 60);
+            DomainValidator.ValidateString(location, 2, 60);
             DomainValidator.ValidateNumber(profit, 0, double.MaxValue);
             Id = id;
             Name = name;

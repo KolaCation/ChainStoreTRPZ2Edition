@@ -14,8 +14,8 @@ namespace ChainStore.DataAccessLayerImpl.DbModels
         public StoreDbModel(Guid id, string name, string location, double profit)
         {
             CustomValidator.ValidateId(id);
-            CustomValidator.ValidateString(name, 2, 40);
-            CustomValidator.ValidateString(location, 2, 40);
+            CustomValidator.ValidateString(name, 2, 60);
+            CustomValidator.ValidateString(location, 2, 60);
             CustomValidator.ValidateNumber(profit, 0, double.MaxValue);
             Id = id;
             Name = name;

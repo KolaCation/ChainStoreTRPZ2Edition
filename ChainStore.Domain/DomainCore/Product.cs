@@ -9,7 +9,7 @@ namespace ChainStore.Domain.DomainCore
         {
             DomainValidator.ValidateId(id);
             DomainValidator.ValidateId(categoryId);
-            DomainValidator.ValidateString(name, 2, 40);
+            DomainValidator.ValidateString(name, 2, 60);
             DomainValidator.ValidateNumber(priceInUAH, 0, 100_000_000);
             Id = id;
             Name = name;

@@ -11,7 +11,7 @@ namespace ChainStore.Domain.DomainCore
         public Category(Guid id, string name)
         {
             DomainValidator.ValidateId(id);
-            DomainValidator.ValidateString(name, 2, 40);
+            DomainValidator.ValidateString(name, 2, 60);
             Id = id;
             Name = name;
         }

@@ -8,7 +8,7 @@ namespace ChainStore.DataAccessLayerImpl.DbModels
         public ClientDbModel(Guid id, string name, double balance)
         {
             CustomValidator.ValidateId(id);
-            CustomValidator.ValidateString(name, 2, 40);
+            CustomValidator.ValidateString(name, 2, 60);
             CustomValidator.ValidateNumber(balance, 0, 100_000_000);
             Id = id;
             Name = name;

@@ -14,7 +14,7 @@ namespace ChainStore.DataAccessLayerImpl.DbModels
         {
             CustomValidator.ValidateId(id);
             CustomValidator.ValidateId(categoryId);
-            CustomValidator.ValidateString(name, 2, 40);
+            CustomValidator.ValidateString(name, 2, 60);
             CustomValidator.ValidateNumber(priceInUAH, 0, 100_000_000);
             Id = id;
             Name = name;
