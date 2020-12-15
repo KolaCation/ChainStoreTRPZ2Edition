@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
@@ -30,10 +28,12 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
         {
             CustomValidator.ValidateObject(item);
             var categoryDbModel = _context.Categories.Where(e => e.Id.Equals(item.Id))
-                .Include(e => e.ProductDbModels).ThenInclude(e => e.StoreProductRelation).ThenInclude(e => e.StoreDbModel).FirstOrDefault();
+                .Include(e => e.ProductDbModels).ThenInclude(e => e.StoreProductRelation)
+                .ThenInclude(e => e.StoreDbModel).FirstOrDefault();
             return new Category
             (
-                (from productDbModel in categoryDbModel.ProductDbModels select _productMapper.DbToDomain(productDbModel)).ToList(),
+                (from productDbModel in categoryDbModel.ProductDbModels
+                    select _productMapper.DbToDomain(productDbModel)).ToList(),
                 categoryDbModel.Id,
                 categoryDbModel.Name
             );
@@ -44,10 +44,12 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
             CustomValidator.ValidateObject(item);
             CustomValidator.ValidateId(storeId);
             var categoryDbModel = _context.Categories.Where(e => e.Id.Equals(item.Id))
-                        .Include(e => e.ProductDbModels).ThenInclude(e => e.StoreProductRelation).ThenInclude(e => e.StoreDbModel).FirstOrDefault();
+                .Include(e => e.ProductDbModels).ThenInclude(e => e.StoreProductRelation)
+                .ThenInclude(e => e.StoreDbModel).FirstOrDefault();
             return new Category
             (
-                (from productDbModel in categoryDbModel.GetStoreSpecificProducts(storeId) select _productMapper.DbToDomain(productDbModel)).ToList(),
+                (from productDbModel in categoryDbModel.GetStoreSpecificProducts(storeId)
+                    select _productMapper.DbToDomain(productDbModel)).ToList(),
                 categoryDbModel.Id,
                 categoryDbModel.Name
             );

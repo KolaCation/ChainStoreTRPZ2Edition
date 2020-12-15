@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
@@ -11,9 +9,7 @@ using ChainStoreTRPZ2Edition.Admin.UserControls.Dialogs;
 using ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Messages;
-using ChainStoreTRPZ2Edition.UserControls.Dialogs;
 using ChainStoreTRPZ2Edition.ViewModels;
-using ChainStoreTRPZ2Edition.ViewModels.ClientOperations.Dialogs;
 using DevExpress.Mvvm;
 using MaterialDesignThemes.Wpf;
 
@@ -21,6 +17,21 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
 {
     public sealed class CategoriesViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
+        #region Constructor
+
+        public CategoriesViewModel(IAuthenticator authenticator, ICategoryRepository categoryRepository)
+        {
+            _authenticator = authenticator;
+            _categoryRepository = categoryRepository;
+            Categories = new ObservableCollection<Category>();
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            CreateCategoryCommand = new RelayCommand(CreateCategoryHandler);
+            EditCategoryCommand = new RelayCommand(categoryId => EditCategoryHandler((Guid) categoryId));
+            DeleteCategoryCommand = new RelayCommand(categoryId => DeleteCategoryHandler((Guid) categoryId));
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
@@ -37,33 +48,16 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
 
         #endregion
 
-        #region Constructor
-
-        public CategoriesViewModel(IAuthenticator authenticator, ICategoryRepository categoryRepository)
-        {
-            _authenticator = authenticator;
-            _categoryRepository = categoryRepository;
-            Categories = new ObservableCollection<Category>();
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            CreateCategoryCommand = new RelayCommand(CreateCategoryHandler);
-            EditCategoryCommand = new RelayCommand(categoryId => EditCategoryHandler((Guid) categoryId));
-            DeleteCategoryCommand = new RelayCommand(categoryId => DeleteCategoryHandler((Guid) categoryId));
-        }
-
-        #endregion
-
         #region Methods
 
         public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
         {
-            if (GetType().Name.Equals(refreshDataMessage.ViewModelName))
+            if (GetType().Name.Equals(refreshDataMessage.ViewModelName) && _authenticator.IsLoggedIn() &&
+                await _authenticator.CurrentUserIsInRole("Admin"))
             {
                 var categories = await _categoryRepository.GetAll();
                 Categories.Clear();
-                foreach (var category in categories)
-                {
-                    Categories.Add(category);
-                }
+                foreach (var category in categories) Categories.Add(category);
             }
         }
 
@@ -109,7 +103,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
             {
                 var editedCategory = new Category(data.Id, data.Name);
                 await _categoryRepository.UpdateOne(editedCategory);
-                var categoryToReplace = Categories.First(e=>e.Id.Equals(data.Id));
+                var categoryToReplace = Categories.First(e => e.Id.Equals(data.Id));
                 Categories.Remove(categoryToReplace);
                 Categories.Add(editedCategory);
             }
@@ -142,7 +136,8 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
                 {
                     eventArgs.Cancel();
                 }
-                else if (Categories.Any(e => e.Name.ToLower().Equals(dialogViewModel.Name.ToLower()) && !e.Id.Equals(dialogViewModel.Id)))
+                else if (Categories.Any(e =>
+                    e.Name.ToLower().Equals(dialogViewModel.Name.ToLower()) && !e.Id.Equals(dialogViewModel.Id)))
                 {
                     dialogViewModel.ErrorMessage = "Category already exists.";
                     eventArgs.Cancel();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.Domain.Identity;
 
@@ -12,13 +9,13 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         private readonly IAuthenticationService _authenticationService;
         private readonly ICustomRoleManager _customRoleManager;
 
-        public User CurrentUser { get; private set; }
-
         public Authenticator(IAuthenticationService authenticationService, ICustomRoleManager customRoleManager)
         {
             _authenticationService = authenticationService;
             _customRoleManager = customRoleManager;
         }
+
+        public User CurrentUser { get; private set; }
 
         public bool IsLoggedIn()
         {
@@ -32,7 +29,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             return CurrentUser != null;
         }
 
-        public async Task<RegistrationResult> Register(string name, string email, string password, string confirmPassword)
+        public async Task<RegistrationResult> Register(string name, string email, string password,
+            string confirmPassword)
         {
             return await _authenticationService.Register(name, email, password, confirmPassword);
         }
@@ -50,13 +48,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public async Task<bool> CurrentUserIsInRole(string roleName)
         {
             if (!string.IsNullOrEmpty(roleName) && IsLoggedIn())
-            {
                 return await _customRoleManager.IsInRole(CurrentUser, roleName);
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

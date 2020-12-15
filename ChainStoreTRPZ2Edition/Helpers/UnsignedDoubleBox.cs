@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -23,12 +22,9 @@ namespace ChainStoreTRPZ2Edition.Helpers
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
-                var text = (string)e.DataObject.GetData(typeof(string));
+                var text = (string) e.DataObject.GetData(typeof(string));
 
-                if (!IsTextAllowed((TextBox)sender, text))
-                {
-                    e.CancelCommand();
-                }
+                if (!IsTextAllowed((TextBox) sender, text)) e.CancelCommand();
             }
             else
             {
@@ -38,8 +34,7 @@ namespace ChainStoreTRPZ2Edition.Helpers
 
         private void DefaultPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !IsTextAllowed((TextBox)sender, e.Text);
+            e.Handled = !IsTextAllowed((TextBox) sender, e.Text);
         }
-
     }
 }

@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using ChainStore.Domain.DomainCore;
 using ChainStoreTRPZ2Edition.DataInterfaces;
-using ChainStoreTRPZ2Edition.Helpers;
 using DevExpress.Mvvm;
 
 namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
 {
     public sealed class AddCategoryToStoreViewModel : ViewModelBase, IVerifiable
     {
+        public AddCategoryToStoreViewModel(List<Category> categories)
+        {
+            Categories = new ObservableCollection<Category>();
+            foreach (var category in categories) Categories.Add(category);
+        }
+
         public ObservableCollection<Category> Categories { get; set; }
 
         public Category SelectedCategory
@@ -25,15 +28,6 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
             set => SetValue(value);
         }
 
-        public AddCategoryToStoreViewModel(List<Category> categories)
-        {
-            Categories = new ObservableCollection<Category>();
-            foreach (var category in categories)
-            {
-                Categories.Add(category);
-            }
-        }
-
         public bool IsValid()
         {
             if (SelectedCategory == null)
@@ -41,11 +35,9 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
                 ErrorMessage = "Provide category from the list.";
                 return false;
             }
-            else
-            {
-                ErrorMessage = string.Empty;
-                return true;
-            }
+
+            ErrorMessage = string.Empty;
+            return true;
         }
     }
 }

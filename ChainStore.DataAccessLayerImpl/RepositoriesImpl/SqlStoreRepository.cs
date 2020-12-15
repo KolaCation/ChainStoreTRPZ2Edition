@@ -48,10 +48,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var storeDbModel = await context.Stores.FindAsync(id);
                 return _storeMapper.DbToDomain(storeDbModel);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task<IReadOnlyCollection<Store>> GetAll()
@@ -110,10 +108,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             var storeDbModel = await context.Stores.FindAsync(storeId);
             var store = _storeMapper.DbToDomain(storeDbModel);
             var products = new List<Product>();
-            foreach (var category in store.Categories)
-            {
-                products.AddRange(category.Products);
-            }
+            foreach (var category in store.Categories) products.AddRange(category.Products);
 
             return products;
         }
@@ -122,11 +117,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             await using var context = new MyDbContext(_options);
             if (store != null)
-            {
                 return await context.Stores.AnyAsync(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
                                                           e.Name.ToLower().Equals(store.Name.ToLower()) &&
                                                           !e.Id.Equals(store.Id));
-            }
 
             return false;
         }
@@ -135,11 +128,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             using var context = new MyDbContext(_options);
             if (store != null)
-            {
                 return context.Stores.Any(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
                                                e.Name.ToLower().Equals(store.Name.ToLower()) &&
                                                !e.Id.Equals(store.Id));
-            }
 
             return false;
         }

@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.Domain.DomainCore;
 using ChainStore.Shared.Util;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ChainStore.DataAccessLayerImpl.Mappers
 {
     internal sealed class StoreMapper : IMapper<Store, StoreDbModel>
     {
-        private readonly MyDbContext _context;
         private readonly CategoryMapper _categoryMapper;
+        private readonly MyDbContext _context;
 
         public StoreMapper(MyDbContext context)
         {
@@ -37,12 +33,13 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
                 .ThenInclude(e => e.ProductDbModel).FirstOrDefault();
             return new Store
             (
-                (from categoryDbModel in storeDbModel.CategoryDbModels select _categoryMapper.DbToDomainStoreSpecificProducts(categoryDbModel, item.Id)).ToList(),
+                (from categoryDbModel in storeDbModel.CategoryDbModels
+                    select _categoryMapper.DbToDomainStoreSpecificProducts(categoryDbModel, item.Id)).ToList(),
                 item.Id,
                 item.Name,
                 item.Location,
                 item.Profit
-                );
+            );
         }
     }
 }

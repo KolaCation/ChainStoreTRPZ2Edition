@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Input;
 using ChainStore.Domain.DomainCore;
 using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Helpers;
@@ -12,6 +8,25 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
 {
     public sealed class CreateEditProductViewModel : ViewModelBase, IVerifiable
     {
+        public CreateEditProductViewModel(ProductOperationType type, Guid categoryId)
+        {
+            EnableTextBoxesDependingOnOperationType(type);
+            Type = type;
+            CategoryId = categoryId;
+            ProductStatus = ProductStatus.OnSale;
+        }
+
+        public CreateEditProductViewModel(ProductOperationType type, Product product)
+        {
+            EnableTextBoxesDependingOnOperationType(type);
+            Type = type;
+            Id = product.Id;
+            Name = product.Name;
+            PriceInUAH = product.PriceInUAH;
+            ProductStatus = product.ProductStatus;
+            CategoryId = product.CategoryId;
+        }
+
         public Guid Id
         {
             get => GetValue<Guid>();
@@ -66,28 +81,61 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
             set => SetValue(value);
         }
 
-        public ProductOperationType Type { get=>GetValue<ProductOperationType>();
-            private set=>SetValue(value); }
-
-        public ProductStatus ProductStatus { get; private set; }
-
-        public CreateEditProductViewModel(ProductOperationType type, Guid categoryId)
+        public ProductOperationType Type
         {
-            EnableTextBoxesDependingOnOperationType(type);
-            Type = type;
-            CategoryId = categoryId;
-            ProductStatus = ProductStatus.OnSale;
+            get => GetValue<ProductOperationType>();
+            private set => SetValue(value);
         }
 
-        public CreateEditProductViewModel(ProductOperationType type, Product product)
+        public ProductStatus ProductStatus { get; }
+
+
+        public bool IsValid()
         {
-            EnableTextBoxesDependingOnOperationType(type);
-            Type = type;
-            Id = product.Id;
-            Name = product.Name;
-            PriceInUAH = product.PriceInUAH;
-            ProductStatus = product.ProductStatus;
-            CategoryId = product.CategoryId;
+            if (string.IsNullOrEmpty(Name))
+            {
+                ErrorMessage = ErrorMessages.Required(nameof(Name));
+                return false;
+            }
+
+            if (Name.Length < 2)
+            {
+                ErrorMessage = ErrorMessages.StringMinLength(nameof(Name), 2);
+                return false;
+            }
+
+            if (Name.Length > 60)
+            {
+                ErrorMessage = ErrorMessages.StringMaxLength(nameof(Name), 60);
+                return false;
+            }
+
+            if (PriceInUAH < 10)
+            {
+                ErrorMessage = ErrorMessages.MinValue("Price", 10) + " UAH";
+                return false;
+            }
+
+            if (PriceInUAH > 100_000_000)
+            {
+                ErrorMessage = ErrorMessages.MaxValue("Price", 100_000_000) + " UAH";
+                return false;
+            }
+
+            if (QuantityOfProducts < 1 && Type != ProductOperationType.Edit)
+            {
+                ErrorMessage = ErrorMessages.MinValue("Quantity of products", 1);
+                return false;
+            }
+
+            if (QuantityOfProducts > 100 && Type != ProductOperationType.Edit)
+            {
+                ErrorMessage = ErrorMessages.MaxValue("Quantity of products", 100);
+                return false;
+            }
+
+            ErrorMessage = string.Empty;
+            return true;
         }
 
         private void EnableTextBoxesDependingOnOperationType(ProductOperationType type)
@@ -109,51 +157,6 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
                 NameTextBoxEnabled = false;
                 PriceTextBoxEnabled = false;
                 QuantityOfProductsTextBoxEnabled = true;
-            }
-        }
-
-
-        public bool IsValid()
-        {
-            if (string.IsNullOrEmpty(Name))
-            {
-                ErrorMessage = ErrorMessages.Required(nameof(Name));
-                return false;
-            }
-            else if (Name.Length < 2)
-            {
-                ErrorMessage = ErrorMessages.StringMinLength(nameof(Name), 2);
-                return false;
-            }
-            else if (Name.Length > 60)
-            {
-                ErrorMessage = ErrorMessages.StringMaxLength(nameof(Name), 60);
-                return false;
-            }
-            else if (PriceInUAH < 10)
-            {
-                ErrorMessage = ErrorMessages.MinValue("Price", 10) + " UAH";
-                return false;
-            }
-            else if (PriceInUAH > 100_000_000)
-            {
-                ErrorMessage = ErrorMessages.MaxValue("Price", 100_000_000) + " UAH";
-                return false;
-            }
-            else if (QuantityOfProducts < 1 && Type != ProductOperationType.Edit)
-            {
-                ErrorMessage = ErrorMessages.MinValue("Quantity of products", 1);
-                return false;
-            }
-            else if (QuantityOfProducts > 100 && Type != ProductOperationType.Edit)
-            {
-                ErrorMessage = ErrorMessages.MaxValue("Quantity of products", 100);
-                return false;
-            }
-            else
-            {
-                ErrorMessage = string.Empty;
-                return true;
             }
         }
     }

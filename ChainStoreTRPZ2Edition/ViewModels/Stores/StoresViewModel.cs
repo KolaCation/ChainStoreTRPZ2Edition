@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
@@ -16,12 +14,37 @@ using ChainStoreTRPZ2Edition.DataInterfaces;
 using ChainStoreTRPZ2Edition.Messages;
 using DevExpress.Mvvm;
 using MaterialDesignThemes.Wpf;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 {
     public sealed class StoresViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
+        #region Constructor
+
+        public StoresViewModel(IAuthenticator authenticator, IStoreRepository storeRepository)
+        {
+            _authenticator = authenticator;
+            _storeRepository = storeRepository;
+            Stores = new ObservableCollection<Store>();
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Filter = new RelayCommand(FilterHandler);
+            ClearFilter = new RelayCommand(CleanerHandler);
+            ViewStoreDetails = new RelayCommand(id =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid) id));
+                ClearData();
+            });
+            ViewCategories = new RelayCommand(() =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(CategoriesViewModel)));
+                ClearData();
+            });
+            CreateStoreCommand = new RelayCommand(CreateStoreHandler);
+            AdminButtonsVisibility = "Collapsed";
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
@@ -57,32 +80,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         #endregion
 
-        #region Constructor
-
-        public StoresViewModel(IAuthenticator authenticator, IStoreRepository storeRepository)
-        {
-            _authenticator = authenticator;
-            _storeRepository = storeRepository;
-            Stores = new ObservableCollection<Store>();
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            Filter = new RelayCommand(FilterHandler);
-            ClearFilter = new RelayCommand(CleanerHandler);
-            ViewStoreDetails = new RelayCommand(id =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid) id));
-                ClearData();
-            });
-            ViewCategories = new RelayCommand(() =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(CategoriesViewModel)));
-                ClearData();
-            });
-            CreateStoreCommand = new RelayCommand(CreateStoreHandler);
-            AdminButtonsVisibility = "Collapsed";
-        }
-
-        #endregion
-
         #region Methods
 
         private async Task CurrentUserIsAdmin()
@@ -97,10 +94,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             {
                 Stores.Clear();
                 var storesDomain = await _storeRepository.GetAll();
-                foreach (var store in storesDomain)
-                {
-                    Stores.Add(store);
-                }
+                foreach (var store in storesDomain) Stores.Add(store);
                 await CurrentUserIsAdmin();
             }
         }
@@ -121,26 +115,20 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             var stores = await _storeRepository.GetAll();
             var storesToDisplay = new List<Store>();
             if (!string.IsNullOrEmpty(SearchStore))
-            {
                 storesToDisplay.AddRange(stores.Where(st => st.Name.ToLower().Contains(SearchStore.ToLower()))
                     .ToList());
-            }
 
             if (!string.IsNullOrEmpty(SearchProduct))
             {
-                if (string.IsNullOrEmpty(SearchStore))
-                {
-                    storesToDisplay = stores.ToList();
-                }
+                if (string.IsNullOrEmpty(SearchStore)) storesToDisplay = stores.ToList();
 
                 var storesToIterate = new List<Store>(storesToDisplay);
                 foreach (var store in storesToIterate)
                 {
-                    bool success = false;
+                    var success = false;
                     foreach (var category in store.Categories)
                     {
                         foreach (var product in category.Products)
-                        {
                             if (product.Name.ToLower().Contains(SearchProduct.ToLower()))
                             {
                                 success = true;
@@ -150,12 +138,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                             {
                                 success = false;
                             }
-                        }
 
-                        if (success)
-                        {
-                            break;
-                        }
+                        if (success) break;
                     }
 
                     if (!success) storesToDisplay.Remove(store);
@@ -163,15 +147,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             }
 
             if (string.IsNullOrEmpty(SearchStore) && string.IsNullOrEmpty(SearchProduct))
-            {
                 storesToDisplay = stores.ToList();
-            }
 
             Stores.Clear();
-            foreach (var store in storesToDisplay)
-            {
-                Stores.Add(store);
-            }
+            foreach (var store in storesToDisplay) Stores.Add(store);
         }
 
         private void CleanerHandler()

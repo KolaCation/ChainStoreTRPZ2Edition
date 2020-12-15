@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using ChainStore.DataAccessLayer.Identity;
 using ChainStore.DataAccessLayer.Repositories;
@@ -22,6 +20,43 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 {
     public sealed class StoreDetailsViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
+        #region Contsructor
+
+        public StoreDetailsViewModel(IAuthenticator authenticator, IStoreRepository storeRepository,
+            ICategoryRepository categoryRepository, IProductRepository productRepository)
+        {
+            _authenticator = authenticator;
+            _storeRepository = storeRepository;
+            _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
+            Categories = new ObservableCollection<Category>();
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Filter = new RelayCommand(FilterHandler);
+            ClearFilter = new RelayCommand(CleanerHandler);
+            NavigateToPurchase = new RelayCommand(id =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid) id));
+                ClearData();
+            });
+            NavigateToBook = new RelayCommand(id =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(BookViewModel), (Guid) id));
+                ClearData();
+            });
+            EditStoreCommand = new RelayCommand(EditStoreHandler);
+            AddCategoryToStoreCommand = new RelayCommand(AddCategoryToStoreHandler);
+            CreateProductCommand = new RelayCommand(categoryId => CreateProductHandler((Guid) categoryId));
+            RemoveCategoryFromStoreCommand =
+                new RelayCommand(categoryId => RemoveCategoryFromStoreHandler((Guid) categoryId));
+            EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
+            ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid) productId));
+            DeleteStoreCommand = new RelayCommand(DeleteStoreHandler);
+            DeleteProductCommand = new RelayCommand(productId => DeleteProductHandler((Guid) productId));
+            AdminButtonsVisibility = "Collapsed";
+        }
+
+        #endregion
+
         #region Properties
 
         public Guid StoreId
@@ -72,43 +107,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
 
         #endregion
 
-        #region Contsructor
-
-        public StoreDetailsViewModel(IAuthenticator authenticator, IStoreRepository storeRepository,
-            ICategoryRepository categoryRepository, IProductRepository productRepository)
-        {
-            _authenticator = authenticator;
-            _storeRepository = storeRepository;
-            _categoryRepository = categoryRepository;
-            _productRepository = productRepository;
-            Categories = new ObservableCollection<Category>();
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            Filter = new RelayCommand(FilterHandler);
-            ClearFilter = new RelayCommand(CleanerHandler);
-            NavigateToPurchase = new RelayCommand(id =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid) id));
-                ClearData();
-            });
-            NavigateToBook = new RelayCommand(id =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(BookViewModel), (Guid) id));
-                ClearData();
-            });
-            EditStoreCommand = new RelayCommand(EditStoreHandler);
-            AddCategoryToStoreCommand = new RelayCommand(AddCategoryToStoreHandler);
-            CreateProductCommand = new RelayCommand(categoryId => CreateProductHandler((Guid) categoryId));
-            RemoveCategoryFromStoreCommand =
-                new RelayCommand(categoryId => RemoveCategoryFromStoreHandler((Guid) categoryId));
-            EditProductCommand = new RelayCommand(productId => EditProductHandler((Guid) productId));
-            ReplenishProductCommand = new RelayCommand(productId => ReplenishProductHandler((Guid) productId));
-            DeleteStoreCommand = new RelayCommand(DeleteStoreHandler);
-            DeleteProductCommand = new RelayCommand(productId=>DeleteProductHandler((Guid)productId));
-            AdminButtonsVisibility = "Collapsed";
-        }
-
-        #endregion
-
         #region Methods
 
         private async Task CurrentUserIsAdmin()
@@ -132,6 +130,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     var categoryToDisplay = new Category(productsToDisplay, category.Id, category.Name);
                     Categories.Add(categoryToDisplay);
                 }
+
                 await CurrentUserIsAdmin();
             }
         }
@@ -142,9 +141,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 .GroupBy(e => e.Name);
             var listWithUniqueProducts = new List<Product>();
             foreach (var groupOfProducts in productGroups.Where(groupOfProducts => groupOfProducts.Count() != 0))
-            {
                 listWithUniqueProducts.Add(groupOfProducts.First());
-            }
 
             listWithUniqueProducts = listWithUniqueProducts.OrderBy(e => e.Name).ToList();
             return listWithUniqueProducts;
@@ -325,12 +322,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
                 var storeProductsOnSale = storeProducts.Where(e => e.ProductStatus == ProductStatus.OnSale).ToList();
                 foreach (var storeProduct in storeProductsOnSale)
-                {
                     if (storeProduct.CategoryId.Equals(data.ItemId))
-                    {
                         await _productRepository.DeleteOne(storeProduct.Id);
-                    }
-                }
                 await _categoryRepository.DeleteCategoryFromStore(data.ItemId, StoreId);
                 RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
             }
@@ -348,22 +341,14 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             {
                 var storeProducts = await _storeRepository.GetStoreSpecificProducts(data.ItemId);
                 foreach (var storeProduct in storeProducts)
-                {
                     if (storeProduct.ProductStatus == ProductStatus.OnSale ||
                         storeProduct.ProductStatus == ProductStatus.Booked)
-                    {
                         await _productRepository.DeleteOne(storeProduct.Id);
-                    }
                     else
-                    {
                         await _productRepository.DeleteProductFromStore(storeProduct, data.ItemId);
-                    }
-                }
 
                 foreach (var category in Categories)
-                {
                     await _categoryRepository.DeleteCategoryFromStore(category.Id, data.ItemId);
-                }
 
                 await _storeRepository.DeleteOne(data.ItemId);
                 ClearData();
@@ -384,14 +369,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             {
                 var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
                 var storeProductsOnSale = storeProducts.Where(e =>
-                    e.Name.Equals(data.ItemName) &&
-                    e.ProductStatus != ProductStatus.Purchased && 
-                    e.CategoryId.Equals(productGroupRepresentative.CategoryId))
+                        e.Name.Equals(data.ItemName) &&
+                        e.ProductStatus != ProductStatus.Purchased &&
+                        e.CategoryId.Equals(productGroupRepresentative.CategoryId))
                     .ToList();
-                foreach (var storeProduct in storeProductsOnSale)
-                {
-                    await _productRepository.DeleteOne(storeProduct.Id);
-                }
+                foreach (var storeProduct in storeProductsOnSale) await _productRepository.DeleteOne(storeProduct.Id);
                 RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
@@ -421,18 +403,12 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             else if (dialogSession.Content.GetType() == typeof(AddCategoryToStoreDialog) &&
                      eventArgs.Parameter is AddCategoryToStoreViewModel addCategoryToStoreViewModel)
             {
-                if (!addCategoryToStoreViewModel.IsValid())
-                {
-                    eventArgs.Cancel();
-                }
+                if (!addCategoryToStoreViewModel.IsValid()) eventArgs.Cancel();
             }
             else if (dialogSession.Content.GetType() == typeof(CreateEditProductDialog) &&
                      eventArgs.Parameter is CreateEditProductViewModel createEditProductViewModel)
             {
-                if (!createEditProductViewModel.IsValid())
-                {
-                    eventArgs.Cancel();
-                }
+                if (!createEditProductViewModel.IsValid()) eventArgs.Cancel();
             }
         }
 

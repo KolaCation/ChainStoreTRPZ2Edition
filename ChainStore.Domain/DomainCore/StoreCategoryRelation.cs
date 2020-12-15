@@ -5,9 +5,6 @@ namespace ChainStore.Domain.DomainCore
 {
     public sealed class StoreCategoryRelation
     {
-        public Guid StoreId { get; }
-        public Guid CategoryId { get; }
-
         public StoreCategoryRelation(Guid storeId, Guid categoryId)
         {
             DomainValidator.ValidateId(storeId);
@@ -15,5 +12,8 @@ namespace ChainStore.Domain.DomainCore
             StoreId = storeId;
             CategoryId = categoryId;
         }
+
+        public Guid StoreId { get; }
+        public Guid CategoryId { get; }
     }
 }

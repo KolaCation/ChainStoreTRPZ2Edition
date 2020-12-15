@@ -1,7 +1,5 @@
 ﻿using ChainStore.DataAccessLayerImpl.DbModels;
-using ChainStore.Domain.DomainCore;
 using ChainStore.Domain.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChainStore.DataAccessLayerImpl
@@ -11,6 +9,7 @@ namespace ChainStore.DataAccessLayerImpl
         public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
         {
         }
+
         internal DbSet<StoreProductDbModel> StoreProductRelation { get; set; }
         internal DbSet<StoreCategoryDbModel> StoreCategoryRelation { get; set; }
         internal DbSet<ProductDbModel> Products { get; set; }
@@ -27,13 +26,18 @@ namespace ChainStore.DataAccessLayerImpl
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserRole>().HasKey(e => new {e.UserId, e.RoleId});
-            modelBuilder.Entity<StoreProductDbModel>().HasKey(e => new { e.StoreDbModelId, e.ProductDbModelId });
-            modelBuilder.Entity<StoreCategoryDbModel>().HasKey(e => new { e.StoreDbModelId, e.CategoryDbModelId });
-            modelBuilder.Entity<StoreProductDbModel>().HasOne(e => e.StoreDbModel).WithMany(e => e.StoreProductRelation);
-            modelBuilder.Entity<StoreProductDbModel>().HasOne(e => e.ProductDbModel).WithMany(e => e.StoreProductRelation);
-            modelBuilder.Entity<StoreCategoryDbModel>().HasOne(e => e.StoreDbModel).WithMany(e => e.StoreCategoryRelation);
-            modelBuilder.Entity<StoreCategoryDbModel>().HasOne(e => e.CategoryDbModel).WithMany(e => e.StoreCategoryRelation);
-            modelBuilder.Entity<CategoryDbModel>().HasMany(cat => cat.ProductDbModels).WithOne(pr => pr.CategoryDbModel);
+            modelBuilder.Entity<StoreProductDbModel>().HasKey(e => new {e.StoreDbModelId, e.ProductDbModelId});
+            modelBuilder.Entity<StoreCategoryDbModel>().HasKey(e => new {e.StoreDbModelId, e.CategoryDbModelId});
+            modelBuilder.Entity<StoreProductDbModel>().HasOne(e => e.StoreDbModel)
+                .WithMany(e => e.StoreProductRelation);
+            modelBuilder.Entity<StoreProductDbModel>().HasOne(e => e.ProductDbModel)
+                .WithMany(e => e.StoreProductRelation);
+            modelBuilder.Entity<StoreCategoryDbModel>().HasOne(e => e.StoreDbModel)
+                .WithMany(e => e.StoreCategoryRelation);
+            modelBuilder.Entity<StoreCategoryDbModel>().HasOne(e => e.CategoryDbModel)
+                .WithMany(e => e.StoreCategoryRelation);
+            modelBuilder.Entity<CategoryDbModel>().HasMany(cat => cat.ProductDbModels)
+                .WithOne(pr => pr.CategoryDbModel);
             modelBuilder.Seed();
         }
     }

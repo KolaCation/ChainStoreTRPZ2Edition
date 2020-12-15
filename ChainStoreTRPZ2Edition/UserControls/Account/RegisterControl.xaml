@@ -43,7 +43,7 @@
                         <Binding Path="Name" Mode="TwoWay" ValidatesOnExceptions="True"
                                  UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <validationRules:StringValidationRule Parameter="Name" MinimumLength="4"
+                                <validationRules:StringValidationRule Parameter="Name" MinimumLength="2"
                                                                       MaximumLength="60" />
                             </Binding.ValidationRules>
                         </Binding>

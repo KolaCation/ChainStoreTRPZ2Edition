@@ -17,9 +17,12 @@ namespace ChainStore.DataAccessLayerImpl
             var storeCatRel2 = new StoreCategoryDbModel(store1.Id, category2.Id);
             var product1 = new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
             var product11 = new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
-            var product111 = new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
-            var product1111 = new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
-            var product11111 = new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
+            var product111 =
+                new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
+            var product1111 =
+                new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
+            var product11111 =
+                new ProductDbModel(Guid.NewGuid(), "HP 450 G1", 20_000, ProductStatus.OnSale, category1.Id);
             var product2 = new ProductDbModel(Guid.NewGuid(), "HP 450 G2", 30_000, ProductStatus.OnSale, category1.Id);
             var product3 = new ProductDbModel(Guid.NewGuid(), "HP 450 G3", 40_000, ProductStatus.OnSale, category1.Id);
             var product4 = new ProductDbModel(Guid.NewGuid(), "HP 450 G4", 50_000, ProductStatus.OnSale, category1.Id);
@@ -41,23 +44,25 @@ namespace ChainStore.DataAccessLayerImpl
 
             modelBuilder.Entity<CategoryDbModel>().HasData(
                 category1, category2, category3
-                );
+            );
 
             modelBuilder.Entity<ProductDbModel>().HasData(
-                product1, product2, product3, product4, product5, product6, product7, product11, product111, product1111, product11111
-                );
+                product1, product2, product3, product4, product5, product6, product7, product11, product111,
+                product1111, product11111
+            );
 
             modelBuilder.Entity<StoreDbModel>().HasData(
                 store1
-                );
+            );
 
             modelBuilder.Entity<StoreCategoryDbModel>().HasData(
                 storeCatRel1, storeCatRel2
-                );
+            );
 
             modelBuilder.Entity<StoreProductDbModel>().HasData(
-                stPrRel1, stPrRel11, stPrRel111, stPrRel1111, stPrRel11111, stPrRel2, stPrRel3, stPrRel4, stPrRel5, stPrRel6, stPrRel7
-                );
+                stPrRel1, stPrRel11, stPrRel111, stPrRel1111, stPrRel11111, stPrRel2, stPrRel3, stPrRel4, stPrRel5,
+                stPrRel6, stPrRel7
+            );
         }
     }
 }

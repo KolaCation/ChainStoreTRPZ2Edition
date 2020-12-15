@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:stores="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Stores"
              xmlns:stores1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -22,27 +21,25 @@
                                          VerticalAlignment="Center" />
                 <Label Content="Stores List" Margin="4" FontFamily="Champagne &amp; Limousines" FontSize="18"
                        FontWeight="Black" />
-                
+
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button 
-                    Content="Add Store" 
-                        HorizontalAlignment="Right" 
-                        Margin="0 4 20 10"
-                        Panel.ZIndex="1"
-                        Command="{Binding CreateStoreCommand}"
-                        Visibility="{Binding AdminButtonsVisibility}"
-                />
                 <Button
-                    Content="View Categories" 
-                        HorizontalAlignment="Right" 
-                        Margin="0 4 20 10"
-                        Panel.ZIndex="1"
-                        Command="{Binding ViewCategories}"
-                        Visibility="{Binding AdminButtonsVisibility}"
-                />
+                    Content="Add Store"
+                    HorizontalAlignment="Right"
+                    Margin="0 4 20 10"
+                    Panel.ZIndex="1"
+                    Command="{Binding CreateStoreCommand}"
+                    Visibility="{Binding AdminButtonsVisibility}" />
+                <Button
+                    Content="View Categories"
+                    HorizontalAlignment="Right"
+                    Margin="0 4 20 10"
+                    Panel.ZIndex="1"
+                    Command="{Binding ViewCategories}"
+                    Visibility="{Binding AdminButtonsVisibility}" />
             </StackPanel>
-         
+
 
             <StackPanel Grid.Row="2" Margin="4" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label FontSize="14" FontFamily="Champagne &amp; Limousines" Content="Search Store:" />

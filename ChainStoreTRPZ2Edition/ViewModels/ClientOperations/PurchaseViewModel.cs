@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
 using System.Windows.Input;
 using ChainStore.Actions.ApplicationServices;
 using ChainStore.DataAccessLayer.Identity;
@@ -15,6 +12,48 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
 {
     public sealed class PurchaseViewModel : ViewModelBase, IRefreshableAsync, ICleanable
     {
+        #region Constructor
+
+        public PurchaseViewModel(IAuthenticator authenticator, IClientRepository clientRepository,
+            IProductRepository productRepository, IPurchaseService purchaseService)
+        {
+            _authenticator = authenticator;
+            _clientRepository = clientRepository;
+            _productRepository = productRepository;
+            _purchaseService = purchaseService;
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Submit = new RelayCommand(productId => HandleOperation((Guid) productId));
+            Cancel = new RelayCommand(storeId =>
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid) storeId));
+                ClearData();
+            });
+        }
+
+        #endregion
+
+        #region Handlers
+
+        private async void HandleOperation(Guid productId)
+        {
+            var result = await _purchaseService.HandleOperation(_authenticator.GetCurrentUser().ClientId, productId);
+            if (result == PurchaseOperationResult.Success)
+            {
+                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), StoreId));
+                ClearData();
+            }
+            else if (result == PurchaseOperationResult.InsufficientFunds)
+            {
+                ErrorMessage = "Not enough money. Replenish your balance.";
+            }
+            else
+            {
+                ErrorMessage = "Something went wrong. Try to repeat operation later.";
+            }
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IAuthenticator _authenticator;
@@ -86,26 +125,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
 
         #endregion
 
-        #region Constructor
-
-        public PurchaseViewModel(IAuthenticator authenticator, IClientRepository clientRepository,
-            IProductRepository productRepository, IPurchaseService purchaseService)
-        {
-            _authenticator = authenticator;
-            _clientRepository = clientRepository;
-            _productRepository = productRepository;
-            _purchaseService = purchaseService;
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
-            Submit = new RelayCommand(productId => HandleOperation((Guid)productId));
-            Cancel = new RelayCommand(storeId =>
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), (Guid)storeId));
-                ClearData();
-            });
-        }
-
-        #endregion
-
         #region Methods
 
         public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
@@ -141,29 +160,5 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
         }
 
         #endregion
-
-        #region Handlers
-
-        private async void HandleOperation(Guid productId)
-        {
-            var result = await _purchaseService.HandleOperation(_authenticator.GetCurrentUser().ClientId, productId);
-            if (result == PurchaseOperationResult.Success)
-            {
-                Messenger.Default.Send(new NavigationMessage(nameof(StoreDetailsViewModel), StoreId));
-                ClearData();
-            }
-            else if (result == PurchaseOperationResult.InsufficientFunds)
-            {
-                ErrorMessage = "Not enough money. Replenish your balance.";
-            }
-            else
-            {
-                ErrorMessage = "Something went wrong. Try to repeat operation later.";
-            }
-        }
-
-        #endregion
-
-    
     }
 }

@@ -5,19 +5,19 @@ namespace ChainStore.Domain.DomainCore
 {
     public class Client
     {
-        public Guid Id { get; }
-        public string Name { get; private set; }
-        public double Balance { get; private set; }
-
         public Client(Guid id, string name, double balance)
         {
             DomainValidator.ValidateId(id);
-            DomainValidator.ValidateString(name, 2, 40);
+            DomainValidator.ValidateString(name, 2, 60);
             DomainValidator.ValidateNumber(balance, 0, 100_000_000);
             Id = id;
             Name = name;
             Balance = balance;
         }
+
+        public Guid Id { get; }
+        public string Name { get; private set; }
+        public double Balance { get; private set; }
 
         public void UpdateName(string newName)
         {

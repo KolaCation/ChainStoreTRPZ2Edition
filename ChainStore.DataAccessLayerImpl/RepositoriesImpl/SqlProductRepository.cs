@@ -14,9 +14,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public class SqlProductRepository : IProductRepository
     {
+        private readonly DbContextOptions<MyDbContext> _options;
         private readonly ProductMapper _productMapper;
         private StoreMapper _storeMapper;
-        private readonly DbContextOptions<MyDbContext> _options;
 
         public SqlProductRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
@@ -45,10 +45,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var productDbModel = await context.Products.FindAsync(id);
                 return _productMapper.DbToDomain(productDbModel);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task<IReadOnlyCollection<Product>> GetAll()
@@ -90,7 +88,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-    
 
         public async Task<Store> GetStoreOfSpecificProduct(Guid productId)
         {
@@ -105,10 +102,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var storeDbModel = await context.Stores.FindAsync(storeDbModelId);
                 return _storeMapper.DbToDomain(storeDbModel);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public async Task AddProductToStore(Product product, Guid storeId)
@@ -116,10 +111,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(product);
             CustomValidator.ValidateId(storeId);
             await using var context = new MyDbContext(_options);
-            if (!Exists(product.Id))
-            {
-                await AddOne(product);
-            }
+            if (!Exists(product.Id)) await AddOne(product);
 
             var storeProdRelExists = await StoreProductRelationExists(storeId, product.Id);
             if (!storeProdRelExists)
@@ -153,6 +145,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             return await context.StoreProductRelation
                 .AnyAsync(e => e.StoreDbModelId.Equals(storeId) && e.ProductDbModelId.Equals(productId));
         }
+
         public bool Exists(Guid id)
         {
             CustomValidator.ValidateId(id);

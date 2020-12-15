@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Media.Animation;
 
@@ -14,7 +12,7 @@ namespace ChainStoreTRPZ2Edition.Animations
             {
                 Duration = new Duration(TimeSpan.FromSeconds(seconds)),
                 From = 0,
-                To = 1,
+                To = 1
             };
 
             Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));
@@ -27,7 +25,7 @@ namespace ChainStoreTRPZ2Edition.Animations
             {
                 Duration = new Duration(TimeSpan.FromSeconds(seconds)),
                 From = 1,
-                To = 0,
+                To = 0
             };
 
             Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));

@@ -15,8 +15,8 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
     public sealed class SqlBookRepository : IBookRepository
     {
         private readonly BookMapper _bookMapper;
-        private readonly ProductMapper _productMapper;
         private readonly DbContextOptions<MyDbContext> _options;
+        private readonly ProductMapper _productMapper;
 
         public SqlBookRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
@@ -57,7 +57,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 var isExpired = book.IsExpired();
                 if (!isExpired && context.Products.Any(e => e.Id.Equals(book.ProductId))) continue;
                 var productDbModel = await context.Products.FindAsync(book.ProductId);
-                if(productDbModel != null)
+                if (productDbModel != null)
                 {
                     var product = _productMapper.DbToDomain(productDbModel);
                     product.ChangeStatus(ProductStatus.OnSale);
@@ -65,6 +65,7 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                     var enState = context.Products.Update(_productMapper.DomainToDb(product));
                     enState.State = EntityState.Modified;
                 }
+
                 booksToRemove.Add(book);
             }
 

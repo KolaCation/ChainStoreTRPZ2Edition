@@ -6,16 +6,12 @@ namespace ChainStore.Domain.DomainCore
 {
     public sealed class Category
     {
-        public Guid Id { get; }
-        public string Name { get; }
-
         private readonly List<Product> _products;
-        public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
         public Category(Guid id, string name)
         {
             DomainValidator.ValidateId(id);
-            DomainValidator.ValidateString(name, 2, 40);
+            DomainValidator.ValidateString(name, 2, 60);
             Id = id;
             Name = name;
         }
@@ -25,5 +21,9 @@ namespace ChainStore.Domain.DomainCore
             DomainValidator.ValidateObject(products);
             _products = products;
         }
+
+        public Guid Id { get; }
+        public string Name { get; }
+        public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
     }
 }

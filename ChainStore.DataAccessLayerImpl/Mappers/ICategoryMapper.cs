@@ -1,8 +1,6 @@
-﻿using ChainStore.DataAccessLayerImpl.DbModels;
+﻿using System;
+using ChainStore.DataAccessLayerImpl.DbModels;
 using ChainStore.Domain.DomainCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChainStore.DataAccessLayerImpl.Mappers
 {

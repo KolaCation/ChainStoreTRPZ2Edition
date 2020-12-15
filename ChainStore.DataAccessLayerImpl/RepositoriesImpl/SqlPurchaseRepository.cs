@@ -13,9 +13,9 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
 {
     public class SqlPurchaseRepository : IPurchaseRepository
     {
-        private readonly PurchaseMapper _purchaseMapper;
-        private readonly ProductMapper _productMapper;
         private readonly DbContextOptions<MyDbContext> _options;
+        private readonly ProductMapper _productMapper;
+        private readonly PurchaseMapper _purchaseMapper;
 
         public SqlPurchaseRepository(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
