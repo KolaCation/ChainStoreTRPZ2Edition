@@ -21,7 +21,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
             _clientRepository = clientRepository;
             _productRepository = productRepository;
             _purchaseService = purchaseService;
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshData);
             Submit = new RelayCommand(productId => HandleOperation((Guid) productId));
             Cancel = new RelayCommand(storeId =>
             {
@@ -72,7 +72,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
             get => GetValue<Guid>();
             set => SetValue(value);
         }
-
 
         public string ProductName
         {
@@ -127,7 +126,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.ClientOperations
 
         #region Methods
 
-        public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
+        public async void RefreshData(RefreshDataMessage refreshDataMessage)
         {
             if (GetType().Name.Equals(refreshDataMessage.ViewModelName) && refreshDataMessage.ItemId != null
                                                                         && _authenticator.IsLoggedIn())

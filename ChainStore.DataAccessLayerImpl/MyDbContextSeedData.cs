@@ -18,7 +18,6 @@ namespace ChainStore.DataAccessLayerImpl
             var userManager = scope.ServiceProvider.GetService<ICustomUserManager>();
             var roleManager = scope.ServiceProvider.GetService<ICustomRoleManager>();
 
-
             var email = configuration.GetValue<string>("AdminUserEmail");
             var password = configuration.GetValue<string>("AdminUserPswd");
             var passwordHasher = new PasswordHasher<User>();

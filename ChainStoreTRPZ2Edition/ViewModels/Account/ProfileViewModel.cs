@@ -26,7 +26,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             _clientRepository = clientRepository;
             _purchaseRepository = purchaseRepository;
             _bookRepository = bookRepository;
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshData);
             NavigateToPurchase = new RelayCommand(productId =>
             {
                 Messenger.Default.Send(new NavigationMessage(nameof(PurchaseViewModel), (Guid) productId));
@@ -86,7 +86,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 
         #region Methods
 
-        public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
+        public async void RefreshData(RefreshDataMessage refreshDataMessage)
         {
             if (GetType().Name.Equals(refreshDataMessage.ViewModelName) && refreshDataMessage.ItemId != null &&
                 _authenticator.IsLoggedIn())
@@ -135,20 +135,20 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             if (!string.IsNullOrEmpty(SearchProduct))
             {
                 var purchaseInfosToDisplay = ClientPurchases.Where(purchaseInfo =>
-                    purchaseInfo.ProductName.ToLower().Contains(SearchProduct.ToLower())).ToList();
+                    purchaseInfo.ProductName.Contains(SearchProduct, StringComparison.OrdinalIgnoreCase)).ToList();
                 ClientPurchases.Clear();
                 foreach (var purchaseInfo in purchaseInfosToDisplay) ClientPurchases.Add(purchaseInfo);
             }
             else
             {
-                RefreshDataAsync(new RefreshDataMessage(nameof(ProfileViewModel), ClientId));
+                RefreshData(new RefreshDataMessage(nameof(ProfileViewModel), ClientId));
             }
         }
 
         private void HandleCleaning()
         {
             SearchProduct = string.Empty;
-            RefreshDataAsync(new RefreshDataMessage(nameof(ProfileViewModel), ClientId));
+            RefreshData(new RefreshDataMessage(nameof(ProfileViewModel), ClientId));
         }
 
         #endregion

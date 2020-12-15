@@ -117,9 +117,11 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             await using var context = new MyDbContext(_options);
             if (store != null)
-                return await context.Stores.AnyAsync(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
-                                                          e.Name.ToLower().Equals(store.Name.ToLower()) &&
+            {
+                return await context.Stores.AnyAsync(e => e.Location.ToLower() == store.Location.ToLower() &&
+                                                          e.Name.ToLower() == store.Name.ToLower() &&
                                                           !e.Id.Equals(store.Id));
+            }
 
             return false;
         }
@@ -128,9 +130,11 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             using var context = new MyDbContext(_options);
             if (store != null)
-                return context.Stores.Any(e => e.Location.ToLower().Equals(store.Location.ToLower()) &&
-                                               e.Name.ToLower().Equals(store.Name.ToLower()) &&
+            {
+                return context.Stores.Any(e => e.Location.ToLower() == store.Location.ToLower() &&
+                                               e.Name.ToLower() == store.Name.ToLower() &&
                                                !e.Id.Equals(store.Id));
+            }
 
             return false;
         }

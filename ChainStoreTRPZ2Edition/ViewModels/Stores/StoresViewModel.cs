@@ -26,7 +26,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             _authenticator = authenticator;
             _storeRepository = storeRepository;
             Stores = new ObservableCollection<Store>();
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshData);
             Filter = new RelayCommand(FilterHandler);
             ClearFilter = new RelayCommand(CleanerHandler);
             ViewStoreDetails = new RelayCommand(id =>
@@ -88,7 +88,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             AdminButtonsVisibility = isAdmin ? "Visible" : "Collapsed";
         }
 
-        public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
+        public async void RefreshData(RefreshDataMessage refreshDataMessage)
         {
             if (GetType().Name.Equals(refreshDataMessage.ViewModelName))
             {
@@ -115,8 +115,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             var stores = await _storeRepository.GetAll();
             var storesToDisplay = new List<Store>();
             if (!string.IsNullOrEmpty(SearchStore))
-                storesToDisplay.AddRange(stores.Where(st => st.Name.ToLower().Contains(SearchStore.ToLower()))
+            {
+                storesToDisplay.AddRange(stores.Where(st => st.Name.Contains(SearchStore, StringComparison.OrdinalIgnoreCase))
                     .ToList());
+            }
 
             if (!string.IsNullOrEmpty(SearchProduct))
             {
@@ -129,7 +131,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     foreach (var category in store.Categories)
                     {
                         foreach (var product in category.Products)
-                            if (product.Name.ToLower().Contains(SearchProduct.ToLower()))
+                        {
+                            if (product.Name.Contains(SearchProduct, StringComparison.OrdinalIgnoreCase))
                             {
                                 success = true;
                                 break;
@@ -138,6 +141,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                             {
                                 success = false;
                             }
+                        }
 
                         if (success) break;
                     }
@@ -157,11 +161,10 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         {
             SearchStore = string.Empty;
             SearchProduct = string.Empty;
-            RefreshDataAsync(new RefreshDataMessage(GetType().Name));
+            RefreshData(new RefreshDataMessage(GetType().Name));
         }
 
         #endregion
-
 
         #region Dialogs
 
@@ -195,8 +198,8 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     eventArgs.Cancel();
                 }
                 else if (Stores.Any(e =>
-                    e.Name.ToLower().Equals(dialogViewModel.Name.ToLower()) &&
-                    e.Location.ToLower().Equals(dialogViewModel.Location.ToLower()) &&
+                    e.Name.Equals(dialogViewModel.Name, StringComparison.OrdinalIgnoreCase) &&
+                    e.Location.Equals(dialogViewModel.Location, StringComparison.OrdinalIgnoreCase) &&
                     !e.Id.Equals(dialogViewModel.Id)))
                 {
                     dialogViewModel.ErrorMessage =

@@ -16,13 +16,12 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             _context = context;
         }
 
-
         public async Task<Role> FindByName(string roleName)
         {
             if (!string.IsNullOrEmpty(roleName))
             {
                 var role = await _context.Roles.FirstOrDefaultAsync(
-                    e => e.RoleName.ToLower().Equals(roleName.ToLower()));
+                    e => e.RoleName.ToLower() == roleName.ToLower());
                 return role;
             }
 
@@ -79,7 +78,7 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public async Task<bool> RoleExists(string roleName)
         {
             if (!string.IsNullOrEmpty(roleName))
-                return await _context.Roles.AnyAsync(e => e.RoleName.ToLower().Equals(roleName.ToLower()));
+                return await _context.Roles.AnyAsync(e => e.RoleName.ToLower() == roleName.ToLower());
             return false;
         }
 
@@ -89,8 +88,8 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             {
                 var userRoles = from userRole in _context.UserRoles
                     join role in _context.Roles on userRole.RoleId equals role.Id
-                    where userRole.UserId.Equals(user.Id) && role.RoleName.ToLower().Equals(roleName.ToLower())
-                    select userRole;
+                    where userRole.UserId.Equals(user.Id) && role.RoleName.ToLower() == roleName.ToLower()
+                                select userRole;
                 return await userRoles.CountAsync() == 1;
             }
 

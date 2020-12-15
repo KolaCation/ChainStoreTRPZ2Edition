@@ -7,6 +7,6 @@ namespace ChainStoreTRPZ2Edition.DataInterfaces
     /// </summary>
     public interface IRefreshableAsync
     {
-        void RefreshDataAsync(RefreshDataMessage refreshDataMessage);
+        void RefreshData(RefreshDataMessage refreshDataMessage);
     }
 }

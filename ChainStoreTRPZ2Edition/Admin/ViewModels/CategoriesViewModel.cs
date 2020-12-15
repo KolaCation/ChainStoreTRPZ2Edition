@@ -24,7 +24,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
             _authenticator = authenticator;
             _categoryRepository = categoryRepository;
             Categories = new ObservableCollection<Category>();
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshData);
             CreateCategoryCommand = new RelayCommand(CreateCategoryHandler);
             EditCategoryCommand = new RelayCommand(categoryId => EditCategoryHandler((Guid) categoryId));
             DeleteCategoryCommand = new RelayCommand(categoryId => DeleteCategoryHandler((Guid) categoryId));
@@ -50,7 +50,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
 
         #region Methods
 
-        public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
+        public async void RefreshData(RefreshDataMessage refreshDataMessage)
         {
             if (GetType().Name.Equals(refreshDataMessage.ViewModelName) && _authenticator.IsLoggedIn() &&
                 await _authenticator.CurrentUserIsInRole("Admin"))
@@ -137,7 +137,7 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels
                     eventArgs.Cancel();
                 }
                 else if (Categories.Any(e =>
-                    e.Name.ToLower().Equals(dialogViewModel.Name.ToLower()) && !e.Id.Equals(dialogViewModel.Id)))
+                    string.Equals(e.Name, dialogViewModel.Name, StringComparison.OrdinalIgnoreCase) && !e.Id.Equals(dialogViewModel.Id)))
                 {
                     dialogViewModel.ErrorMessage = "Category already exists.";
                     eventArgs.Cancel();

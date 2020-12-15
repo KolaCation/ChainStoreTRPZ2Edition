@@ -90,12 +90,11 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
             ErrorMessage = string.Empty;
         }
 
-
         private bool Validate(object[] passwords)
         {
-            var hasNumber = new Regex(@"[0-9]+");
-            var hasUpperChar = new Regex(@"[A-Z]+");
-            var hasMinimum8Chars = new Regex(@".{8,}");
+            var hasNumber = new Regex("[0-9]+");
+            var hasUpperChar = new Regex("[A-Z]+");
+            var hasMinimum8Chars = new Regex(".{8,}");
             if (string.IsNullOrEmpty(Name) || Name.Length < 2 || Name.Length > 60)
             {
                 ErrorMessage = "Provide valid name.";

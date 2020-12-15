@@ -15,12 +15,12 @@ namespace ChainStoreTRPZ2Edition.ValidationRules
         {
             var result = new ValidationResult(true, null);
             var inputString = (value ?? string.Empty).ToString();
-            if (inputString == string.Empty)
-                result = new ValidationResult(false, $"{Parameter} is required.");
+            if (inputString?.Length == 0)
+                return new ValidationResult(false, $"{Parameter} is required.");
             else if (inputString.Length < MinimumLength)
-                result = new ValidationResult(false, $"{Parameter} must be at least {MinimumLength} chars long.");
+                return new ValidationResult(false, $"{Parameter} must be at least {MinimumLength} chars long.");
             else if (MaximumLength > 0 && inputString.Length > MaximumLength)
-                result = new ValidationResult(false, $"{Parameter} must not exceed {MaximumLength} chars.");
+                return new ValidationResult(false, $"{Parameter} must not exceed {MaximumLength} chars.");
 
             return result;
         }

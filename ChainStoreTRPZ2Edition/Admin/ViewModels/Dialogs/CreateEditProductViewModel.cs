@@ -89,7 +89,6 @@ namespace ChainStoreTRPZ2Edition.Admin.ViewModels.Dialogs
 
         public ProductStatus ProductStatus { get; }
 
-
         public bool IsValid()
         {
             if (string.IsNullOrEmpty(Name))

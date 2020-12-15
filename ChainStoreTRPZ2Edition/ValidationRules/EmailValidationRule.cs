@@ -11,9 +11,12 @@ namespace ChainStoreTRPZ2Edition.ValidationRules
         {
             var result = new ValidationResult(true, null);
             var inputEmail = (value ?? string.Empty).ToString();
-            if (inputEmail == string.Empty)
+            if (inputEmail?.Length == 0)
+            {
                 result = new ValidationResult(false, "Email is required.");
+            }
             else
+            {
                 try
                 {
                     var validEmail = new MailAddress(inputEmail);
@@ -26,6 +29,7 @@ namespace ChainStoreTRPZ2Edition.ValidationRules
                 {
                     result = new ValidationResult(false, "Email is invalid.");
                 }
+            }
 
             return result;
         }

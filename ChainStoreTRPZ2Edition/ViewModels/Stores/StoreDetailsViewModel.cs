@@ -30,7 +30,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
             Categories = new ObservableCollection<Category>();
-            Messenger.Default.Register<RefreshDataMessage>(this, RefreshDataAsync);
+            Messenger.Default.Register<RefreshDataMessage>(this, RefreshData);
             Filter = new RelayCommand(FilterHandler);
             ClearFilter = new RelayCommand(CleanerHandler);
             NavigateToPurchase = new RelayCommand(id =>
@@ -115,7 +115,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             AdminButtonsVisibility = isAdmin ? "Visible" : "Collapsed";
         }
 
-        public async void RefreshDataAsync(RefreshDataMessage refreshDataMessage)
+        public async void RefreshData(RefreshDataMessage refreshDataMessage)
         {
             if (GetType().Name.Equals(refreshDataMessage.ViewModelName) && refreshDataMessage.ItemId != null)
             {
@@ -139,12 +139,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         {
             var productGroups = category.Products.Where(e => e.ProductStatus.Equals(ProductStatus.OnSale))
                 .GroupBy(e => e.Name);
-            var listWithUniqueProducts = new List<Product>();
-            foreach (var groupOfProducts in productGroups.Where(groupOfProducts => groupOfProducts.Count() != 0))
-                listWithUniqueProducts.Add(groupOfProducts.First());
+            var listWithUniqueProducts = productGroups.Where(groupOfProducts => groupOfProducts.Any()).Select(groupOfProducts => groupOfProducts.First()).ToList();
 
-            listWithUniqueProducts = listWithUniqueProducts.OrderBy(e => e.Name).ToList();
-            return listWithUniqueProducts;
+            return listWithUniqueProducts.OrderBy(e => e.Name).ToList();
         }
 
         public void ClearData()
@@ -167,13 +164,13 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             {
                 categoriesToDisplay.AddRange(Categories.Where(category =>
                     category.Products.Any(e =>
-                        e.Name.ToLower().Contains(SearchProduct.ToLower()) &&
+                        e.Name.Contains(SearchProduct, StringComparison.OrdinalIgnoreCase) &&
                         e.ProductStatus.Equals(ProductStatus.OnSale))));
                 Categories.Clear();
                 foreach (var category in categoriesToDisplay)
                 {
                     var productsToDisplay = GetListWithUniqueProducts(category)
-                        .Where(product => product.Name.ToLower().Contains(SearchProduct.ToLower())).ToList();
+                        .Where(product => product.Name.Contains(SearchProduct, StringComparison.OrdinalIgnoreCase)).ToList();
                     var result = new Category(productsToDisplay, category.Id, category.Name);
                     Categories.Add(result);
                 }
@@ -183,7 +180,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
         private void CleanerHandler()
         {
             SearchProduct = string.Empty;
-            RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+            RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
         }
 
         #endregion
@@ -232,7 +229,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             {
                 var addedCategory = data.SelectedCategory;
                 await _categoryRepository.AddCategoryToStore(addedCategory.Id, StoreId);
-                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+                RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
 
@@ -253,7 +250,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     await _productRepository.AddProductToStore(createdProduct, StoreId);
                 }
 
-                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+                RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
 
@@ -282,7 +279,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     await _productRepository.UpdateOne(updatedProduct);
                 }
 
-                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+                RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
 
@@ -304,7 +301,7 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                     await _productRepository.AddProductToStore(createdProduct, StoreId);
                 }
 
-                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+                RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
 
@@ -322,10 +319,15 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                 var storeProducts = await _storeRepository.GetStoreSpecificProducts(StoreId);
                 var storeProductsOnSale = storeProducts.Where(e => e.ProductStatus == ProductStatus.OnSale).ToList();
                 foreach (var storeProduct in storeProductsOnSale)
+                {
                     if (storeProduct.CategoryId.Equals(data.ItemId))
+                    {
                         await _productRepository.DeleteOne(storeProduct.Id);
+                    }
+                }
+
                 await _categoryRepository.DeleteCategoryFromStore(data.ItemId, StoreId);
-                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+                RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
 
@@ -341,11 +343,17 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
             {
                 var storeProducts = await _storeRepository.GetStoreSpecificProducts(data.ItemId);
                 foreach (var storeProduct in storeProducts)
+                {
                     if (storeProduct.ProductStatus == ProductStatus.OnSale ||
                         storeProduct.ProductStatus == ProductStatus.Booked)
+                    {
                         await _productRepository.DeleteOne(storeProduct.Id);
+                    }
                     else
+                    {
                         await _productRepository.DeleteProductFromStore(storeProduct, data.ItemId);
+                    }
+                }
 
                 foreach (var category in Categories)
                     await _categoryRepository.DeleteCategoryFromStore(category.Id, data.ItemId);
@@ -374,10 +382,9 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Stores
                         e.CategoryId.Equals(productGroupRepresentative.CategoryId))
                     .ToList();
                 foreach (var storeProduct in storeProductsOnSale) await _productRepository.DeleteOne(storeProduct.Id);
-                RefreshDataAsync(new RefreshDataMessage(GetType().Name, StoreId));
+                RefreshData(new RefreshDataMessage(GetType().Name, StoreId));
             }
         }
-
 
         private void ClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {

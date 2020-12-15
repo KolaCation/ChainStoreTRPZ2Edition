@@ -91,17 +91,18 @@ namespace ChainStoreTRPZ2Edition.ViewModels
         public MainViewModel(IAuthenticator authenticator)
         {
             _authenticator = authenticator;
-            NavigateToLogin = new RelayCommand(() =>
-            {
-                CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel));
-            });
+            NavigateToLogin = new RelayCommand(() => CurrentViewModel = GetAppropriateViewModel(nameof(LoginViewModel)));
             NavigateToProfile = new RelayCommand(() =>
             {
                 if (_authenticator.IsLoggedIn())
+                {
                     HandleNavigation(new NavigationMessage(nameof(ProfileViewModel),
                         _authenticator.GetCurrentUser().ClientId));
+                }
                 else
+                {
                     MessageBox.Show("Login to access profile.");
+                }
             });
             NavigateToStoresIndex = new RelayCommand(() =>
             {

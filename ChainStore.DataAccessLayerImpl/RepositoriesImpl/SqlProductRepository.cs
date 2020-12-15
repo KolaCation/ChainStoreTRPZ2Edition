@@ -88,7 +88,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-
         public async Task<Store> GetStoreOfSpecificProduct(Guid productId)
         {
             CustomValidator.ValidateId(productId);
