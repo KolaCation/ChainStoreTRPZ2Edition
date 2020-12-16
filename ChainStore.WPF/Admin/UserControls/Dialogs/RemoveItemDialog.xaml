@@ -14,14 +14,12 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Label Content="Are you sure to you want to delete"
-                   FontSize="14"
-                   FontFamily="Champagne &amp; Limousines" Foreground="Red" FontWeight="Medium" />
+                   Style="{StaticResource ErrorLabel}" FontWeight="Medium" />
             <Label Content="{Binding ItemName}"
                    FontSize="14"
                    FontFamily="Champagne &amp; Limousines" FontWeight="Bold" />
             <Label Content="?"
-                   FontSize="14"
-                   FontFamily="Champagne &amp; Limousines" Foreground="Red" FontWeight="Medium" />
+                   Style="{StaticResource ErrorLabel}" FontWeight="Medium" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1"
                     Margin="0 16 0 0">

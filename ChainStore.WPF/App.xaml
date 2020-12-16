@@ -55,6 +55,13 @@
             <DataTemplate DataType="{x:Type viewModels:CategoriesViewModel}">
                 <userControls:CategoriesControl DataContext="{Binding}" />
             </DataTemplate>
+            <Style TargetType="Label" x:Key="ErrorLabel" BasedOn="{StaticResource MaterialDesignLabel}">
+                <Style.Setters>
+                    <Setter Property="FontFamily" Value="Champagne &amp; Limousines"/>
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="FontSize" Value="14"/>
+                </Style.Setters>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
