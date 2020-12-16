@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ChainStore.DataAccessLayer.Identity;
+using ChainStore.DataAccessLayerImpl.Helpers;
 using ChainStore.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,18 +9,19 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 {
     public sealed class CustomUserManager : ICustomUserManager
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextOptions<MyDbContext> _options;
 
-        public CustomUserManager(MyDbContext context)
+        public CustomUserManager(OptionsBuilderService<MyDbContext> optionsBuilder)
         {
-            _context = context;
+            _options = optionsBuilder.BuildOptions();
         }
 
         public async Task<User> FindByName(string userName)
         {
+            await using var context = new MyDbContext(_options);
             if (!string.IsNullOrEmpty(userName))
             {
-                var user = await _context.Users.FirstOrDefaultAsync(
+                var user = await context.Users.FirstOrDefaultAsync(
                     e => e.UserName.ToLower() == userName.ToLower());
                 return user;
             }
@@ -29,9 +31,10 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 
         public async Task<User> FindById(Guid userId)
         {
+            await using var context = new MyDbContext(_options);
             if (!userId.Equals(Guid.Empty))
             {
-                var user = await _context.Users.FirstOrDefaultAsync(e => e.Id.Equals(userId));
+                var user = await context.Users.FirstOrDefaultAsync(e => e.Id.Equals(userId));
                 return user;
             }
 
@@ -40,10 +43,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 
         public async Task<bool> CreateUser(User user)
         {
+            await using var context = new MyDbContext(_options);
             if (user != null)
             {
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
                 return true;
             }
 
@@ -52,10 +56,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 
         public async Task<bool> UpdateUser(User user)
         {
+            await using var context = new MyDbContext(_options);
             if (user != null)
             {
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
                 return true;
             }
 
@@ -64,10 +69,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 
         public async Task<bool> DeleteUser(User user)
         {
+            await using var context = new MyDbContext(_options);
             if (user != null)
             {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+                context.Users.Remove(user);
+                await context.SaveChangesAsync();
                 return true;
             }
 
@@ -76,9 +82,10 @@ namespace ChainStore.DataAccessLayerImpl.Identity
 
         public async Task<bool> UserExists(string userName)
         {
+            await using var context = new MyDbContext(_options);
             if (!string.IsNullOrEmpty(userName))
             {
-                return await _context.Users.AnyAsync(e => e.UserName.ToLower() == userName.ToLower());
+                return await context.Users.AnyAsync(e => e.UserName.ToLower() == userName.ToLower());
             }
 
             return false;
