@@ -25,9 +25,9 @@ namespace ChainStore.DataAccessLayerImpl
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<UserRole>().HasKey(e => new {e.UserId, e.RoleId});
-            modelBuilder.Entity<StoreProductDbModel>().HasKey(e => new {e.StoreDbModelId, e.ProductDbModelId});
-            modelBuilder.Entity<StoreCategoryDbModel>().HasKey(e => new {e.StoreDbModelId, e.CategoryDbModelId});
+            modelBuilder.Entity<UserRole>().HasKey(e => new { e.UserId, e.RoleId });
+            modelBuilder.Entity<StoreProductDbModel>().HasKey(e => new { e.StoreDbModelId, e.ProductDbModelId });
+            modelBuilder.Entity<StoreCategoryDbModel>().HasKey(e => new { e.StoreDbModelId, e.CategoryDbModelId });
             modelBuilder.Entity<StoreProductDbModel>().HasOne(e => e.StoreDbModel)
                 .WithMany(e => e.StoreProductRelation);
             modelBuilder.Entity<StoreProductDbModel>().HasOne(e => e.ProductDbModel)

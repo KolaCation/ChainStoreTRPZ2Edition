@@ -78,7 +78,10 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public async Task<bool> RoleExists(string roleName)
         {
             if (!string.IsNullOrEmpty(roleName))
+            {
                 return await _context.Roles.AnyAsync(e => e.RoleName.ToLower() == roleName.ToLower());
+            }
+
             return false;
         }
 

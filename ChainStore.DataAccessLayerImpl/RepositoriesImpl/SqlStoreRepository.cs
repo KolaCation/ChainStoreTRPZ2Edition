@@ -108,7 +108,10 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             var storeDbModel = await context.Stores.FindAsync(storeId);
             var store = _storeMapper.DbToDomain(storeDbModel);
             var products = new List<Product>();
-            foreach (var category in store.Categories) products.AddRange(category.Products);
+            foreach (var category in store.Categories)
+            {
+                products.AddRange(category.Products);
+            }
 
             return products;
         }

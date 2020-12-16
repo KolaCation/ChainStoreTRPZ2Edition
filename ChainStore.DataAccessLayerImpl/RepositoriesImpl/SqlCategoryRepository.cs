@@ -103,7 +103,10 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                     storeProductRelations.Add(storeProductRelationToRemove);
                     var purchaseToRemove =
                         await context.Purchases.FirstOrDefaultAsync(e => e.ProductId.Equals(productDbModel.Id));
-                    if (purchaseToRemove != null) purchases.Add(purchaseToRemove);
+                    if (purchaseToRemove != null)
+                    {
+                        purchases.Add(purchaseToRemove);
+                    }
                 }
 
                 context.StoreProductRelation.RemoveRange(storeProductRelations);

@@ -77,7 +77,10 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public async Task<bool> UserExists(string userName)
         {
             if (!string.IsNullOrEmpty(userName))
+            {
                 return await _context.Users.AnyAsync(e => e.UserName.ToLower() == userName.ToLower());
+            }
+
             return false;
         }
     }

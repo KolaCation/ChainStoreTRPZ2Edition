@@ -1,0 +1,60 @@
+﻿<Application x:Class="ChainStoreTRPZ2Edition.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:account="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Account"
+             xmlns:account1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Account"
+             xmlns:stores="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.Stores"
+             xmlns:stores1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.Stores"
+             xmlns:clientOperations="clr-namespace:ChainStoreTRPZ2Edition.ViewModels.ClientOperations"
+             xmlns:clientOperations1="clr-namespace:ChainStoreTRPZ2Edition.UserControls.ClientOperations"
+             xmlns:viewModels="clr-namespace:ChainStoreTRPZ2Edition.Admin.ViewModels"
+             xmlns:userControls="clr-namespace:ChainStoreTRPZ2Edition.Admin.UserControls">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Popupbox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type account:LoginViewModel}">
+                <account1:LoginControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type account:RegisterViewModel}">
+                <account1:RegisterControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type stores:StoresViewModel}">
+                <stores1:StoresIndexControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type stores:StoreDetailsViewModel}">
+                <stores1:StoreDetailsControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type clientOperations:PurchaseViewModel}">
+                <clientOperations1:PurchaseControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type clientOperations:BookViewModel}">
+                <clientOperations1:BookControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type account:ProfileViewModel}">
+                <account1:ProfileControl DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:CategoriesViewModel}">
+                <userControls:CategoriesControl DataContext="{Binding}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

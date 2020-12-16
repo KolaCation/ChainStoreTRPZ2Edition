@@ -4,6 +4,6 @@
     {
         OnSale,
         Purchased,
-        Booked
+        Booked,
     }
 }

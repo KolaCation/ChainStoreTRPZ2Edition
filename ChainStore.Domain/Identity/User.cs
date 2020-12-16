@@ -23,7 +23,10 @@ namespace ChainStore.Domain.Identity
 
         public void SetHashedPassword(string hashedPassword)
         {
-            if (!string.IsNullOrEmpty(hashedPassword)) HashedPassword = hashedPassword;
+            if (!string.IsNullOrEmpty(hashedPassword))
+            {
+                HashedPassword = hashedPassword;
+            }
         }
     }
 }

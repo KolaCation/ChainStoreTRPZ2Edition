@@ -5,6 +5,6 @@
         Success,
         LimitExceeded,
         InvalidParameters,
-        Fail
+        Fail,
     }
 }

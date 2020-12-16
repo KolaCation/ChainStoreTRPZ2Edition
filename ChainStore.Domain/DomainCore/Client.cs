@@ -34,7 +34,11 @@ namespace ChainStore.Domain.DomainCore
         public bool Charge(double sum)
         {
             DomainValidator.ValidateNumber(sum, 0, 100_000_000);
-            if (Balance < sum) return false;
+            if (Balance < sum)
+            {
+                return false;
+            }
+
             Balance -= sum;
             return true;
         }

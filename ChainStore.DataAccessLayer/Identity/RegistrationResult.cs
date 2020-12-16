@@ -4,6 +4,6 @@
     {
         Success,
         EmailAlreadyTaken,
-        Fail
+        Fail,
     }
 }

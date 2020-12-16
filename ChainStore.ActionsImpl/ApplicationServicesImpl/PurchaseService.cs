@@ -36,11 +36,27 @@ namespace ChainStore.ActionsImpl.ApplicationServicesImpl
             if (client != null && product != null)
             {
                 var clientBooks = await _bookRepository.GetClientBooks(client.Id);
-                var currentClientProductBook = clientBooks.FirstOrDefault(b => b.ProductId.Equals(product.Id));
+                Book currentClientProductBook = null;
+                foreach (var b in clientBooks)
+                {
+                    if (b.ProductId.Equals(product.Id))
+                    {
+                        currentClientProductBook = b;
+                        break;
+                    }
+                }
+
                 if (product.ProductStatus.Equals(ProductStatus.Booked) && currentClientProductBook != null)
+                {
                     await _bookRepository.DeleteOne(currentClientProductBook.Id);
+                }
+
                 var operationSucceed = client.Charge(product.PriceInUAH);
-                if (!operationSucceed) return PurchaseOperationResult.InsufficientFunds;
+                if (!operationSucceed)
+                {
+                    return PurchaseOperationResult.InsufficientFunds;
+                }
+
                 var store = await _productRepository.GetStoreOfSpecificProduct(product.Id);
                 store.GetProfit(product.PriceInUAH);
                 product.ChangeStatus(ProductStatus.Purchased);
