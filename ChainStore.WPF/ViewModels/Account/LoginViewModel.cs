@@ -11,6 +11,32 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
 {
     public class LoginViewModel : ViewModelBase, ICleanable
     {
+        #region Properties
+
+        public string Email
+        {
+            get => GetValue<string>();
+            set => SetValue(value);
+        }
+
+        public string ErrorMessage
+        {
+            get => GetValue<string>();
+            set => SetValue(value);
+        }
+
+        private readonly IAuthenticator _authenticator;
+
+        #endregion
+
+        #region Commands
+
+        public ICommand NavigateToRegister { get; set; }
+
+        public ICommand Login { get; set; }
+
+        #endregion
+
         #region Constructor
 
         public LoginViewModel(IAuthenticator authenticator)
@@ -59,32 +85,6 @@ namespace ChainStoreTRPZ2Edition.ViewModels.Account
                 }
             }
         }
-
-        #endregion
-
-        #region Properties
-
-        public string Email
-        {
-            get => GetValue<string>();
-            set => SetValue(value);
-        }
-
-        public string ErrorMessage
-        {
-            get => GetValue<string>();
-            set => SetValue(value);
-        }
-
-        private readonly IAuthenticator _authenticator;
-
-        #endregion
-
-        #region Commands
-
-        public ICommand NavigateToRegister { get; set; }
-
-        public ICommand Login { get; set; }
 
         #endregion
     }
