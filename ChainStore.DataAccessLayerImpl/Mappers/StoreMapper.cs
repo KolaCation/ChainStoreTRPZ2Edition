@@ -31,15 +31,13 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
                 .ThenInclude(e => e.CategoryDbModel)
                 .Include(e => e.StoreProductRelation)
                 .ThenInclude(e => e.ProductDbModel).FirstOrDefault();
-            return new Store
-            (
+            return new Store(
                 (from categoryDbModel in storeDbModel.CategoryDbModels
                     select _categoryMapper.DbToDomainStoreSpecificProducts(categoryDbModel, item.Id)).ToList(),
                 item.Id,
                 item.Name,
                 item.Location,
-                item.Profit
-            );
+                item.Profit);
         }
     }
 }

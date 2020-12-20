@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStoreTRPZ2Edition", "ChainStoreTRPZ2Edition\ChainStoreTRPZ2Edition.csproj", "{C0279A6B-1745-4041-A4C5-40F8584A96CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChainStore.Domain", "ChainStore.Domain\ChainStore.Domain.csproj", "{D8CEBAB4-E183-45D0-A1A2-6010707B07D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.Domain", "ChainStore.Domain\ChainStore.Domain.csproj", "{D8CEBAB4-E183-45D0-A1A2-6010707B07D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChainStore.Shared", "ChainStore.Shared\ChainStore.Shared.csproj", "{69F92EFF-1AB4-4BA1-BEFB-D3043C352215}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.Shared", "ChainStore.Shared\ChainStore.Shared.csproj", "{69F92EFF-1AB4-4BA1-BEFB-D3043C352215}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChainStore.DataAccessLayer", "ChainStore.DataAccessLayer\ChainStore.DataAccessLayer.csproj", "{C772C8A9-2684-48FF-ABE2-C08D29A6A966}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.DataAccessLayer", "ChainStore.DataAccessLayer\ChainStore.DataAccessLayer.csproj", "{C772C8A9-2684-48FF-ABE2-C08D29A6A966}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChainStore.DataAccessLayerImpl", "ChainStore.DataAccessLayerImpl\ChainStore.DataAccessLayerImpl.csproj", "{1118F979-65B6-4394-9766-73C6CF4E16EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.DataAccessLayerImpl", "ChainStore.DataAccessLayerImpl\ChainStore.DataAccessLayerImpl.csproj", "{1118F979-65B6-4394-9766-73C6CF4E16EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChainStore.Actions", "ChainStore.Actions\ChainStore.Actions.csproj", "{220DF036-3B2B-42A4-8594-C021BD47D948}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.Actions", "ChainStore.Actions\ChainStore.Actions.csproj", "{220DF036-3B2B-42A4-8594-C021BD47D948}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChainStore.ActionsImpl", "ChainStore.ActionsImpl\ChainStore.ActionsImpl.csproj", "{8475DDA1-C2D5-4C85-B1B2-DAF5B0D4188F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.ActionsImpl", "ChainStore.ActionsImpl\ChainStore.ActionsImpl.csproj", "{8475DDA1-C2D5-4C85-B1B2-DAF5B0D4188F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainStore.WPF", "ChainStore.WPF\ChainStore.WPF.csproj", "{B04E0312-5DA4-4CAD-8C3B-BAC74346EED3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C0279A6B-1745-4041-A4C5-40F8584A96CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0279A6B-1745-4041-A4C5-40F8584A96CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C0279A6B-1745-4041-A4C5-40F8584A96CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C0279A6B-1745-4041-A4C5-40F8584A96CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8CEBAB4-E183-45D0-A1A2-6010707B07D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8CEBAB4-E183-45D0-A1A2-6010707B07D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8CEBAB4-E183-45D0-A1A2-6010707B07D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +47,10 @@ Global
 		{8475DDA1-C2D5-4C85-B1B2-DAF5B0D4188F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8475DDA1-C2D5-4C85-B1B2-DAF5B0D4188F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8475DDA1-C2D5-4C85-B1B2-DAF5B0D4188F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B04E0312-5DA4-4CAD-8C3B-BAC74346EED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B04E0312-5DA4-4CAD-8C3B-BAC74346EED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B04E0312-5DA4-4CAD-8C3B-BAC74346EED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B04E0312-5DA4-4CAD-8C3B-BAC74346EED3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

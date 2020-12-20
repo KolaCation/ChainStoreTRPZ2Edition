@@ -30,13 +30,11 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
             var categoryDbModel = _context.Categories.Where(e => e.Id.Equals(item.Id))
                 .Include(e => e.ProductDbModels).ThenInclude(e => e.StoreProductRelation)
                 .ThenInclude(e => e.StoreDbModel).FirstOrDefault();
-            return new Category
-            (
+            return new Category(
                 (from productDbModel in categoryDbModel.ProductDbModels
                     select _productMapper.DbToDomain(productDbModel)).ToList(),
                 categoryDbModel.Id,
-                categoryDbModel.Name
-            );
+                categoryDbModel.Name);
         }
 
         public Category DbToDomainStoreSpecificProducts(CategoryDbModel item, Guid storeId)
@@ -46,13 +44,11 @@ namespace ChainStore.DataAccessLayerImpl.Mappers
             var categoryDbModel = _context.Categories.Where(e => e.Id.Equals(item.Id))
                 .Include(e => e.ProductDbModels).ThenInclude(e => e.StoreProductRelation)
                 .ThenInclude(e => e.StoreDbModel).FirstOrDefault();
-            return new Category
-            (
+            return new Category(
                 (from productDbModel in categoryDbModel.GetStoreSpecificProducts(storeId)
                     select _productMapper.DbToDomain(productDbModel)).ToList(),
                 categoryDbModel.Id,
-                categoryDbModel.Name
-            );
+                categoryDbModel.Name);
         }
     }
 }

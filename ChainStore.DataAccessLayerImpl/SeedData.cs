@@ -41,7 +41,6 @@ namespace ChainStore.DataAccessLayerImpl
             var stPrRel6 = new StoreProductDbModel(store1.Id, product6.Id);
             var stPrRel7 = new StoreProductDbModel(store1.Id, product7.Id);
 
-
             modelBuilder.Entity<CategoryDbModel>().HasData(
                 category1, category2, category3
             );

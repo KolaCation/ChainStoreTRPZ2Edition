@@ -55,7 +55,11 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             foreach (var book in books)
             {
                 var isExpired = book.IsExpired();
-                if (!isExpired && context.Products.Any(e => e.Id.Equals(book.ProductId))) continue;
+                if (!isExpired && context.Products.Any(e => e.Id.Equals(book.ProductId)))
+                {
+                    continue;
+                }
+
                 var productDbModel = await context.Products.FindAsync(book.ProductId);
                 if (productDbModel != null)
                 {

@@ -29,7 +29,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
             {
                 var user = await _customUserManager.FindByName(email);
-                if (user == null) return null;
+                if (user == null)
+                {
+                    return null;
+                }
+
                 var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
                 return verificationResult == PasswordVerificationResult.Success ? user : null;
             }
@@ -43,9 +47,17 @@ namespace ChainStore.DataAccessLayerImpl.Identity
             if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password) &&
                 !string.IsNullOrEmpty(confirmPassword))
             {
-                if (password != confirmPassword) return RegistrationResult.Fail;
+                if (password != confirmPassword)
+                {
+                    return RegistrationResult.Fail;
+                }
+
                 var userWithProvidedEmailExists = await _customUserManager.UserExists(email);
-                if (userWithProvidedEmailExists) return RegistrationResult.EmailAlreadyTaken;
+                if (userWithProvidedEmailExists)
+                {
+                    return RegistrationResult.EmailAlreadyTaken;
+                }
+
                 var userId = Guid.NewGuid();
                 var user = new User(userId, email, email, userId);
                 var hashedPassword = _passwordHasher.HashPassword(user, password);
@@ -54,7 +66,11 @@ namespace ChainStore.DataAccessLayerImpl.Identity
                 await _customUserManager.CreateUser(user);
                 await _clientRepository.AddOne(clientDetails);
                 var roleExists = await _customRoleManager.RoleExists("Client");
-                if (!roleExists) await _customRoleManager.CreateRole(new Role("Client"));
+                if (!roleExists)
+                {
+                    await _customRoleManager.CreateRole(new Role("Client"));
+                }
+
                 await _customRoleManager.AddToRole(user, "Client");
                 return RegistrationResult.Success;
             }

@@ -88,7 +88,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             }
         }
 
-
         public async Task<Store> GetStoreOfSpecificProduct(Guid productId)
         {
             CustomValidator.ValidateId(productId);
@@ -111,7 +110,10 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
             CustomValidator.ValidateObject(product);
             CustomValidator.ValidateId(storeId);
             await using var context = new MyDbContext(_options);
-            if (!Exists(product.Id)) await AddOne(product);
+            if (!Exists(product.Id))
+            {
+                await AddOne(product);
+            }
 
             var storeProdRelExists = await StoreProductRelationExists(storeId, product.Id);
             if (!storeProdRelExists)

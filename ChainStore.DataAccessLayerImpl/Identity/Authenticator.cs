@@ -48,7 +48,10 @@ namespace ChainStore.DataAccessLayerImpl.Identity
         public async Task<bool> CurrentUserIsInRole(string roleName)
         {
             if (!string.IsNullOrEmpty(roleName) && IsLoggedIn())
+            {
                 return await _customRoleManager.IsInRole(CurrentUser, roleName);
+            }
+
             return false;
         }
     }

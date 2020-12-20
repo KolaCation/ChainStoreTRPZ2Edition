@@ -103,7 +103,10 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                     storeProductRelations.Add(storeProductRelationToRemove);
                     var purchaseToRemove =
                         await context.Purchases.FirstOrDefaultAsync(e => e.ProductId.Equals(productDbModel.Id));
-                    if (purchaseToRemove != null) purchases.Add(purchaseToRemove);
+                    if (purchaseToRemove != null)
+                    {
+                        purchases.Add(purchaseToRemove);
+                    }
                 }
 
                 context.StoreProductRelation.RemoveRange(storeProductRelations);
@@ -114,7 +117,6 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
                 await context.SaveChangesAsync();
             }
         }
-
 
         public async Task AddCategoryToStore(Guid categoryId, Guid storeId)
         {
@@ -153,8 +155,11 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             await using var context = new MyDbContext(_options);
             if (category != null)
+            {
                 return await context.Categories.AnyAsync(e =>
-                    e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
+                    e.Name.ToLower() == category.Name.ToLower() && !category.Id.Equals(e.Id));
+            }
+
             return false;
         }
 
@@ -162,8 +167,11 @@ namespace ChainStore.DataAccessLayerImpl.RepositoriesImpl
         {
             using var context = new MyDbContext(_options);
             if (category != null)
+            {
                 return context.Categories.Any(e =>
-                    e.Name.ToLower().Equals(category.Name.ToLower()) && !category.Id.Equals(e.Id));
+                    e.Name.ToLower() == category.Name.ToLower() && !category.Id.Equals(e.Id));
+            }
+
             return false;
         }
 

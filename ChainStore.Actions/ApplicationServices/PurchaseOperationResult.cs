@@ -4,6 +4,6 @@
     {
         Success,
         Fail,
-        InsufficientFunds
+        InsufficientFunds,
     }
 }
